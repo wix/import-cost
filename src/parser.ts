@@ -68,7 +68,7 @@ function compileImportString(node) {
           importString += ` {`;
           startedImportSpecifiers = true;
         }
-        importString += `${specifier.local.name}`;
+        importString += `${specifier.imported.name}`;
         if (node.specifiers[i + 1] && t.isImportDeclaration(node.specifiers[i + 1])) {
           importString += `, `;
         } else {

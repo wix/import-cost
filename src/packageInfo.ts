@@ -7,10 +7,11 @@ import { workspace } from 'vscode';
 
 export function getSizes(packages) {
   const sizes = Object.keys(packages).map(async packageName => {
-    if (!sizeCache[packageName]) {
-      sizeCache[packageName] = await getPackageSize(packages[packageName]);
+    const key = packages[packageName].string;
+    if (!sizeCache[key]) {
+      sizeCache[key] = await getPackageSize(packages[packageName]);
     }
-    return { name: packageName, size: sizeCache[packageName] };
+    return { name: packageName, size: sizeCache[key] };
   });
   return sizes;
 }
