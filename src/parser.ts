@@ -51,6 +51,7 @@ export function getPackages(source) {
     plugins: PARSE_PLUGINS
   });
   traverse(ast, visitor);
+  console.log('packages', packages);
   return packages;
 }
 

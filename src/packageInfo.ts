@@ -9,6 +9,7 @@ export function getSizes(packages) {
   const sizes = Object.keys(packages).map(async packageName => {
     const key = packages[packageName].string;
     if (!sizeCache[key]) {
+      console.log('calculating ' + packageName);
       sizeCache[key] = await getPackageSize(packages[packageName]);
     }
     return { name: packageName, size: sizeCache[key] };
