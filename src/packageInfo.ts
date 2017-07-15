@@ -5,11 +5,12 @@ import * as MemoryFS from 'memory-fs';
 import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import { workspace } from 'vscode';
 
-export function getSizes(packages) {
+export function getSizes(packages, decorate) {
   const sizes = Object.keys(packages).map(async packageName => {
     const key = packages[packageName].string;
     if (!sizeCache[key]) {
       console.log('calculating ' + packageName);
+      decorate(packages[packageName]);
       sizeCache[key] = await getPackageSize(packages[packageName]);
     }
     return { name: packageName, size: sizeCache[key] };

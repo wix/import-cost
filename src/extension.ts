@@ -14,10 +14,11 @@ async function decoratePackages() {
     console.log('triggered - ' + Date.now());
     try {
       const packagesNameToLocation = getPackages(editor.document.getText());
-      Object.keys(packagesNameToLocation).forEach(packageName =>
-        decorate('Calculating...', packagesNameToLocation[packageName].line, editor.document.fileName)
+      const packageSizes = await Promise.all(
+        getSizes(packagesNameToLocation, packageInfo =>
+          decorate('Calculating...', packageInfo.line, editor.document.fileName)
+        )
       );
-      const packageSizes = await Promise.all(getSizes(packagesNameToLocation));
       packageSizes.forEach(packageInfo => {
         decorate(
           packageInfo.size.toString() + 'KB',
