@@ -18,6 +18,7 @@ const PARSE_PLUGINS = [
   'functionBind',
   'functionSent'
 ];
+// TODO: make this more robust
 function isLocalImport(name) {
   return name.indexOf('.') === 0;
 }
@@ -39,7 +40,8 @@ export function getPackages(source) {
         packages[path.node.arguments[0].value] = {
           name: path.node.arguments[0].value,
           line: path.node.loc.end.line,
-          node: path.node
+          node: path.node,
+          string: compileRequireString(path.node)
         };
       }
     }
@@ -77,4 +79,8 @@ function compileImportString(node) {
   }
   importString += ` from '${node.source.value}';`;
   return importString;
+}
+
+function compileRequireString(node) {
+  return `require('${node.arguments[0].value}')`;
 }
