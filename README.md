@@ -1,4 +1,4 @@
-# vscode-import-cost Vscode Extension
+# Import Cost VSCode Extension
 
 This extension will display inline in the editor the size of the imported package.
 The extension utilizes webpack with UglifyJSPlugin in order to detect the imported size.
