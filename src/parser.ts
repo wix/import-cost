@@ -70,7 +70,7 @@ function compileImportString(node) {
           startedImportSpecifiers = true;
         }
         importString += `${specifier.imported.name}`;
-        if (node.specifiers[i + 1] && t.isImportDeclaration(node.specifiers[i + 1])) {
+        if (node.specifiers[i + 1] && t.isImportSpecifier(node.specifiers[i + 1])) {
           importString += `, `;
         } else {
           importString += `}`;

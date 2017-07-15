@@ -41,6 +41,7 @@ function getPackageSize(packageInfo) {
 
 function getEntryPoint(packageInfo) {
   const fileName = `${workspace.rootPath}/${packageInfo.name.replace(/\//g, '-')}-size-temp.js`;
+  console.log('entry point', fileName, packageInfo.string);
   fs.writeFileSync(fileName, packageInfo.string, 'utf-8');
   return fileName;
 }
