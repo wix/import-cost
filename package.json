@@ -1,0 +1,44 @@
+{
+  "name": "import-size",
+  "displayName": "import-size",
+  "description": "Display import/require package size in the editor",
+  "version": "0.0.1",
+  "publisher": "wix",
+  "engines": {
+    "vscode": "^1.12.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/src/extension",
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "@types/webpack": "^3.0.4",
+    "@types/webpack-dev-middleware": "^1.9.2",
+    "@types/webpack-dev-server": "^2.4.0",
+    "mocha": "^2.3.3",
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0"
+  },
+  "dependencies": {
+    "babel-core": "^6.25.0",
+    "babel-types": "^6.25.0",
+    "babylon": "^6.17.4",
+    "json-stringify-safe": "^5.0.1",
+    "memory-fs": "^0.4.1",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "webpack": "^3.2.0",
+    "webpack-dev-middleware": "^1.11.0",
+    "webpack-dev-server": "^2.5.1"
+  }
+}
