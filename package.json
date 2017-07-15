@@ -3,7 +3,7 @@
   "displayName": "vscode import cost",
   "description": "Display import/require package size in the editor",
   "version": "0.0.1",
-  "publisher": "wix",
+  "publisher": "yairhaimo",
   "engines": {
     "vscode": "^1.12.0"
   },
