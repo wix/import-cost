@@ -15,6 +15,10 @@ The extension utilizes webpack with UglifyJSPlugin in order to detect the import
 - Supports both `Javascript` and `Typescript`
 
 
+### 1.0.3
+
+Use typescript-eslint-parser
+
 ### 1.0.1
 
 Calculate only locally installed packages

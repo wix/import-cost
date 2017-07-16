@@ -2,17 +2,13 @@
   "name": "vscode-import-cost",
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "yairhaimo",
   "engines": {
     "vscode": "^1.12.0"
   },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "*"
-  ],
+  "categories": ["Other"],
+  "activationEvents": ["*"],
   "main": "./out/src/extension",
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
