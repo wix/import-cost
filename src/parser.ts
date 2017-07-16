@@ -1,6 +1,7 @@
 import { traverse } from 'babel-core';
 import * as t from 'babel-types';
 import { parse as tsParse } from 'typescript-eslint-parser';
+import logger from './logger';
 
 const PARSE_PLUGINS = [
   'jsx',
@@ -29,7 +30,7 @@ export function getPackages(source) {
         node: path.node,
         string: compileImportString(path.node)
       };
-      return;
+      logger.log('found import declaration:' + packages[path.node.source.value].string);
     },
     CallExpression(path) {
       if (path.node.callee.name === 'require') {
@@ -39,18 +40,21 @@ export function getPackages(source) {
           node: path.node,
           string: compileRequireString(path.node)
         };
+        logger.log('found require expression:' + packages[path.node.arguments[0].value].string);
       }
-      return;
     }
   };
-  // const ast = parse(source, {
-  //   sourceType: 'module',
-  //   plugins: PARSE_PLUGINS
-  // });
+  logger.log('parsing AST');
   const ast = parse(source);
+  logger.log('ast parsed');
   try {
+    logger.log('traversing AST');
     traverse(ast, visitor);
-  } catch (e) {}
+    logger.log('AST traversed');
+  } catch (e) {
+    logger.log('error traversing AST:' + e);
+  }
+  logger.log('returning packages:' + JSON.stringify(packages, null, 2));
   return packages;
 }
 

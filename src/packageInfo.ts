@@ -4,6 +4,7 @@ import * as webpack from 'webpack';
 import * as MemoryFS from 'memory-fs';
 import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import { workspace } from 'vscode';
+import logger from './logger';
 const sizeCache = {};
 
 export function getSizes(packages, decorate) {
@@ -12,8 +13,15 @@ export function getSizes(packages, decorate) {
     .map(async packageName => {
       const key = packages[packageName].string;
       if (!sizeCache[key]) {
+        logger.log('decorating "calculating" for ' + packageName);
         decorate(packages[packageName]);
-        sizeCache[key] = await getPackageSize(packages[packageName]);
+        try {
+          sizeCache[key] = await getPackageSize(packages[packageName]);
+          logger.log('got size successfully');
+        } catch (e) {
+          logger.log('couldnt calculate size');
+          sizeCache[key] = 0;
+        }
       }
       return { name: packageName, size: sizeCache[key] };
     });
@@ -31,9 +39,11 @@ function getPackageSize(packageInfo) {
       (err, stats) => {
         removeTempFile(entryPoint);
         if (err) {
+          logger.log('received error in webpack compilations: ' + err);
           reject(err);
         }
         const size = Math.round(stats.toJson().assets[0].size / 1024);
+        logger.log('size is: ' + size);
         resolve(size);
       }
     );
@@ -44,28 +54,37 @@ function getPackageSize(packageInfo) {
 function getEntryPoint(packageInfo) {
   const basePath = `${workspace.rootPath}/.importcost`;
   if (!fs.existsSync(basePath)) {
+    logger.log('creating .importcost directory:' + basePath);
     fs.mkdirSync(basePath);
   }
   const fileName = `${basePath}/${packageInfo.name.replace(/\//g, '-')}-import-cost-temp.js`;
   fs.writeFileSync(fileName, packageInfo.string, 'utf-8');
+  logger.log('creating entrypoint file:' + fileName + '|' + packageInfo.string);
   return fileName;
 }
 
 function removeTempFile(fileName) {
+  logger.log('removing file:' + fileName);
   fs.unlinkSync(fileName);
 }
 
 function isPackageInstalledInProject(packageName: string): boolean {
   try {
     const packageRootPath = `${workspace.rootPath}/node_modules/${packageName}`;
-    // require('vscode/lib/testrunner')
+    logger.log('package root path:' + packageRootPath);
+    // example: require('vscode/lib/testrunner')
     if (packageName.split(/\//).length > 1) {
-      return fs.existsSync(`${packageRootPath}.js`);
+      const exists = fs.existsSync(`${packageRootPath}.js`);
+      logger.log('package is a sub module:' + packageName + '|' + exists);
+      return exists;
     }
     const packageJson = JSON.parse(fs.readFileSync(`${packageRootPath}/package.json`, 'utf-8'));
     const mainFilePath = path.resolve(packageRootPath, packageJson.main || 'index.js');
-    return fs.existsSync(mainFilePath);
+    const exists = fs.existsSync(mainFilePath);
+    logger.log('looking for the package main file:' + mainFilePath + '|' + exists);
+    return exists;
   } catch (e) {
+    logger.log('failed to check if the package is installed in the project, returning false');
     return false;
   }
 }
