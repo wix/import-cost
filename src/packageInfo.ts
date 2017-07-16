@@ -12,7 +12,6 @@ export function getSizes(packages, decorate) {
     .map(async packageName => {
       const key = packages[packageName].string;
       if (!sizeCache[key]) {
-        console.log('calculating ' + packageName);
         decorate(packages[packageName]);
         sizeCache[key] = await getPackageSize(packages[packageName]);
       }
@@ -48,7 +47,6 @@ function getEntryPoint(packageInfo) {
     fs.mkdirSync(basePath);
   }
   const fileName = `${basePath}/${packageInfo.name.replace(/\//g, '-')}-import-cost-temp.js`;
-  console.log('entry point', fileName, packageInfo.string);
   fs.writeFileSync(fileName, packageInfo.string, 'utf-8');
   return fileName;
 }
@@ -62,15 +60,12 @@ function isPackageInstalledInProject(packageName: string): boolean {
     const packageRootPath = `${workspace.rootPath}/node_modules/${packageName}`;
     // require('vscode/lib/testrunner')
     if (packageName.split(/\//).length > 1) {
-      console.log(`submodule ${packageName}`);
       return fs.existsSync(`${packageRootPath}.js`);
     }
     const packageJson = JSON.parse(fs.readFileSync(`${packageRootPath}/package.json`, 'utf-8'));
     const mainFilePath = path.resolve(packageRootPath, packageJson.main || 'index.js');
-    console.log(`${packageName} mainFilePath`, mainFilePath);
     return fs.existsSync(mainFilePath);
   } catch (e) {
-    console.log(`${packageName} catch, returning false`);
     return false;
   }
 }

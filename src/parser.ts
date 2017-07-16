@@ -1,6 +1,6 @@
 import { traverse } from 'babel-core';
-import { parse } from 'babylon';
 import * as t from 'babel-types';
+import { parse as tsParse } from 'typescript-eslint-parser';
 
 const PARSE_PLUGINS = [
   'jsx',
@@ -29,6 +29,7 @@ export function getPackages(source) {
         node: path.node,
         string: compileImportString(path.node)
       };
+      return;
     },
     CallExpression(path) {
       if (path.node.callee.name === 'require') {
@@ -39,14 +40,17 @@ export function getPackages(source) {
           string: compileRequireString(path.node)
         };
       }
+      return;
     }
   };
-  const ast = parse(source, {
-    sourceType: 'module',
-    plugins: PARSE_PLUGINS
-  });
-  traverse(ast, visitor);
-  console.log('packages', packages);
+  // const ast = parse(source, {
+  //   sourceType: 'module',
+  //   plugins: PARSE_PLUGINS
+  // });
+  const ast = parse(source);
+  try {
+    traverse(ast, visitor);
+  } catch (e) {}
   return packages;
 }
 
@@ -79,4 +83,41 @@ function compileImportString(node) {
 
 function compileRequireString(node) {
   return `require('${node.arguments[0].value}')`;
+}
+
+function parse(text) {
+  const jsx = isProbablyJsx(text);
+  let ast;
+  try {
+    // Try passing with our best guess first.
+    ast = tryParseTypeScript(text, jsx);
+  } catch (e) {
+    // But if we get it wrong, try the opposite.
+    ast = tryParseTypeScript(text, !jsx);
+  }
+  delete ast.tokens;
+  return ast;
+}
+
+function tryParseTypeScript(text, jsx) {
+  return tsParse(text, {
+    loc: true,
+    range: true,
+    tokens: true,
+    comment: true,
+    useJSXTextNode: true,
+    ecmaFeatures: { jsx },
+    loggerFn: () => {}
+  });
+}
+
+function isProbablyJsx(text) {
+  return new RegExp(
+    [
+      '(^[^"\'`]*</)', // Contains "</" when probably not in a string
+      '|',
+      '(^[^/]{2}.*/>)' // Contains "/>" on line not starting with "//"
+    ].join(''),
+    'm'
+  ).test(text);
 }

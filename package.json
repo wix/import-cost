@@ -28,8 +28,8 @@
   "dependencies": {
     "babel-core": "^6.25.0",
     "babel-types": "^6.25.0",
-    "babylon": "^6.17.4",
     "memory-fs": "^0.4.1",
+    "typescript-eslint-parser": "^4.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.2.0"
   }

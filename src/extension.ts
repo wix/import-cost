@@ -6,12 +6,12 @@ import { getSizes } from './packageInfo';
 export function activate(context: ExtensionContext) {
   workspace.onDidSaveTextDocument(decoratePackages);
   window.onDidChangeActiveTextEditor(decoratePackages);
+  decoratePackages();
 }
 
 async function decoratePackages() {
   const editor = window.activeTextEditor;
   if (editor && editor.document) {
-    console.log('triggered - ' + Date.now());
     try {
       const packagesNameToLocation = getPackages(editor.document.getText());
       const packageSizes = await Promise.all(

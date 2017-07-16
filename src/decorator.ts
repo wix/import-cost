@@ -9,7 +9,6 @@ export function decorate(text: string, line: number, file: string) {
       after: { color: DECORATION_COLOR, margin: '0 0 0 1rem' }
     });
   }
-  console.log('decorating', text, line - 1);
   window.activeTextEditor.setDecorations(
     decorationsCache[key],
     <DecorationOptions[]>[
