@@ -18,25 +18,20 @@ const PARSE_PLUGINS = [
   'functionBind',
   'functionSent'
 ];
-// TODO: make this more robust
-function isLocalImport(name) {
-  return name.indexOf('.') === 0;
-}
+
 export function getPackages(source) {
   const packages = {};
   const visitor = {
     ImportDeclaration(path) {
-      if (!isLocalImport(path.node.source.value)) {
-        packages[path.node.source.value] = {
-          name: path.node.source.value,
-          line: path.node.loc.end.line,
-          node: path.node,
-          string: compileImportString(path.node)
-        };
-      }
+      packages[path.node.source.value] = {
+        name: path.node.source.value,
+        line: path.node.loc.end.line,
+        node: path.node,
+        string: compileImportString(path.node)
+      };
     },
     CallExpression(path) {
-      if (path.node.callee.name === 'require' && !isLocalImport(path.node.arguments[0].value)) {
+      if (path.node.callee.name === 'require') {
         packages[path.node.arguments[0].value] = {
           name: path.node.arguments[0].value,
           line: path.node.loc.end.line,

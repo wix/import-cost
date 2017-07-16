@@ -1,20 +1,23 @@
-const sizeCache = {};
 import * as fs from 'fs';
+import * as path from 'path';
 import * as webpack from 'webpack';
 import * as MemoryFS from 'memory-fs';
 import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import { workspace } from 'vscode';
+const sizeCache = {};
 
 export function getSizes(packages, decorate) {
-  const sizes = Object.keys(packages).map(async packageName => {
-    const key = packages[packageName].string;
-    if (!sizeCache[key]) {
-      console.log('calculating ' + packageName);
-      decorate(packages[packageName]);
-      sizeCache[key] = await getPackageSize(packages[packageName]);
-    }
-    return { name: packageName, size: sizeCache[key] };
-  });
+  const sizes = Object.keys(packages)
+    .filter(packageName => isPackageInstalledInProject(packageName))
+    .map(async packageName => {
+      const key = packages[packageName].string;
+      if (!sizeCache[key]) {
+        console.log('calculating ' + packageName);
+        decorate(packages[packageName]);
+        sizeCache[key] = await getPackageSize(packages[packageName]);
+      }
+      return { name: packageName, size: sizeCache[key] };
+    });
   return sizes;
 }
 
@@ -40,7 +43,11 @@ function getPackageSize(packageInfo) {
 }
 
 function getEntryPoint(packageInfo) {
-  const fileName = `${workspace.rootPath}/${packageInfo.name.replace(/\//g, '-')}-size-temp.js`;
+  const basePath = `${workspace.rootPath}/.importcost`;
+  if (!fs.existsSync(basePath)) {
+    fs.mkdirSync(basePath);
+  }
+  const fileName = `${basePath}/${packageInfo.name.replace(/\//g, '-')}-import-cost-temp.js`;
   console.log('entry point', fileName, packageInfo.string);
   fs.writeFileSync(fileName, packageInfo.string, 'utf-8');
   return fileName;
@@ -48,4 +55,22 @@ function getEntryPoint(packageInfo) {
 
 function removeTempFile(fileName) {
   fs.unlinkSync(fileName);
+}
+
+function isPackageInstalledInProject(packageName: string): boolean {
+  try {
+    const packageRootPath = `${workspace.rootPath}/node_modules/${packageName}`;
+    // require('vscode/lib/testrunner')
+    if (packageName.split(/\//).length > 1) {
+      console.log(`submodule ${packageName}`);
+      return fs.existsSync(`${packageRootPath}.js`);
+    }
+    const packageJson = JSON.parse(fs.readFileSync(`${packageRootPath}/package.json`, 'utf-8'));
+    const mainFilePath = path.resolve(packageRootPath, packageJson.main || 'index.js');
+    console.log(`${packageName} mainFilePath`, mainFilePath);
+    return fs.existsSync(mainFilePath);
+  } catch (e) {
+    console.log(`${packageName} catch, returning false`);
+    return false;
+  }
 }
