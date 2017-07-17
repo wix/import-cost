@@ -19,6 +19,14 @@ The extension utilizes webpack with UglifyJSPlugin in order to detect the import
 This extension creates a directory for temporary files called `.importcost`.  
 Add this directory to the `.gitignore` file in order to keep the repo clean.
 
-### 1.0.5
+## Known Issues
+The extension does not yet handle common chunks between imports:
+```javascript
+import 'myLib'
+import 'myLib2'
+```
+Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
+
+### 1.0.6
 
 Initial release
