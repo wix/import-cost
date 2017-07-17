@@ -22,7 +22,7 @@ async function decoratePackages() {
     try {
       logger.log('triggered ' + Date.now());
       logger.log('### getting packages');
-      const packagesNameToLocation = getPackages(editor.document.getText());
+      const packagesNameToLocation = getPackages(editor.document.fileName, editor.document.getText());
       logger.log('### getting sizes');
       const packageSizes = await Promise.all(
         getSizes(packagesNameToLocation, packageInfo =>

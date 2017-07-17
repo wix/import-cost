@@ -2763,7 +2763,7 @@ typescript-eslint-parser@^4.0.0:
     lodash.unescape "4.0.1"
     semver "5.3.0"
 
-typescript@^2.0.3:
+typescript@^2.4.1:
   version "2.4.1"
   resolved "https://registry.npmjs.org/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
 

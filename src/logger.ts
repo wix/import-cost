@@ -3,15 +3,20 @@ import { OutputChannel, ExtensionContext, window } from 'vscode';
 class Logger {
   private channel: OutputChannel;
   private context: ExtensionContext;
+  private debug: boolean = false;
 
   init(context: ExtensionContext) {
     this.context = context;
-    this.channel = window.createOutputChannel('ImportCost');
-    context.subscriptions.push(this.channel);
+    if (this.debug) {
+      this.channel = window.createOutputChannel('ImportCost');
+      context.subscriptions.push(this.channel);
+    }
   }
 
   log(text: string) {
-    this.channel.appendLine(text);
+    if (this.debug) {
+      this.channel.appendLine(text);
+    }
   }
 }
 

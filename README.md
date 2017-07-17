@@ -14,15 +14,6 @@ The extension utilizes webpack with UglifyJSPlugin in order to detect the import
 - Require: `const Func = require('utils').Func;`
 - Supports both `Javascript` and `Typescript`
 
-
-### 1.0.3
-
-Use typescript-eslint-parser
-
-### 1.0.1
-
-Calculate only locally installed packages
-
-### 1.0.0
+### 1.0.4
 
 Initial release
