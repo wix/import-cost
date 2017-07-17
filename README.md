@@ -5,6 +5,8 @@ The extension utilizes webpack with UglifyJSPlugin in order to detect the import
 ![Example Image](https://file-gwpnofjfte.now.sh/Screen%20Shot%202017-07-15%20at%202.13.55%20PM.png)
 
 ## Features
+Calculates the size of imports and requires.  
+Currently supports:
 
 - Default importing: `import Func from 'utils';`
 - Entire content importing: `import * as Utils from 'utils';`

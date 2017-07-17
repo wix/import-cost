@@ -2,13 +2,14 @@
   "name": "vscode-import-cost",
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "publisher": "yairhaimo",
   "engines": {
     "vscode": "^1.12.0"
   },
   "categories": ["Other"],
   "activationEvents": ["*"],
+  "keywords": ["import", "require", "size", "weight", "webpack"],
   "main": "./out/src/extension",
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
@@ -32,5 +33,15 @@
     "memory-fs": "^0.4.1",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.2.0"
+  },
+  "icon": "images/import-cost-logo.png",
+  "galleryBanner": {
+    "color": "#1C78C0",
+    "theme": "light"
+  },
+  "homepage": "https://github.com/wix/vscode-import-cost/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wix/vscode-import-cost.git"
   }
 }
