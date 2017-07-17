@@ -20,12 +20,12 @@ This extension creates a directory for temporary files called `.importcost`.
 Add this directory to the `.gitignore` file in order to keep the repo clean.
 
 ## Known Issues
-The extension does not yet handle common chunks between imports:
-```javascript
-import 'myLib'
-import 'myLib2'
-```
-Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
+- Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
+- Switching between files while calculating will cause a temporary mixup with the decorations
+
+### 1.0.7
+
+Add cross session cache
 
 ### 1.0.6
 

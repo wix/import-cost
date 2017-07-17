@@ -5,7 +5,28 @@ import * as MemoryFS from 'memory-fs';
 import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import { workspace } from 'vscode';
 import logger from './logger';
-const sizeCache = {};
+export const BASE_PATH = `${workspace.rootPath}/.importcost`;
+const cacheFile = `${BASE_PATH}/cache`;
+let sizeCache = {};
+loadSizeCache();
+
+function loadSizeCache() {
+  try {
+    if (fs.existsSync(cacheFile)) {
+      sizeCache = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
+    }
+  } catch (e) {
+    logger.log('Failed to load cache from file:' + e);
+  }
+}
+
+function saveSizeCache() {
+  try {
+    fs.writeFileSync(cacheFile, JSON.stringify(sizeCache, null, 2), 'utf-8');
+  } catch (e) {
+    logger.log('Failed to write cache to file:' + e);
+  }
+}
 
 export function getSizes(packages, decorate) {
   const sizes = Object.keys(packages)
@@ -25,6 +46,7 @@ export function getSizes(packages, decorate) {
       }
       return { name: packageName, size: sizeCache[key] };
     });
+  saveSizeCache();
   return sizes;
 }
 
@@ -52,12 +74,7 @@ function getPackageSize(packageInfo) {
 }
 
 function getEntryPoint(packageInfo) {
-  const basePath = `${workspace.rootPath}/.importcost`;
-  if (!fs.existsSync(basePath)) {
-    logger.log('creating .importcost directory:' + basePath);
-    fs.mkdirSync(basePath);
-  }
-  const fileName = `${basePath}/${packageInfo.name.replace(/\//g, '-')}-import-cost-temp.js`;
+  const fileName = `${BASE_PATH}/${packageInfo.name.replace(/\//g, '-')}-import-cost-temp.js`;
   fs.writeFileSync(fileName, packageInfo.string, 'utf-8');
   logger.log('creating entrypoint file:' + fileName + '|' + packageInfo.string);
   return fileName;
