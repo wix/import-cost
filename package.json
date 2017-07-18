@@ -37,7 +37,7 @@
   "icon": "images/import-cost-logo.png",
   "galleryBanner": {
     "color": "#1C78C0",
-    "theme": "light"
+    "theme": "dark"
   },
   "homepage": "https://github.com/wix/vscode-import-cost/blob/master/README.md",
   "repository": {
