@@ -7,9 +7,19 @@
   "engines": {
     "vscode": "^1.12.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["*"],
-  "keywords": ["import", "require", "size", "weight", "webpack"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "keywords": [
+    "import",
+    "require",
+    "size",
+    "weight",
+    "webpack"
+  ],
   "main": "./out/src/extension",
   "scripts": {
     "vscode:prepublish": "tsc -p ./",

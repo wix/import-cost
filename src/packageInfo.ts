@@ -91,15 +91,15 @@ function isPackageInstalledInProject(packageName: string): boolean {
     logger.log('package root path:' + packageRootPath);
     // example: require('vscode/lib/testrunner')
     if (packageName.split(/\//).length > 1) {
-      const exists = fs.existsSync(`${packageRootPath}.js`);
-      logger.log('package is a sub module:' + packageName + '|' + exists);
-      return exists;
+      logger.log('package is a sub module:' + packageName);
+      require.resolve(packageRootPath);
+      return true;
     }
     const packageJson = JSON.parse(fs.readFileSync(`${packageRootPath}/package.json`, 'utf-8'));
-    const mainFilePath = path.resolve(packageRootPath, packageJson.main || 'index.js');
-    const exists = fs.existsSync(mainFilePath);
-    logger.log('looking for the package main file:' + mainFilePath + '|' + exists);
-    return exists;
+    const mainFilePath = path.resolve(packageRootPath, packageJson.main || 'index');
+    logger.log('looking for the package main file:' + mainFilePath);
+    require.resolve(mainFilePath);
+    return true;
   } catch (e) {
     logger.log('failed to check if the package is installed in the project, returning false');
     return false;
