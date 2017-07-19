@@ -62,7 +62,6 @@ function getPackageSize(packageInfo) {
         removeTempFile(entryPoint);
         if (err || stats.toJson().errors.length > 0) {
           logger.log('received error in webpack compilations: ' + err);
-          console.log(packageInfo, stats.toJson().errors);
           resolve(0);
         }
         const size = Math.round(stats.toJson().assets[0].size / 1024);
