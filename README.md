@@ -25,6 +25,10 @@ Add this directory to the `.gitignore` file in order to keep the repo clean.
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 - Switching between files while calculating will cause a temporary mixup with the decorations
 
+### 1.0.12
+
+Fix cache bug
+
 ### 1.0.11
 
 Switch from uglifyjs-webpack-plugin to babili-webpack-plugin
