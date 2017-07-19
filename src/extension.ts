@@ -26,13 +26,9 @@ async function decoratePackages() {
       logger.log('### getting packages');
       const packagesNameToLocation = getPackages(editor.document.fileName, editor.document.getText());
       logger.log('### getting sizes');
-      const packageSizes = await Promise.all(
-        getSizes(packagesNameToLocation, packageInfo =>
-          decorate('Calculating...', packageInfo.line, editor.document.fileName)
-        )
-      );
-      logger.log('### decorating');
-      packageSizes.forEach(packageInfo => {
+      getSizes(packagesNameToLocation, packageInfo =>
+        decorate('Calculating...', packageInfo.line, editor.document.fileName)
+      ).map(promise => promise.then(packageInfo => {
         if (packageInfo.size > 0) {
           decorate(
             packageInfo.size.toString() + 'KB',
@@ -40,7 +36,7 @@ async function decoratePackages() {
             editor.document.fileName
           );
         }
-      });
+      }));
     } catch (e) {
       logger.log('decoratePackages error:' + e);
     }
