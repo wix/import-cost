@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as webpack from 'webpack';
 import * as MemoryFS from 'memory-fs';
-import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
+import * as BabiliPlugin from 'babili-webpack-plugin';
 import { workspace } from 'vscode';
 import logger from './logger';
 export const BASE_PATH = `${workspace.rootPath}/.importcost`;
@@ -56,13 +56,14 @@ function getPackageSize(packageInfo) {
     const compiler = webpack(
       {
         entry: entryPoint,
-        plugins: [new UglifyJSPlugin()]
+        plugins: [new BabiliPlugin()]
       },
       (err, stats) => {
         removeTempFile(entryPoint);
-        if (err) {
+        if (err || stats.toJson().errors.length > 0) {
           logger.log('received error in webpack compilations: ' + err);
-          reject(err);
+          console.log(packageInfo, stats.toJson().errors);
+          resolve(0);
         }
         const size = Math.round(stats.toJson().assets[0].size / 1024);
         logger.log('size is: ' + size);

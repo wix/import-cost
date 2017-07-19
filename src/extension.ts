@@ -29,13 +29,11 @@ async function decoratePackages() {
       getSizes(packagesNameToLocation, packageInfo =>
         decorate('Calculating...', packageInfo.line, editor.document.fileName)
       ).map(promise => promise.then(packageInfo => {
-        if (packageInfo.size > 0) {
-          decorate(
-            packageInfo.size.toString() + 'KB',
-            packagesNameToLocation[packageInfo.name].line,
-            editor.document.fileName
-          );
-        }
+        decorate(
+          packageInfo.size > 0 ? packageInfo.size.toString() + 'KB' : '',
+          packagesNameToLocation[packageInfo.name].line,
+          editor.document.fileName
+        );
       }));
     } catch (e) {
       logger.log('decoratePackages error:' + e);
