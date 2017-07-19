@@ -39,6 +39,7 @@ export function getSizes(packages, decorate) {
         try {
           sizeCache[key] = await getPackageSize(packages[packageName]);
           logger.log('got size successfully');
+          saveSizeCache();
         } catch (e) {
           logger.log('couldnt calculate size');
           sizeCache[key] = 0;
@@ -46,7 +47,6 @@ export function getSizes(packages, decorate) {
       }
       return { name: packageName, size: sizeCache[key] };
     });
-  saveSizeCache();
   return sizes;
 }
 
