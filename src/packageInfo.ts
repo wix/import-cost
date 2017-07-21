@@ -3,10 +3,11 @@ import * as path from 'path';
 import * as webpack from 'webpack';
 import * as MemoryFS from 'memory-fs';
 import * as BabiliPlugin from 'babili-webpack-plugin';
+import * as pkgDir from 'pkg-dir';
+import * as tmp from 'tmp';
 import { workspace } from 'vscode';
 import logger from './logger';
-export const BASE_PATH = `${workspace.rootPath}/.importcost`;
-const cacheFile = `${BASE_PATH}/cache`;
+const cacheFile = tmp.fileSync().name;
 let sizeCache = {};
 loadSizeCache();
 
@@ -39,11 +40,11 @@ export function getSizes(packages, decorate) {
         try {
           sizeCache[key] = await getPackageSize(pkg);
           logger.log('got size successfully');
-          saveSizeCache();
         } catch (e) {
           logger.log('couldnt calculate size');
           sizeCache[key] = 0;
         }
+        saveSizeCache();
       }
       return { ...pkg, size: sizeCache[key] };
     });
@@ -53,10 +54,16 @@ export function getSizes(packages, decorate) {
 function getPackageSize(packageInfo) {
   return new Promise((resolve, reject) => {
     const entryPoint = getEntryPoint(packageInfo);
-    const compiler = webpack({entry: entryPoint, plugins: [new BabiliPlugin()]});
+    const compiler = webpack({
+      entry: entryPoint.name,
+      plugins: [new BabiliPlugin()],
+      resolve: {
+        modules: [path.join(pkgDir.sync(path.dirname(packageInfo.fileName)), 'node_modules')]
+      }
+    });
     (compiler as webpack.Compiler).outputFileSystem = new MemoryFS();
     compiler.run((err, stats) => {
-      removeTempFile(entryPoint);
+      entryPoint.removeCallback();
       if (err || stats.toJson().errors.length > 0) {
         logger.log('received error in webpack compilations: ' + err);
         resolve(0);
@@ -69,18 +76,9 @@ function getPackageSize(packageInfo) {
   });
 }
 
-function getEntryPoint(packageInfo) {5
-  const fileName = `${BASE_PATH}/${packageInfo.name.replace(/\//g, '-')}-import-cost-temp.js`;
-  fs.writeFileSync(fileName, packageInfo.string, 'utf-8');
-  logger.log('creating entrypoint file:' + fileName + '|' + packageInfo.string);
-  return fileName;
-}
-
-function removeTempFile(fileName) {
-  try {
-    logger.log('removing file:' + fileName);
-    fs.unlinkSync(fileName);
-  } catch (e) {
-    //
-  }
+function getEntryPoint(packageInfo) {
+  const tmpFile = tmp.fileSync();
+  fs.writeFileSync(tmpFile.name, packageInfo.string, 'utf-8');
+  logger.log('creating entry point file:' + tmpFile.name + '|' + packageInfo.string);
+  return tmpFile;
 }

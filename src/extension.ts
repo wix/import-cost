@@ -2,12 +2,11 @@ import * as fs from 'fs';
 import { ExtensionContext, commands, window, Range, Position, workspace } from 'vscode';
 import { getPackages } from './parser';
 import { decorate } from './decorator';
-import { getSizes, BASE_PATH } from './packageInfo';
+import { getSizes } from './packageInfo';
 import logger from './logger';
 
 export function activate(context: ExtensionContext) {
   try {
-    createExtensionLibrary();
     logger.init(context);
     logger.log('starting...');
     workspace.onDidSaveTextDocument(decoratePackages);
@@ -37,10 +36,3 @@ async function decoratePackages() {
   }
 }
 export function deactivate() {}
-
-function createExtensionLibrary() {
-  if (!fs.existsSync(BASE_PATH)) {
-    logger.log('creating .importcost directory:' + BASE_PATH);
-    fs.mkdirSync(BASE_PATH);
-  }
-}
