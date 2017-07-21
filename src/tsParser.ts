@@ -1,9 +1,9 @@
 import * as ts from 'typescript';
 import logger from './logger';
 
-export function getPackages(filename, source) {
+export function getPackages(fileName, source) {
   logger.log('parsing AST');
-  const sourceFile = ts.createSourceFile(filename, source, ts.ScriptTarget.ES2016, true);
+  const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.ES2016, true);
   logger.log('ast parsed');
   logger.log('traversing AST');
   const packages = gatherPackages(sourceFile);
@@ -20,6 +20,7 @@ function gatherPackages(sourceFile: ts.SourceFile) {
       case ts.SyntaxKind.ImportDeclaration:
         const importNode: any = node;
         const packageInfo = (packages[importNode.moduleSpecifier.text] = {
+          filename: sourceFile.fileName,
           name: importNode.moduleSpecifier.text,
           line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
           node: importNode,
@@ -32,6 +33,7 @@ function gatherPackages(sourceFile: ts.SourceFile) {
         if (callExpressionNode.expression.text === 'require') {
           const packageName = callExpressionNode.arguments[0].text;
           const packageInfo = (packages[packageName] = {
+            filename: sourceFile.fileName,
             name: packageName,
             line: sourceFile.getLineAndCharacterOfPosition(callExpressionNode.getStart()).line + 1,
             node: callExpressionNode,

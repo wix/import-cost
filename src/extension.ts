@@ -26,15 +26,11 @@ async function decoratePackages() {
       logger.log('### getting packages');
       const packagesNameToLocation = getPackages(editor.document.fileName, editor.document.getText());
       logger.log('### getting sizes');
-      getSizes(packagesNameToLocation, packageInfo =>
-        decorate('Calculating...', packageInfo.line, editor.document.fileName)
-      ).map(promise => promise.then(packageInfo => {
-        decorate(
-          packageInfo.size > 0 ? packageInfo.size.toString() + 'KB' : '',
-          packagesNameToLocation[packageInfo.name].line,
-          editor.document.fileName
-        );
-      }));
+      return getSizes(packagesNameToLocation, packageInfo =>
+        decorate('Calculating...', packageInfo)
+      ).map(promise => promise.then(packageInfo =>
+        decorate(packageInfo.size > 0 ? packageInfo.size.toString() + 'KB' : '', packageInfo)
+      ));
     } catch (e) {
       logger.log('decoratePackages error:' + e);
     }

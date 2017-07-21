@@ -20,11 +20,12 @@ const PARSE_PLUGINS = [
   'functionSent'
 ];
 
-export function getPackages(source) {
+export function getPackages(fileName, source) {
   const packages = {};
   const visitor = {
     ImportDeclaration(path) {
       packages[path.node.source.value] = {
+        fileName,
         name: path.node.source.value,
         line: path.node.loc.end.line,
         node: path.node,
@@ -35,6 +36,7 @@ export function getPackages(source) {
     CallExpression(path) {
       if (path.node.callee.name === 'require') {
         packages[path.node.arguments[0].value] = {
+          fileName,
           name: path.node.arguments[0].value,
           line: path.node.loc.end.line,
           node: path.node,
