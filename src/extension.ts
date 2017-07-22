@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { ExtensionContext, commands, window, Range, Position, workspace } from 'vscode';
 import { getPackages } from './parser';
 import { decorate } from './decorator';
-import { getSizes } from './packageInfo';
+import { getSize } from './packageInfo';
 import logger from './logger';
 
 export function activate(context: ExtensionContext) {
@@ -18,7 +18,7 @@ export function activate(context: ExtensionContext) {
   }
 }
 
-async function decoratePackages() {
+function decoratePackages() {
   const editor = window.activeTextEditor;
   if (editor && editor.document) {
     try {
@@ -26,9 +26,11 @@ async function decoratePackages() {
       logger.log('### getting packages');
       const packagesNameToLocation = getPackages(editor.document.fileName, editor.document.getText());
       logger.log('### getting sizes');
-      return getSizes(packagesNameToLocation, packageInfo =>
-        decorate('Calculating...', packageInfo)
-      ).map(promise => promise.then(packageInfo => {
+      return Object.keys(packagesNameToLocation).map(packageName => {
+        const packageInfo = packagesNameToLocation[packageName];
+        decorate('Calculating...', packageInfo);
+        return getSize(packageInfo);
+      }).map(promise => promise.then(packageInfo => {
         const pkgCheck = getPackages(editor.document.fileName, editor.document.getText());
         const pkgString = pkgCheck[packageInfo.name] && pkgCheck[packageInfo.name].string;
         if (pkgString === packageInfo.string) {

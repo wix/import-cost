@@ -29,30 +29,24 @@ function saveSizeCache() {
   }
 }
 
-export function getSizes(packages, decorate) {
-  const sizes = Object.keys(packages)
-    .map(async packageName => {
-      const pkg = packages[packageName];
-      const key = pkg.string;
-      if (sizeCache[key] === undefined) {
-        logger.log('decorating "calculating" for ' + packageName);
-        decorate(pkg);
-        try {
-          sizeCache[key] = await getPackageSize(pkg);
-          logger.log('got size successfully');
-        } catch (e) {
-          if (e === 'debounced') {
-            throw e;
-          } else {
-            logger.log('couldnt calculate size');
-            sizeCache[key] = 0;
-          }
-        }
-        saveSizeCache();
+export async function getSize(pkg) {
+  const key = pkg.string;
+  if (sizeCache[key] === undefined) {
+    logger.log('decorating "calculating" for ' + pkg.name);
+    try {
+      sizeCache[key] = await getPackageSize(pkg);
+      logger.log('got size successfully');
+    } catch (e) {
+      if (e === 'debounced') {
+        throw e;
+      } else {
+        logger.log('couldnt calculate size');
+        sizeCache[key] = 0;
       }
-      return { ...pkg, size: sizeCache[key] };
-    });
-  return sizes;
+    }
+    saveSizeCache();
+  }
+  return { ...pkg, size: sizeCache[key] };
 }
 
 const debouncedPromises = {};
