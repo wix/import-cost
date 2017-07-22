@@ -79,7 +79,7 @@ function debouncedPromise(key, fn) {
 }
 
 function getPackageSize(packageInfo) {
-  return debouncedPromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
+  return debouncedPromise(`${packageInfo.fileName}#${packageInfo.line}`, resolve => {
     const entryPoint = getEntryPoint(packageInfo);
     const compiler = webpack({
       entry: entryPoint.name,

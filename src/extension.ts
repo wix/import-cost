@@ -28,9 +28,13 @@ async function decoratePackages() {
       logger.log('### getting sizes');
       return getSizes(packagesNameToLocation, packageInfo =>
         decorate('Calculating...', packageInfo)
-      ).map(promise => promise.then(packageInfo =>
-        decorate(packageInfo.size > 0 ? packageInfo.size.toString() + 'KB' : '', packageInfo)
-      ));
+      ).map(promise => promise.then(packageInfo => {
+        const pkgCheck = getPackages(editor.document.fileName, editor.document.getText());
+        const pkgString = pkgCheck[packageInfo.name] && pkgCheck[packageInfo.name].string;
+        if (pkgString === packageInfo.string) {
+          decorate(packageInfo.size > 0 ? packageInfo.size.toString() + 'KB' : '', packageInfo);
+        }
+      }));
     } catch (e) {
       logger.log('decoratePackages error:' + e);
     }
