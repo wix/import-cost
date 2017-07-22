@@ -23,6 +23,10 @@ export function calculated(packageInfo) {
   decorate(packageInfo.size > 0 ? packageInfo.size.toString() + 'KB' : '', packageInfo);
 }
 
+function getEditor(fileName) {
+  return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName).pop();
+}
+
 function decorate(text: string, packageInfo) {
   const {fileName, line} = packageInfo;
   const key = `${fileName}:${line}`;
@@ -33,18 +37,21 @@ function decorate(text: string, packageInfo) {
   }
   clearTimeout(decorationsDebounce[key]);
   decorationsDebounce[key] = setTimeout(() => {
-    window.activeTextEditor.setDecorations(
-      decorationsCache[key],
-      <DecorationOptions[]>[
-        {
-          renderOptions: {
-            after: {
-              contentText: text
-            }
-          },
-          range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
-        }
-      ]
-    );
+    const editor = getEditor(packageInfo.fileName);
+    if (editor) {
+      editor.setDecorations(
+        decorationsCache[key],
+        <DecorationOptions[]>[
+          {
+            renderOptions: {
+              after: {
+                contentText: text
+              }
+            },
+            range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
+          }
+        ]
+      );
+    }
   }, 100);
 }

@@ -9,29 +9,30 @@ export function activate(context: ExtensionContext) {
   try {
     logger.init(context);
     logger.log('starting...');
-    workspace.onDidSaveTextDocument(processActiveFile);
-    workspace.onDidChangeTextDocument(processActiveFile);
-    window.onDidChangeActiveTextEditor(processActiveFile);
-    processActiveFile();
+    workspace.onDidChangeTextDocument(ev => processActiveFile(ev.document));
+    window.onDidChangeActiveTextEditor(ev => ev && processActiveFile(ev.document));
+    if (window.activeTextEditor) {
+      processActiveFile(window.activeTextEditor.document);
+    }
   } catch (e) {
     logger.log('wrapping error: ' + e);
   }
 }
 
-async function processActiveFile() {
-  const editor = window.activeTextEditor;
-  if (editor && editor.document) {
+async function processActiveFile(document) {
+  console.log(document.fileName);
+  if (document) {
     try {
       logger.log('triggered ' + Date.now());
       logger.log('### getting packages');
-      const packagesNameToLocation = getPackages(editor.document.fileName, editor.document.getText());
+      const packagesNameToLocation = getPackages(document.fileName, document.getText());
       logger.log('### getting sizes');
       const promises = Object.keys(packagesNameToLocation).map(packageName => {
         const packageInfo = packagesNameToLocation[packageName];
         calculating(packageInfo);
         return getSize(packageInfo);
       }).map(promise => promise.then(packageInfo => {
-        const pkgCheck = getPackages(editor.document.fileName, editor.document.getText());
+        const pkgCheck = getPackages(document.fileName, document.getText());
         const pkgString = pkgCheck[packageInfo.name] && pkgCheck[packageInfo.name].string;
         if (pkgString === packageInfo.string) {
           calculated(packageInfo);
@@ -39,7 +40,7 @@ async function processActiveFile() {
         }
       }));
       const packages = (await Promise.all(promises)).filter(x => x);
-      flushDecorations(editor.document.fileName, packages);
+      flushDecorations(document.fileName, packages);
     } catch (e) {
       logger.log('decoratePackages error:' + e);
     }

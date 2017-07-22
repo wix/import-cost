@@ -5,6 +5,7 @@ import * as MemoryFS from 'memory-fs';
 import * as BabiliPlugin from 'babili-webpack-plugin';
 import * as pkgDir from 'pkg-dir';
 import * as tmp from 'tmp';
+import { debouncePromise, DebounceError } from './debouncedPromise';
 import { workspace } from 'vscode';
 import logger from './logger';
 const cacheFile = tmp.fileSync().name;
@@ -37,7 +38,7 @@ export async function getSize(pkg) {
       sizeCache[key] = await getPackageSize(pkg);
       logger.log('got size successfully');
     } catch (e) {
-      if (e === 'debounced') {
+      if (e === DebounceError) {
         throw e;
       } else {
         logger.log('couldnt calculate size');
@@ -49,31 +50,8 @@ export async function getSize(pkg) {
   return { ...pkg, size: sizeCache[key] };
 }
 
-const debouncedPromises = {};
-const debouncedInProgressPromises = {};
-function debouncedPromise(key, fn) {
-  const promise = new Promise((resolve, reject) => {
-    setTimeout(function check() {
-      if (debouncedPromises[key] === promise) {
-        if (debouncedInProgressPromises[key]) {
-          debouncedInProgressPromises[key].catch(() => undefined).then(() => {
-            delete debouncedInProgressPromises[key];
-            check();
-          });
-        } else {
-          debouncedInProgressPromises[key] = new Promise(fn);
-          debouncedInProgressPromises[key].then(resolve).catch(reject);
-        }
-      } else {
-        reject('debounced');
-      }
-    }, 500);
-  });
-  return debouncedPromises[key] = promise;
-}
-
 function getPackageSize(packageInfo) {
-  return debouncedPromise(`${packageInfo.fileName}#${packageInfo.line}`, resolve => {
+  return debouncePromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
     const entryPoint = getEntryPoint(packageInfo);
     const compiler = webpack({
       entry: entryPoint.name,
@@ -87,7 +65,7 @@ function getPackageSize(packageInfo) {
       entryPoint.removeCallback();
       if (err || stats.toJson().errors.length > 0) {
         logger.log('received error in webpack compilations: ' + err);
-        resolve(0);
+        reject(err || stats.toJson().errors);
       } else {
         const size = Math.round(stats.toJson().assets[0].size / 1024);
         logger.log('size is: ' + size);

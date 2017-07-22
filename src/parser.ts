@@ -6,7 +6,8 @@ export function getPackages(fileName, source) {
   if (/\.tsx?$/.test(fileName)) {
     logger.log('using typescript parser:' + fileName);
     return getPackagesFromTS(fileName, source);
+  } else {
+    logger.log('using javascript parser:' + fileName);
+    return getPackagesFromJS(fileName, source);
   }
-  logger.log('using javascript parser:' + fileName);
-  return getPackagesFromJS(fileName, source);
 }
