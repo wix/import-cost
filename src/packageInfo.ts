@@ -34,15 +34,19 @@ export function getSizes(packages, decorate) {
     .map(async packageName => {
       const pkg = packages[packageName];
       const key = pkg.string;
-      if (!sizeCache[key]) {
+      if (sizeCache[key] === undefined) {
         logger.log('decorating "calculating" for ' + packageName);
         decorate(pkg);
         try {
           sizeCache[key] = await getPackageSize(pkg);
           logger.log('got size successfully');
         } catch (e) {
-          logger.log('couldnt calculate size');
-          sizeCache[key] = 0;
+          if (e === 'debounced') {
+            throw e;
+          } else {
+            logger.log('couldnt calculate size');
+            sizeCache[key] = 0;
+          }
         }
         saveSizeCache();
       }
@@ -51,8 +55,31 @@ export function getSizes(packages, decorate) {
   return sizes;
 }
 
+const debouncedPromises = {};
+const debouncedInProgressPromises = {};
+function debouncedPromise(key, fn) {
+  const promise = new Promise((resolve, reject) => {
+    setTimeout(function check() {
+      if (debouncedPromises[key] === promise) {
+        if (debouncedInProgressPromises[key]) {
+          debouncedInProgressPromises[key].catch(() => undefined).then(() => {
+            delete debouncedInProgressPromises[key];
+            check();
+          });
+        } else {
+          debouncedInProgressPromises[key] = new Promise(fn);
+          debouncedInProgressPromises[key].then(resolve).catch(reject);
+        }
+      } else {
+        reject('debounced');
+      }
+    }, 500);
+  });
+  return debouncedPromises[key] = promise;
+}
+
 function getPackageSize(packageInfo) {
-  return new Promise((resolve, reject) => {
+  return debouncedPromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
     const entryPoint = getEntryPoint(packageInfo);
     const compiler = webpack({
       entry: entryPoint.name,

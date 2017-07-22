@@ -10,6 +10,7 @@ export function activate(context: ExtensionContext) {
     logger.init(context);
     logger.log('starting...');
     workspace.onDidSaveTextDocument(decoratePackages);
+    workspace.onDidChangeTextDocument(decoratePackages);
     window.onDidChangeActiveTextEditor(decoratePackages);
     decoratePackages();
   } catch (e) {
