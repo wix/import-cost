@@ -20,7 +20,7 @@ function gatherPackages(sourceFile: ts.SourceFile) {
       case ts.SyntaxKind.ImportDeclaration:
         const importNode: any = node;
         const packageInfo = (packages[importNode.moduleSpecifier.text] = {
-          filename: sourceFile.fileName,
+          fileName: sourceFile.fileName,
           name: importNode.moduleSpecifier.text,
           line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
           node: importNode,
@@ -33,7 +33,7 @@ function gatherPackages(sourceFile: ts.SourceFile) {
         if (callExpressionNode.expression.text === 'require') {
           const packageName = callExpressionNode.arguments[0].text;
           const packageInfo = (packages[packageName] = {
-            filename: sourceFile.fileName,
+            fileName: sourceFile.fileName,
             name: packageName,
             line: sourceFile.getLineAndCharacterOfPosition(callExpressionNode.getStart()).line + 1,
             node: callExpressionNode,

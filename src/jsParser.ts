@@ -46,16 +46,14 @@ export function getPackages(fileName, source) {
       }
     }
   };
-  try {
-    logger.log('parsing AST');
-    const ast = parse(source);
-    logger.log('ast parsed');
-    logger.log('traversing AST');
-    traverse(ast, visitor);
-    logger.log('AST traversed');
-  } catch (e) {
-    logger.log('error traversing AST:' + e);
-  }
+
+  logger.log('parsing AST');
+  const ast = parse(source);
+  logger.log('ast parsed');
+  logger.log('traversing AST');
+  traverse(ast, visitor);
+  logger.log('AST traversed');
+
   logger.log('returning packages:' + Object.keys(packages));
   return packages;
 }

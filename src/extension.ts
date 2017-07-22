@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { ExtensionContext, commands, window, Range, Position, workspace } from 'vscode';
 import { getPackages } from './parser';
-import { decorate } from './decorator';
+import { calculating, calculated, flushDecorations } from './decorator';
 import { getSize } from './packageInfo';
 import logger from './logger';
 
@@ -9,16 +9,16 @@ export function activate(context: ExtensionContext) {
   try {
     logger.init(context);
     logger.log('starting...');
-    workspace.onDidSaveTextDocument(decoratePackages);
-    workspace.onDidChangeTextDocument(decoratePackages);
-    window.onDidChangeActiveTextEditor(decoratePackages);
-    decoratePackages();
+    workspace.onDidSaveTextDocument(processActiveFile);
+    workspace.onDidChangeTextDocument(processActiveFile);
+    window.onDidChangeActiveTextEditor(processActiveFile);
+    processActiveFile();
   } catch (e) {
     logger.log('wrapping error: ' + e);
   }
 }
 
-function decoratePackages() {
+async function processActiveFile() {
   const editor = window.activeTextEditor;
   if (editor && editor.document) {
     try {
@@ -26,17 +26,20 @@ function decoratePackages() {
       logger.log('### getting packages');
       const packagesNameToLocation = getPackages(editor.document.fileName, editor.document.getText());
       logger.log('### getting sizes');
-      return Object.keys(packagesNameToLocation).map(packageName => {
+      const promises = Object.keys(packagesNameToLocation).map(packageName => {
         const packageInfo = packagesNameToLocation[packageName];
-        decorate('Calculating...', packageInfo);
+        calculating(packageInfo);
         return getSize(packageInfo);
       }).map(promise => promise.then(packageInfo => {
         const pkgCheck = getPackages(editor.document.fileName, editor.document.getText());
         const pkgString = pkgCheck[packageInfo.name] && pkgCheck[packageInfo.name].string;
         if (pkgString === packageInfo.string) {
-          decorate(packageInfo.size > 0 ? packageInfo.size.toString() + 'KB' : '', packageInfo);
+          calculated(packageInfo);
+          return packageInfo;
         }
       }));
+      const packages = (await Promise.all(promises)).filter(x => x);
+      flushDecorations(editor.document.fileName, packages);
     } catch (e) {
       logger.log('decoratePackages error:' + e);
     }
