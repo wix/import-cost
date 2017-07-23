@@ -20,7 +20,6 @@ export function activate(context: ExtensionContext) {
 }
 
 async function processActiveFile(document) {
-  console.log(document.fileName);
   if (document) {
     try {
       logger.log('triggered ' + Date.now());
