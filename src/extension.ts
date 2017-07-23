@@ -24,7 +24,8 @@ async function processActiveFile(document) {
     try {
       logger.log('triggered ' + Date.now());
       logger.log('### getting packages');
-      const packagesNameToLocation = getPackages(document.fileName, document.getText());
+      const text = document.getText();
+      const packagesNameToLocation = getPackages(document.fileName, text);
       logger.log('### getting sizes');
       const promises = Object.keys(packagesNameToLocation).map(packageName => {
         const packageInfo = packagesNameToLocation[packageName];
@@ -39,7 +40,9 @@ async function processActiveFile(document) {
         }
       }));
       const packages = (await Promise.all(promises)).filter(x => x);
-      flushDecorations(document.fileName, packages);
+      if (document.getText() === text) {
+        flushDecorations(document.fileName, packages);
+      }
     } catch (e) {
       logger.log('decoratePackages error:' + e);
     }
