@@ -9,6 +9,7 @@ const decorationType = window.createTextEditorDecorationType({
 export function flushDecorations(fileName, packages) {
   decorations[fileName] = {};
   packages.forEach(packageInfo => calculated(packageInfo));
+  refreshDecorations(fileName);
 }
 
 export function calculating(packageInfo) {
@@ -23,6 +24,16 @@ function getEditors(fileName) {
   return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
 }
 
+function refreshDecorations(fileName) {
+  clearTimeout(decorationsDebounce);
+  decorationsDebounce = setTimeout(() => getEditors(fileName).forEach(editor => {
+    editor.setDecorations(
+      decorationType,
+      Object.keys(decorations[fileName]).map(x => decorations[fileName][x])
+    );
+  }), 10);
+}
+
 function decorate(text, packageInfo) {
   const {fileName, line} = packageInfo;
   decorations[fileName] = decorations[fileName] || {};
@@ -30,13 +41,5 @@ function decorate(text, packageInfo) {
     renderOptions: {after: {contentText: text}},
     range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
   };
-  clearTimeout(decorationsDebounce);
-  decorationsDebounce = setTimeout(() => {
-    getEditors(fileName).forEach(editor => {
-      editor.setDecorations(
-        decorationType,
-        Object.keys(decorations[fileName]).map(x => decorations[fileName][x])
-      );
-    });
-  }, 10);
+  refreshDecorations(fileName);
 }
