@@ -20,7 +20,13 @@ export function calcSize(packageInfo, callback) {
     entry: entryPoint.name,
     plugins: [new BabiliPlugin()],
     resolve: {
-      modules: [modulesDirectory]
+      modules: [modulesDirectory, 'node_modules']
+    },
+    node: {
+      fs: 'empty',
+      net: 'empty',
+      tls: 'empty',
+      child_process: 'empty'
     }
   });
 
