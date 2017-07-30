@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as webpack from 'webpack';
-import * as MemoryFS from 'memory-fs';
-import * as BabiliPlugin from 'babili-webpack-plugin';
+import * as workerFarm from 'worker-farm';
 import * as pkgDir from 'pkg-dir';
 import * as tmp from 'tmp';
 import { debouncePromise, DebounceError } from './debouncedPromise';
 import { workspace } from 'vscode';
 import logger from './logger';
+
+const workers = workerFarm(require.resolve('./webpack'));
 const cacheFile = tmp.fileSync().name;
 let sizeCache = {};
 loadSizeCache();
@@ -55,33 +55,13 @@ export async function getSize(pkg) {
 function getPackageSize(packageInfo) {
   return debouncePromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
     const entryPoint = getEntryPoint(packageInfo);
-    // const wp = require('child_process').fork(path.join(__dirname, 'webpack'), [entryPoint.name,
-    //   path.join(pkgDir.sync(path.dirname(packageInfo.fileName)), 'node_modules')])
-    // wp.on('message', m => {
-    //   entryPoint.removeCallback();
-    //   if (m.err) {
-    //     reject(m.err);
-    //   } else {
-    //     resolve(m.size);
-    //   }
-    // });
-    const compiler = webpack({
-      entry: entryPoint.name,
-      plugins: [new BabiliPlugin()],
-      resolve: {
-        modules: [path.join(pkgDir.sync(path.dirname(packageInfo.fileName)), 'node_modules')]
-      }
-    });
-    (compiler as webpack.Compiler).outputFileSystem = new MemoryFS();
-    compiler.run((err, stats) => {
+    const modulesDirectory = path.join(pkgDir.sync(path.dirname(packageInfo.fileName)), 'node_modules');
+    workers({fileName: entryPoint.name, modulesDirectory}, result => {
       entryPoint.removeCallback();
-      if (err || stats.toJson().errors.length > 0) {
-        logger.log('received error in webpack compilations: ' + err);
-        reject(err || stats.toJson().errors);
+      if (result.err) {
+        reject(result.err);
       } else {
-        const size = Math.round(stats.toJson().assets[0].size / 1024);
-        logger.log('size is: ' + size);
-        resolve(size);
+        resolve(result.size);
       }
     });
   });
@@ -92,4 +72,8 @@ function getEntryPoint(packageInfo) {
   fs.writeFileSync(tmpFile.name, packageInfo.string, 'utf-8');
   logger.log('creating entry point file:' + tmpFile.name + '|' + packageInfo.string);
   return tmpFile;
+}
+
+export function cleanup() {
+  workerFarm.end(workers);
 }

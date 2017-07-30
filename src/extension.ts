@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { ExtensionContext, commands, window, Range, Position, workspace } from 'vscode';
 import { getPackages } from './parser';
 import { calculating, calculated, flushDecorations } from './decorator';
-import { getSize } from './packageInfo';
+import { getSize, cleanup } from './packageInfo';
 import logger from './logger';
 
 export function activate(context: ExtensionContext) {
@@ -17,6 +17,10 @@ export function activate(context: ExtensionContext) {
   } catch (e) {
     logger.log('wrapping error: ' + e);
   }
+}
+
+export function deactivate() {
+  cleanup();
 }
 
 let pendingCounter = {};
@@ -51,4 +55,3 @@ async function processActiveFile(document) {
     }
   }
 }
-export function deactivate() {}
