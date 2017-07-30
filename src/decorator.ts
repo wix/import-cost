@@ -16,7 +16,7 @@ export function calculating(packageInfo) {
 }
 
 export function calculated(packageInfo) {
-  decorate(packageInfo.size > 0 ? packageInfo.size.toString() + 'KB' : '', packageInfo);
+  decorate(packageInfo.size > 0 ? `${packageInfo.size}KB` : '', packageInfo);
 }
 
 function getEditors(fileName) {

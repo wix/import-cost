@@ -32,13 +32,15 @@ function saveSizeCache() {
 
 export async function getSize(pkg) {
   const key = pkg.string;
-  if (sizeCache[key] === undefined) {
+  if (sizeCache[key] === undefined || sizeCache[key] instanceof Promise) {
     logger.log('decorating "calculating" for ' + pkg.name);
     try {
-      sizeCache[key] = await getPackageSize(pkg);
+      sizeCache[key] = sizeCache[key] || getPackageSize(pkg);
+      sizeCache[key] = await sizeCache[key];
       logger.log('got size successfully');
     } catch (e) {
       if (e === DebounceError) {
+        delete sizeCache[key];
         throw e;
       } else {
         logger.log('couldnt calculate size');
@@ -53,6 +55,16 @@ export async function getSize(pkg) {
 function getPackageSize(packageInfo) {
   return debouncePromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
     const entryPoint = getEntryPoint(packageInfo);
+    // const wp = require('child_process').fork(path.join(__dirname, 'webpack'), [entryPoint.name,
+    //   path.join(pkgDir.sync(path.dirname(packageInfo.fileName)), 'node_modules')])
+    // wp.on('message', m => {
+    //   entryPoint.removeCallback();
+    //   if (m.err) {
+    //     reject(m.err);
+    //   } else {
+    //     resolve(m.size);
+    //   }
+    // });
     const compiler = webpack({
       entry: entryPoint.name,
       plugins: [new BabiliPlugin()],

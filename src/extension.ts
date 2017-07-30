@@ -19,28 +19,31 @@ export function activate(context: ExtensionContext) {
   }
 }
 
+let pendingCounter = {};
+
 async function processActiveFile(document) {
   if (document) {
+    pendingCounter[document.fileName] = pendingCounter[document.fileName] || 0;
+    const currentCounter = ++pendingCounter[document.fileName];
+
     try {
       logger.log('triggered ' + Date.now());
       logger.log('### getting packages');
-      const text = document.getText();
-      const packagesNameToLocation = getPackages(document.fileName, text);
+      const packagesNameToLocation = getPackages(document.fileName, document.getText());
       logger.log('### getting sizes');
+      flushDecorations(document.fileName, []);
       const promises = Object.keys(packagesNameToLocation).map(packageName => {
         const packageInfo = packagesNameToLocation[packageName];
         calculating(packageInfo);
         return getSize(packageInfo);
       }).map(promise => promise.then(packageInfo => {
-        const pkgCheck = getPackages(document.fileName, document.getText());
-        const pkgString = pkgCheck[packageInfo.name] && pkgCheck[packageInfo.name].string;
-        if (pkgString === packageInfo.string) {
+        if (currentCounter === pendingCounter[document.fileName]) {
           calculated(packageInfo);
           return packageInfo;
         }
       }));
       const packages = (await Promise.all(promises)).filter(x => x);
-      if (document.getText() === text) {
+      if (currentCounter === pendingCounter[document.fileName]) {
         flushDecorations(document.fileName, packages);
       }
     } catch (e) {
