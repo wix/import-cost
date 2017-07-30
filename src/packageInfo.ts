@@ -1,9 +1,8 @@
 import * as workerFarm from 'worker-farm';
 import { debouncePromise, DebounceError } from './debouncedPromise';
 import { workspace } from 'vscode';
-import logger from './logger';
 
-const workers = workerFarm(require.resolve('./webpack'));
+const workers = workerFarm(require.resolve('./webpack'), ['calcSize']);
 let sizeCache = {};
 
 export async function getSize(pkg) {
@@ -26,7 +25,7 @@ export async function getSize(pkg) {
 
 function calcPackageSize(packageInfo) {
   return debouncePromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
-    workers(packageInfo, result => result.err ? reject(result.err) : resolve(result.size));
+    workers.calcSize(packageInfo, result => result.err ? reject(result.err) : resolve(result.size));
   });
 }
 

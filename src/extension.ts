@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { DebounceError } from './debouncedPromise';
 import { ExtensionContext, commands, window, Range, Position, workspace } from 'vscode';
 import { getPackages } from './parser';
 import { calculating, calculated, flushDecorations } from './decorator';
@@ -31,10 +32,7 @@ async function processActiveFile(document) {
     const currentCounter = ++pendingCounter[document.fileName];
 
     try {
-      logger.log('triggered ' + Date.now());
-      logger.log('### getting packages');
       const packagesNameToLocation = getPackages(document.fileName, document.getText());
-      logger.log('### getting sizes');
       flushDecorations(document.fileName, []);
       const promises = Object.keys(packagesNameToLocation).map(packageName => {
         const packageInfo = packagesNameToLocation[packageName];
@@ -44,6 +42,8 @@ async function processActiveFile(document) {
         if (currentCounter === pendingCounter[document.fileName]) {
           calculated(packageInfo);
           return packageInfo;
+        } else {
+          return Promise.reject(DebounceError);
         }
       }));
       const packages = (await Promise.all(promises)).filter(x => x);

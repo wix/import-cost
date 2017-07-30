@@ -12,7 +12,7 @@ function getEntryPoint(packageInfo) {
   return tmpFile;
 }
 
-module.exports = function pack(packageInfo, callback) {
+export function calcSize(packageInfo, callback) {
   const entryPoint = getEntryPoint(packageInfo);
   const modulesDirectory = path.join(pkgDir.sync(path.dirname(packageInfo.fileName)), 'node_modules');
 
