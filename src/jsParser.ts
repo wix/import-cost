@@ -21,28 +21,28 @@ const PARSE_PLUGINS = [
 ];
 
 export function getPackages(fileName, source) {
-  const packages = {};
+  const packages = [];
   const visitor = {
     ImportDeclaration(path) {
-      packages[path.node.source.value] = {
+      packages.push({
         fileName,
         name: path.node.source.value,
         line: path.node.loc.end.line,
         node: path.node,
         string: compileImportString(path.node)
-      };
-      logger.log('found import declaration:' + packages[path.node.source.value].string);
+      });
+      logger.log('found import declaration:' + packages[packages.length - 1].string);
     },
     CallExpression(path) {
       if (path.node.callee.name === 'require') {
-        packages[path.node.arguments[0].value] = {
+        packages.push({
           fileName,
           name: path.node.arguments[0].value,
           line: path.node.loc.end.line,
           node: path.node,
           string: compileRequireString(path.node)
-        };
-        logger.log('found require expression:' + packages[path.node.arguments[0].value].string);
+        });
+        logger.log('found require expression:' + packages[packages.length - 1].string);
       }
     }
   };
@@ -54,7 +54,6 @@ export function getPackages(fileName, source) {
   traverse(ast, visitor);
   logger.log('AST traversed');
 
-  logger.log('returning packages:' + Object.keys(packages));
   return packages;
 }
 
