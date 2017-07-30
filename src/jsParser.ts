@@ -28,7 +28,6 @@ export function getPackages(fileName, source) {
         fileName,
         name: path.node.source.value,
         line: path.node.loc.end.line,
-        node: path.node,
         string: compileImportString(path.node)
       });
       logger.log('found import declaration:' + packages[packages.length - 1].string);
@@ -39,7 +38,6 @@ export function getPackages(fileName, source) {
           fileName,
           name: path.node.arguments[0].value,
           line: path.node.loc.end.line,
-          node: path.node,
           string: compileRequireString(path.node)
         });
         logger.log('found require expression:' + packages[packages.length - 1].string);

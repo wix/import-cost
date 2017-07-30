@@ -23,7 +23,6 @@ function gatherPackages(sourceFile: ts.SourceFile) {
           fileName: sourceFile.fileName,
           name: importNode.moduleSpecifier.text,
           line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
-          node: importNode,
           string: importNode.getText()
         };
         packages.push(packageInfo);
@@ -37,7 +36,6 @@ function gatherPackages(sourceFile: ts.SourceFile) {
             fileName: sourceFile.fileName,
             name: packageName,
             line: sourceFile.getLineAndCharacterOfPosition(callExpressionNode.getStart()).line + 1,
-            node: callExpressionNode,
             string: callExpressionNode.getText()
           };
           packages.push(packageInfo);
