@@ -26,6 +26,7 @@ export function calcSize(packageInfo, callback) {
       fs: 'empty',
       net: 'empty',
       tls: 'empty',
+      module: 'empty',
       child_process: 'empty'
     }
   });
