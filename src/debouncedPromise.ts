@@ -1,19 +1,11 @@
-const debouncePromises = {};
+const promises = {};
 
-const debounceInProgressPromises = {};
+export const DebounceError = new Error('DebounceError');
 
-export const DebounceError = new Error('debounced');
-
-export function debouncePromise(key, fn) {
+export function debouncePromise(key, fn, delay = 500) {
   const promise = new Promise((resolve, reject) => {
-    setTimeout(function check() {
-      if (debouncePromises[key] === promise) {
-        new Promise(fn).then(resolve).catch(reject);
-      } else {
-        reject(DebounceError);
-      }
-    }, 500);
+    setTimeout(() => promises[key] === promise ? new Promise(fn).then(resolve).catch(reject) : reject(DebounceError), delay);
   });
-  return debouncePromises[key] = promise;
+  return promises[key] = promise;
 }
 

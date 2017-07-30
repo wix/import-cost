@@ -24,14 +24,14 @@ function getEditors(fileName) {
   return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
 }
 
-function refreshDecorations(fileName) {
+function refreshDecorations(fileName, delay = 10) {
   clearTimeout(decorationsDebounce);
   decorationsDebounce = setTimeout(() => getEditors(fileName).forEach(editor => {
     editor.setDecorations(
       decorationType,
       Object.keys(decorations[fileName]).map(x => decorations[fileName][x])
     );
-  }), 10);
+  }), delay);
 }
 
 function decorate(text, packageInfo) {
