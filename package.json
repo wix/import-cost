@@ -30,7 +30,6 @@
     "babel-types": "^6.25.0",
     "babili-webpack-plugin": "^0.1.2",
     "babylon": "^6.17.4",
-    "findup-sync": "^1.0.0",
     "memory-fs": "^0.4.1",
     "pkg-dir": "^2.0.0",
     "tmp": "0.0.31",

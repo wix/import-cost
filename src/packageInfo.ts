@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as findup from 'findup-sync';
 import * as workerFarm from 'worker-farm';
 import * as pkgDir from 'pkg-dir';
 import { debouncePromise, DebounceError } from './debouncedPromise';
