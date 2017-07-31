@@ -16,14 +16,19 @@ Currently supports:
 - Require: `const Func = require('utils').Func;`
 - Supports both `Javascript` and `Typescript`
 
-## Notes
-
-This extension creates a directory for temporary files called `.importcost`.  
-Add this directory to the `.gitignore` file in order to keep the repo clean.
-
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 - Switching between files while calculating will cause a temporary mixup with the decorations
+
+### 1.0.13
+
+- Calculate cost as-you-type
+- Support multiple windows
+- Remove the .importcost folder
+- Add support for monorepo
+- Calculations are done in parallel
+- Temporarily remove cross-session cache
+- Bug fixes
 
 ### 1.0.12
 
