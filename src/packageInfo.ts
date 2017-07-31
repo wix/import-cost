@@ -6,7 +6,8 @@ import { debouncePromise, DebounceError } from './debouncedPromise';
 import { workspace } from 'vscode';
 
 const workers = workerFarm(require.resolve('./webpack'), ['calcSize']);
-const cacheFile = `${__dirname}/ic-cache`;
+const version = getVersion(pkgDir.sync(__dirname));
+const cacheFile = path.join(__dirname, `ic-cache-${version}`);
 let sizeCache = {};
 const versionsCache = {};
 readSizeCache();
@@ -64,11 +65,15 @@ function saveSizeCache() {
   }
 }
 
+function getVersion(dir) {
+  const pkg = path.join(dir, 'package.json');
+  return JSON.parse(fs.readFileSync(pkg, 'utf-8')).version;
+}
+
 function getPackageVersion(pkg): string {
   const modulesDirectory = path.join(pkgDir.sync(path.dirname(pkg.fileName)), 'node_modules');
   const pkgName = pkg.name.split('/').shift();
-  const packageJsonPath = `${modulesDirectory}/${pkgName}/package.json`;
-  const version = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')).version;
+  const version = getVersion(path.join(modulesDirectory, pkgName));
   return `${pkgName}@${version}`;
 }
 
