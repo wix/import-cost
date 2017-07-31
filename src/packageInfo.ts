@@ -21,8 +21,7 @@ export async function getSize(pkg) {
   if (sizeCache[key] === undefined || sizeCache[key] instanceof Promise) {
     try {
       sizeCache[key] = sizeCache[key] || calcPackageSize(pkg);
-      const size = await sizeCache[key];
-      sizeCache[key] = size;
+      sizeCache[key] = await sizeCache[key];
       saveSizeCache();
     } catch (e) {
       if (e === DebounceError) {
@@ -57,7 +56,9 @@ function readSizeCache() {
 
 function saveSizeCache() {
   try {
-    fs.writeFileSync(cacheFile, JSON.stringify(sizeCache, null, 2), 'utf-8');
+    const keys = Object.keys(sizeCache).filter(key => typeof sizeCache[key] === 'number' && sizeCache[key] > 0);
+    const cache = keys.reduce((obj, key) => ({...obj, [key]: sizeCache[key]}), {});
+    fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2), 'utf-8');
   } catch (e) {
     // silent error
   }
@@ -65,10 +66,10 @@ function saveSizeCache() {
 
 function getPackageVersion(pkg): string {
   const modulesDirectory = path.join(pkgDir.sync(path.dirname(pkg.fileName)), 'node_modules');
-  const [, pkgName] = pkg.name.match(/([^\/]+)/);
+  const pkgName = pkg.name.split('/').shift();
   const packageJsonPath = `${modulesDirectory}/${pkgName}/package.json`;
-  const version = require(packageJsonPath).version;
-  return version;
+  const version = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')).version;
+  return `${pkgName}@${version}`;
 }
 
 export function cleanup() {

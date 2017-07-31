@@ -38,7 +38,7 @@ export function calcSize(packageInfo, callback) {
     if (err || stats.toJson().errors.length > 0) {
       callback({err: err || stats.toJson().errors});
     } else {
-      const size = Math.round(stats.toJson().assets[0].size / 1024);
+      const size = stats.toJson().assets[0].size;
       callback({size});
     }
   });

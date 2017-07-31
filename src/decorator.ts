@@ -17,7 +17,8 @@ export function calculating(packageInfo) {
 }
 
 export function calculated(packageInfo) {
-  decorate(packageInfo.size > 0 ? `${packageInfo.size}KB` : '', packageInfo);
+  const size = packageInfo.size > 0 ? `${Math.round(packageInfo.size / 1024)}KB` : '';
+  decorate(size, packageInfo);
 }
 
 function getEditors(fileName) {
