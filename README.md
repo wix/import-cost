@@ -2,7 +2,7 @@
 
 This extension will display inline in the editor the size of the imported package.
 The extension utilizes webpack with babili-webpack-plugin in order to detect the imported size.
-![Example Image](https://file-gwpnofjfte.now.sh/Screen%20Shot%202017-07-15%20at%202.13.55%20PM.png)
+![Example Image](https://file-wkbcnlcvbn.now.sh/import-cost.gif)
 
 ## Features
 Calculates the size of imports and requires.  
@@ -19,6 +19,10 @@ Currently supports:
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 - Switching between files while calculating will cause a temporary mixup with the decorations
+
+### 1.0.14
+
+Update readme
 
 ### 1.0.13
 
