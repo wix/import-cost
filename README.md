@@ -19,13 +19,17 @@ Currently supports:
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 1.1.2
+
+Fix typo
+
 ### 1.1.1
 
 Fix cache location
 
 ### 1.1.0
 
-Add back cross-section cache with support for library version
+Add back cross-session cache with support for library version
 
 ### 1.0.15
 
