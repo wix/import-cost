@@ -2,7 +2,7 @@
   "name": "vscode-import-cost",
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "yairhaimo",
   "engines": {
     "vscode": "^1.12.0"

@@ -7,7 +7,7 @@ import { debouncePromise, DebounceError } from './debouncedPromise';
 import { workspace } from 'vscode';
 
 const workers = workerFarm(require.resolve('./webpack'), ['calcSize']);
-const cacheFile = `${process.cwd()}/ic-cache`;
+const cacheFile = `${__dirname}/ic-cache`;
 let sizeCache = {};
 const versionsCache = {};
 readSizeCache();
@@ -39,7 +39,10 @@ export async function getSize(pkg) {
 
 function calcPackageSize(packageInfo) {
   return debouncePromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
-    workers.calcSize(packageInfo, result => (result.err ? reject(result.err) : resolve(result.size)));
+    workers.calcSize(
+      packageInfo,
+      result => (result.err ? reject(result.err) : resolve(result.size))
+    );
   });
 }
 
