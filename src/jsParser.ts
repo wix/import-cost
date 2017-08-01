@@ -63,29 +63,31 @@ function parse(source) {
 }
 
 function compileImportString(node) {
-  let importString = 'import';
-  let startedImportSpecifiers = false;
+  let importString = 'import ';
+  let importSpecifiers = undefined;
   if (node.specifiers && node.specifiers.length > 0) {
-    node.specifiers.map((specifier, i) => {
+    importString += node.specifiers.map((specifier, i) => {
       if (t.isImportNamespaceSpecifier(specifier)) {
-        importString += ` * as ${specifier.local.name}`;
+        return `* as ${specifier.local.name}`;
       } else if (t.isImportDefaultSpecifier(specifier)) {
-        importString += ` ${specifier.local.name}`;
+        return specifier.local.name;
       } else if (t.isImportSpecifier(specifier)) {
-        if (!startedImportSpecifiers) {
-          importString += ` {`;
-          startedImportSpecifiers = true;
+        if (!importSpecifiers) {
+          importSpecifiers = '{';
         }
-        importString += `${specifier.imported.name}`;
+        importSpecifiers += specifier.imported.name;
         if (node.specifiers[i + 1] && t.isImportSpecifier(node.specifiers[i + 1])) {
-          importString += `, `;
+          importSpecifiers += ', ';
+          return undefined;
         } else {
-          importString += `}`;
+          const result = importSpecifiers + '}';
+          importSpecifiers = undefined;
+          return result;
         }
       }
-    });
+    }).filter(x => x).join(', ');
   } else {
-    importString += ' tmp';
+    importString += 'tmp';
   }
   importString += ` from '${node.source.value}';`;
   return importString;
