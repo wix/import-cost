@@ -8,4 +8,3 @@ export function debouncePromise(key, fn, delay = 500) {
   });
   return promises[key] = promise;
 }
-

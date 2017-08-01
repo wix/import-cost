@@ -1,11 +1,11 @@
-import { window, Range, Position, DecorationOptions } from 'vscode';
-import * as filesize from 'filesize';
+import {window, Range, Position, DecorationOptions} from 'vscode';
+import * as fileSize from 'filesize';
 
 const DECORATION_COLOR = '#C23B22';
 const decorations = {};
 let decorationsDebounce;
 const decorationType = window.createTextEditorDecorationType({
-  after: { color: DECORATION_COLOR, margin: '0 0 0 1rem' }
+  after: {color: DECORATION_COLOR, margin: '0 0 0 1rem'}
 });
 
 export function flushDecorations(fileName, packages) {
@@ -19,7 +19,7 @@ export function calculating(packageInfo) {
 }
 
 export function calculated(packageInfo) {
-  const size = filesize(packageInfo.size, {unix: true});
+  const size = fileSize(packageInfo.size, {unix: true});
   decorate(packageInfo.size > 0 ? `${size}` : '', packageInfo);
 }
 

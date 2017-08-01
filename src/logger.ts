@@ -1,4 +1,4 @@
-import { OutputChannel, ExtensionContext, window } from 'vscode';
+import {OutputChannel, ExtensionContext, window} from 'vscode';
 
 class Logger {
   private channel: OutputChannel;

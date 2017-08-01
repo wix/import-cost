@@ -1,6 +1,6 @@
-import { traverse } from 'babel-core';
+import {traverse} from 'babel-core';
 import * as t from 'babel-types';
-import { parse as jsParse } from 'babylon';
+import {parse as jsParse} from 'babylon';
 import logger from './logger';
 
 const PARSE_PLUGINS = [

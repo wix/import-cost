@@ -2,12 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as workerFarm from 'worker-farm';
 import * as pkgDir from 'pkg-dir';
-import { debouncePromise, DebounceError } from './debouncedPromise';
-import { workspace } from 'vscode';
+import {debouncePromise, DebounceError} from './debouncePromise';
+import {workspace} from 'vscode';
 
 const workers = workerFarm(require.resolve('./webpack'), ['calcSize']);
-const version = getVersion(pkgDir.sync(__dirname));
-const cacheFile = path.join(__dirname, `ic-cache-${version}`);
+const extensionVersion = getVersion(pkgDir.sync(__dirname));
+const cacheFile = path.join(__dirname, `ic-cache-${extensionVersion}`);
 let sizeCache = {};
 const versionsCache = {};
 readSizeCache();
@@ -16,7 +16,7 @@ export async function getSize(pkg) {
   try {
     versionsCache[pkg.string] = versionsCache[pkg.string] || getPackageVersion(pkg);
   } catch (e) {
-    return { ...pkg, size: 0 };
+    return {...pkg, size: 0};
   }
   const key = `${pkg.string}#${versionsCache[pkg.string]}`;
   if (sizeCache[key] === undefined || sizeCache[key] instanceof Promise) {
@@ -33,7 +33,7 @@ export async function getSize(pkg) {
       }
     }
   }
-  return { ...pkg, size: sizeCache[key] };
+  return {...pkg, size: sizeCache[key]};
 }
 
 function calcPackageSize(packageInfo) {

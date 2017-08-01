@@ -16,32 +16,29 @@ function gatherPackages(sourceFile: ts.SourceFile) {
   gatherPackagesFromNode(sourceFile);
 
   function gatherPackagesFromNode(node: ts.Node) {
-    switch (node.kind) {
-      case ts.SyntaxKind.ImportDeclaration:
-        const importNode: any = node;
+    if (node.kind === ts.SyntaxKind.ImportDeclaration) {
+      const importNode: any = node;
+      const packageInfo = {
+        fileName: sourceFile.fileName,
+        name: importNode.moduleSpecifier.text,
+        line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
+        string: importNode.getText()
+      };
+      packages.push(packageInfo);
+      logger.log('found import declaration:' + packageInfo.string + '|' + packageInfo.line);
+    } else if (node.kind === ts.SyntaxKind.CallExpression) {
+      const callExpressionNode: any = node;
+      if (callExpressionNode.expression.text === 'require') {
+        const packageName = callExpressionNode.arguments[0].text;
         const packageInfo = {
           fileName: sourceFile.fileName,
-          name: importNode.moduleSpecifier.text,
-          line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
-          string: importNode.getText()
+          name: packageName,
+          line: sourceFile.getLineAndCharacterOfPosition(callExpressionNode.getStart()).line + 1,
+          string: callExpressionNode.getText()
         };
         packages.push(packageInfo);
         logger.log('found import declaration:' + packageInfo.string + '|' + packageInfo.line);
-        break;
-      case ts.SyntaxKind.CallExpression:
-        const callExpressionNode: any = node;
-        if (callExpressionNode.expression.text === 'require') {
-          const packageName = callExpressionNode.arguments[0].text;
-          const packageInfo = {
-            fileName: sourceFile.fileName,
-            name: packageName,
-            line: sourceFile.getLineAndCharacterOfPosition(callExpressionNode.getStart()).line + 1,
-            string: callExpressionNode.getText()
-          };
-          packages.push(packageInfo);
-          logger.log('found import declaration:' + packageInfo.string + '|' + packageInfo.line);
-        }
-        break;
+      }
     }
     ts.forEachChild(node, gatherPackagesFromNode);
   }

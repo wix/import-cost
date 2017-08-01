@@ -7,13 +7,23 @@
   "engines": {
     "vscode": "^1.12.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["*"],
-  "keywords": ["import", "require", "size", "weight", "webpack"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "keywords": [
+    "import",
+    "require",
+    "size",
+    "weight",
+    "webpack"
+  ],
   "main": "./out/src/extension",
   "scripts": {
-    "vscode:prepublish": "tsc -p ./",
-    "compile": "tsc -watch -p ./",
+    "vscode:prepublish": "tslint {src,test}/**/*.ts && tsc -p ./",
+    "compile": "tslint {src,test}/**/*.ts && tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test"
   },
@@ -23,6 +33,8 @@
     "@types/node": "^6.0.40",
     "@types/webpack": "^3.0.4",
     "mocha": "^2.3.3",
+    "tslint": "^5.5.0",
+    "tslint-config-wix": "^1.0.25",
     "vscode": "^1.0.0"
   },
   "dependencies": {

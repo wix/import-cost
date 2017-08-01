@@ -1,9 +1,9 @@
 import * as fs from 'fs';
-import { DebounceError } from './debouncedPromise';
-import { ExtensionContext, commands, window, Range, Position, workspace } from 'vscode';
-import { getPackages } from './parser';
-import { calculating, calculated, flushDecorations } from './decorator';
-import { getSize, cleanup } from './packageInfo';
+import {DebounceError} from './debouncePromise';
+import {ExtensionContext, commands, window, Range, Position, workspace} from 'vscode';
+import {getPackages} from './parser';
+import {calculating, calculated, flushDecorations} from './decorator';
+import {getSize, cleanup} from './packageInfo';
 import logger from './logger';
 
 export function activate(context: ExtensionContext) {
