@@ -22,6 +22,19 @@ export function calcSize(packageInfo, callback) {
     resolve: {
       modules: [modulesDirectory, 'node_modules']
     },
+    module: {
+      rules: [{
+        test: /\.s?css$/,
+        use: 'css-loader'
+      }, {
+        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|wav)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          name: '[path][name].[ext]?[hash]',
+          limit: 10000
+        }
+      }]
+    },
     node: {
       fs: 'empty',
       net: 'empty',
