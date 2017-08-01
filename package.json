@@ -41,6 +41,7 @@
     "babili-webpack-plugin": "^0.1.2",
     "babylon": "^6.17.4",
     "css-loader": "^0.28.4",
+    "filesize": "^3.5.10",
     "memory-fs": "^0.4.1",
     "pkg-dir": "^2.0.0",
     "tmp": "0.0.31",

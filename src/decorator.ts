@@ -1,4 +1,6 @@
 import { window, Range, Position, DecorationOptions } from 'vscode';
+import * as filesize from 'filesize';
+
 const DECORATION_COLOR = '#C23B22';
 const decorations = {};
 let decorationsDebounce;
@@ -17,8 +19,8 @@ export function calculating(packageInfo) {
 }
 
 export function calculated(packageInfo) {
-  const size = packageInfo.size > 0 ? `${Math.round(packageInfo.size / 1024)}KB` : '';
-  decorate(size, packageInfo);
+  const size = filesize(packageInfo.size, {unix: true});
+  decorate(packageInfo.size > 0 ? `${size}` : '', packageInfo);
 }
 
 function getEditors(fileName) {
