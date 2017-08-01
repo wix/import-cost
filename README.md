@@ -19,6 +19,10 @@ Currently supports:
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 1.1.3
+
+Bug fixes and prettifying output
+
 ### 1.1.2
 
 Fix typo
