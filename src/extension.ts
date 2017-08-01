@@ -32,8 +32,9 @@ async function processActiveFile(document) {
     const currentCounter = ++pendingCounter[document.fileName];
 
     try {
+      const imports = getPackages(document.fileName, document.getText());
       flushDecorations(document.fileName, []);
-      const promises = getPackages(document.fileName, document.getText())
+      const promises = imports
         .filter(packageInfo => !packageInfo.name.startsWith('.'))
         .map(packageInfo => {
           calculating(packageInfo);
