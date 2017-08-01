@@ -6,5 +6,6 @@
   "search.exclude": {
     "out": true // set this to false to include "out" folder in search results
   },
-  "tslint.autoFixOnSave": true
+  "tslint.autoFixOnSave": true,
+  "prettier.bracketSpacing": false
 }

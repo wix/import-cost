@@ -6,7 +6,7 @@ export function getPackages(fileName, source) {
   const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.ES2016, true);
   logger.log('ast parsed');
   logger.log('traversing AST');
-  const packages = gatherPackages(sourceFile).map(pkg => ({ ...pkg, fileName }));
+  const packages = gatherPackages(sourceFile).map(pkg => ({...pkg, fileName}));
   logger.log('AST traversed');
   return packages;
 }
