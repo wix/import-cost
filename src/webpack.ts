@@ -41,6 +41,9 @@ export function calcSize(packageInfo, callback) {
       tls: 'empty',
       module: 'empty',
       child_process: 'empty'
+    },
+    output: {
+      filename: 'bundle.js'
     }
   });
 
@@ -51,7 +54,7 @@ export function calcSize(packageInfo, callback) {
     if (err || stats.toJson().errors.length > 0) {
       callback({err: err || stats.toJson().errors});
     } else {
-      const size = stats.toJson().assets[0].size;
+      const size = stats.toJson().assets.filter(x => x.name === 'bundle.js').pop().size;
       callback({size});
     }
   });

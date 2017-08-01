@@ -38,7 +38,9 @@ export async function getSize(pkg) {
 
 function calcPackageSize(packageInfo) {
   return debouncePromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
-    workers.calcSize(
+    const debug = false;
+    const calcSize = debug ? require('./webpack').calcSize : workers.calcSize;
+    calcSize(
       packageInfo,
       result => (result.err ? reject(result.err) : resolve(result.size))
     );
