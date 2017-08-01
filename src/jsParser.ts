@@ -65,7 +65,7 @@ function parse(source) {
 function compileImportString(node) {
   let importString = 'import';
   let startedImportSpecifiers = false;
-  if (node.specifiers) {
+  if (node.specifiers && node.specifiers.length > 0) {
     node.specifiers.map((specifier, i) => {
       if (t.isImportNamespaceSpecifier(specifier)) {
         importString += ` * as ${specifier.local.name}`;
@@ -84,6 +84,8 @@ function compileImportString(node) {
         }
       }
     });
+  } else {
+    importString += ' tmp';
   }
   importString += ` from '${node.source.value}';`;
   return importString;
