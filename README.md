@@ -5,7 +5,7 @@ The extension utilizes webpack with babili-webpack-plugin in order to detect the
 ![Example Image](https://file-wkbcnlcvbn.now.sh/import-cost.gif)
 
 ## Features
-Calculates the size of imports and requires.  
+Calculates the size of imports and requires.
 Currently supports:
 
 - Default importing: `import Func from 'utils';`
@@ -18,6 +18,10 @@ Currently supports:
 
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
+
+### 1.1.4
+
+Bug fix for disappearing decorators on incorrect syntax
 
 ### 1.1.3
 
