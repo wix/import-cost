@@ -74,7 +74,12 @@ function getVersion(dir) {
 
 function getPackageVersion(pkg): string {
   const modulesDirectory = path.join(pkgDir.sync(path.dirname(pkg.fileName)), 'node_modules');
-  const pkgName = pkg.name.split('/').shift();
+  const pkgParts = pkg.name.split('/');
+  let pkgName = pkgParts.shift();
+  if (pkgName.startsWith('@')) {
+    pkgName = path.join(pkgName, pkgParts.shift());
+  }
+
   const version = getVersion(path.join(modulesDirectory, pkgName));
   return `${pkgName}@${version}`;
 }
