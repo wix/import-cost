@@ -19,6 +19,10 @@ Currently supports:
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 1.1.6
+
+reworked import reconstruction a bit in order to support `import React, {Component} from 'react';`
+
 ### 1.1.5
 
 Bug fix for Typescript on Windows
