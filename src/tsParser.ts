@@ -6,7 +6,7 @@ export function getPackages(fileName, source) {
   const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.ES2016, true);
   logger.log('ast parsed');
   logger.log('traversing AST');
-  const packages = gatherPackages(sourceFile);
+  const packages = gatherPackages(sourceFile).map(pkg => ({ ...pkg, fileName }));
   logger.log('AST traversed');
   return packages;
 }
@@ -19,7 +19,6 @@ function gatherPackages(sourceFile: ts.SourceFile) {
     if (node.kind === ts.SyntaxKind.ImportDeclaration) {
       const importNode: any = node;
       const packageInfo = {
-        fileName: sourceFile.fileName,
         name: importNode.moduleSpecifier.text,
         line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
         string: importNode.getText()

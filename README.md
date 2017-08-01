@@ -19,6 +19,10 @@ Currently supports:
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 1.1.5
+
+Bug fix for Typescript on Windows
+
 ### 1.1.4
 
 Bug fix for disappearing decorators on incorrect syntax
