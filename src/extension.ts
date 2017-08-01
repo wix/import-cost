@@ -33,17 +33,20 @@ async function processActiveFile(document) {
 
     try {
       flushDecorations(document.fileName, []);
-      const promises = getPackages(document.fileName, document.getText()).map(packageInfo => {
-        calculating(packageInfo);
-        return getSize(packageInfo);
-      }).map(promise => promise.then(packageInfo => {
-        if (currentCounter === pendingCounter[document.fileName]) {
-          calculated(packageInfo);
-          return packageInfo;
-        } else {
-          return Promise.reject(DebounceError);
-        }
-      }));
+      const promises = getPackages(document.fileName, document.getText())
+        .filter(packageInfo => !packageInfo.name.startsWith('.'))
+        .map(packageInfo => {
+          calculating(packageInfo);
+          return getSize(packageInfo);
+        })
+        .map(promise => promise.then(packageInfo => {
+          if (currentCounter === pendingCounter[document.fileName]) {
+            calculated(packageInfo);
+            return packageInfo;
+          } else {
+            return Promise.reject(DebounceError);
+          }
+        }));
       const packages = (await Promise.all(promises)).filter(x => x);
       if (currentCounter === pendingCounter[document.fileName]) {
         flushDecorations(document.fileName, packages);
