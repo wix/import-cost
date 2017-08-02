@@ -35,12 +35,26 @@ The following properties are configurable:
 
   // Decoration color for large packages
   "importCost.largePackageColor": "#d44e40",
+
+  // File extensions to be parsed by the Typescript parser
+  "importCost.typescriptExtensions": [
+    "\\.tsx?$"
+  ],
+
+  // File extensions to be parsed by the Javascript parser
+  "importCost.javascriptExtensions": [
+    "\\.jsx?$"
+  ]
 ```
 Any package size above the mediumPackageSize limit will be considered large.
 
 
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
+
+### 1.3.0
+
+Add a way to configure the file extensions that will be parsed
 
 ### 1.2.1
 

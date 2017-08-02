@@ -2,7 +2,7 @@
   "name": "vscode-import-cost",
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "publisher": "wix",
   "engines": {
     "vscode": "^1.12.0"
@@ -40,6 +40,16 @@
           "type": "string",
           "default": "#d44e40",
           "description": "Decoration color for large packages"
+        },
+        "importCost.typescriptExtensions": {
+          "type": "array",
+          "default": ["\\.tsx?$"],
+          "description": "File extensions to be parsed by the Typescript parser"
+        },
+        "importCost.javascriptExtensions": {
+          "type": "array",
+          "default": ["\\.jsx?$"],
+          "description": "File extensions to be parsed by the Javascript parser"
         }
       }
     }
