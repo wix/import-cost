@@ -1,0 +1,9 @@
+install:
+  - ps: Install-Product node 7.4.0 x64
+
+build_script:
+  - npm install
+  - npm run vscode:prepublish
+
+test_script:
+  - npm test --silent
