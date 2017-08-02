@@ -1,4 +1,4 @@
-# Import Cost VSCode Extension
+# Import Cost VSCode Extension [![Build Status](https://travis-ci.org/wix/vscode-import-cost.svg?branch=master)](https://travis-ci.org/wix/vscode-import-cost)
 
 This extension will display inline in the editor the size of the imported package.
 The extension utilizes webpack with babili-webpack-plugin in order to detect the imported size.
