@@ -1,11 +1,11 @@
 import {window, Range, Position, DecorationOptions} from 'vscode';
 import * as fileSize from 'filesize';
+import configuration from './config';
 
-const DECORATION_COLOR = '#C23B22';
 const decorations = {};
 let decorationsDebounce;
 const decorationType = window.createTextEditorDecorationType({
-  after: {color: DECORATION_COLOR, margin: '0 0 0 1rem'}
+  after: {margin: '0 0 0 1rem'}
 });
 
 export function flushDecorations(fileName, packages) {
@@ -20,7 +20,11 @@ export function calculating(packageInfo) {
 
 export function calculated(packageInfo) {
   const size = fileSize(packageInfo.size, {unix: true});
-  decorate(packageInfo.size > 0 ? `${size}` : '', packageInfo);
+  decorate(
+    packageInfo.size > 0 ? `${size}` : '',
+    packageInfo,
+    getDecorationColor(packageInfo.size)
+  );
 }
 
 function getEditors(fileName) {
@@ -29,20 +33,35 @@ function getEditors(fileName) {
 
 function refreshDecorations(fileName, delay = 10) {
   clearTimeout(decorationsDebounce);
-  decorationsDebounce = setTimeout(() => getEditors(fileName).forEach(editor => {
-    editor.setDecorations(
-      decorationType,
-      Object.keys(decorations[fileName]).map(x => decorations[fileName][x])
-    );
-  }), delay);
+  decorationsDebounce = setTimeout(
+    () =>
+      getEditors(fileName).forEach(editor => {
+        editor.setDecorations(
+          decorationType,
+          Object.keys(decorations[fileName]).map(x => decorations[fileName][x])
+        );
+      }),
+    delay
+  );
 }
 
-function decorate(text, packageInfo) {
+function decorate(text, packageInfo, color = configuration.smallPackageColor) {
   const {fileName, line} = packageInfo;
   decorations[fileName] = decorations[fileName] || {};
   decorations[fileName][line] = {
-    renderOptions: {after: {contentText: text}},
+    renderOptions: {after: {contentText: text, color}},
     range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
   };
   refreshDecorations(fileName);
+}
+
+function getDecorationColor(size) {
+  const sizeInKB = size / 1024;
+  if (sizeInKB < configuration.smallPackageSize) {
+    return configuration.smallPackageColor;
+  }
+  if (sizeInKB < configuration.mediumPackageSize) {
+    return configuration.mediumPackageColor;
+  }
+  return configuration.largePackageColor;
 }

@@ -16,8 +16,35 @@ Currently supports:
 - Require: `const Func = require('utils').Func;`
 - Supports both `Javascript` and `Typescript`
 
+## Configuration
+
+The following properties are configurable:
+
+```javascript
+  // Upper size limit, in KB, that will count a package as a small package
+  "importCost.smallPackageSize": 50,
+
+  // Upper size limit, in KB, that will count a package as a medium package
+  "importCost.mediumPackageSize": 100,
+
+  // Decoration color for small packages
+  "importCost.smallPackageColor": "#7cc36e",
+
+  // Decoration color for medium packages
+  "importCost.mediumPackageColor": "#7cc36e",
+
+  // Decoration color for large packages
+  "importCost.largePackageColor": "#d44e40",
+```
+Any package size above the mediumPackageSize limit will be considered large.
+
+
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
+
+### 1.2.0
+
+Add the ability to configure different colored decocrations for different sized packages.
 
 ### 1.1.7
 

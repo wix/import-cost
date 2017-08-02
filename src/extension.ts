@@ -40,14 +40,16 @@ async function processActiveFile(document) {
           calculating(packageInfo);
           return getSize(packageInfo);
         })
-        .map(promise => promise.then(packageInfo => {
-          if (currentCounter === pendingCounter[document.fileName]) {
-            calculated(packageInfo);
-            return packageInfo;
-          } else {
-            return Promise.reject(DebounceError);
-          }
-        }));
+        .map(promise =>
+          promise.then(packageInfo => {
+            if (currentCounter === pendingCounter[document.fileName]) {
+              calculated(packageInfo);
+              return packageInfo;
+            } else {
+              return Promise.reject(DebounceError);
+            }
+          })
+        );
       const packages = (await Promise.all(promises)).filter(x => x);
       if (currentCounter === pendingCounter[document.fileName]) {
         flushDecorations(document.fileName, packages);

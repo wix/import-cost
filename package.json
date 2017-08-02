@@ -2,25 +2,48 @@
   "name": "vscode-import-cost",
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "publisher": "wix",
   "engines": {
     "vscode": "^1.12.0"
   },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "*"
-  ],
-  "keywords": [
-    "import",
-    "require",
-    "size",
-    "weight",
-    "webpack"
-  ],
+  "categories": ["Other"],
+  "activationEvents": ["*"],
+  "keywords": ["import", "require", "size", "weight", "webpack"],
   "main": "./out/src/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Import Cost configuration",
+      "properties": {
+        "importCost.smallPackageSize": {
+          "type": "number",
+          "default": 50,
+          "description": "Upper size limit, in KB, that will count a package as a small package"
+        },
+        "importCost.mediumPackageSize": {
+          "type": "number",
+          "default": 100,
+          "description": "Upper size limit, in KB, that will count a package as a medium package"
+        },
+        "importCost.smallPackageColor": {
+          "type": "string",
+          "default": "#7cc36e",
+          "description": "Decoration color for small packages"
+        },
+        "importCost.mediumPackageColor": {
+          "type": "string",
+          "default": "#7cc36e",
+          "description": "Decoration color for medium packages"
+        },
+        "importCost.largePackageColor": {
+          "type": "string",
+          "default": "#d44e40",
+          "description": "Decoration color for large packages"
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "tslint {src,test}/**/*.ts && tsc -p ./",
     "compile": "tslint {src,test}/**/*.ts && tsc -watch -p ./",
