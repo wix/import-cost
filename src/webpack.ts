@@ -40,7 +40,8 @@ export function calcSize(packageInfo, callback) {
       net: 'empty',
       tls: 'empty',
       module: 'empty',
-      child_process: 'empty'
+      child_process: 'empty',
+      dns: 'empty'
     },
     output: {
       filename: 'bundle.js'

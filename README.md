@@ -42,6 +42,10 @@ Any package size above the mediumPackageSize limit will be considered large.
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 1.2.1
+
+Bug fix for a small webpack issue with node
+
 ### 1.2.0
 
 Add the ability to configure different colored decocrations for different sized packages.
