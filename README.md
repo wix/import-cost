@@ -53,6 +53,10 @@ Any package size above the mediumPackageSize limit will be considered large.
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 1.3.1
+
+Fix breakage on backticks
+
 ### 1.3.0
 
 Add a way to configure the file extensions that will be parsed

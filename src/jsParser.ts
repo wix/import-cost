@@ -36,7 +36,7 @@ export function getPackages(fileName, source) {
       if (path.node.callee.name === 'require') {
         packages.push({
           fileName,
-          name: path.node.arguments[0].value,
+          name: getPackageName(path.node),
           line: path.node.loc.end.line,
           string: compileRequireString(path.node)
         });
@@ -66,26 +66,29 @@ function compileImportString(node) {
   let importString = 'import ';
   let importSpecifiers = undefined;
   if (node.specifiers && node.specifiers.length > 0) {
-    importString += node.specifiers.map((specifier, i) => {
-      if (t.isImportNamespaceSpecifier(specifier)) {
-        return `* as ${specifier.local.name}`;
-      } else if (t.isImportDefaultSpecifier(specifier)) {
-        return specifier.local.name;
-      } else if (t.isImportSpecifier(specifier)) {
-        if (!importSpecifiers) {
-          importSpecifiers = '{';
+    importString += node.specifiers
+      .map((specifier, i) => {
+        if (t.isImportNamespaceSpecifier(specifier)) {
+          return `* as ${specifier.local.name}`;
+        } else if (t.isImportDefaultSpecifier(specifier)) {
+          return specifier.local.name;
+        } else if (t.isImportSpecifier(specifier)) {
+          if (!importSpecifiers) {
+            importSpecifiers = '{';
+          }
+          importSpecifiers += specifier.imported.name;
+          if (node.specifiers[i + 1] && t.isImportSpecifier(node.specifiers[i + 1])) {
+            importSpecifiers += ', ';
+            return undefined;
+          } else {
+            const result = importSpecifiers + '}';
+            importSpecifiers = undefined;
+            return result;
+          }
         }
-        importSpecifiers += specifier.imported.name;
-        if (node.specifiers[i + 1] && t.isImportSpecifier(node.specifiers[i + 1])) {
-          importSpecifiers += ', ';
-          return undefined;
-        } else {
-          const result = importSpecifiers + '}';
-          importSpecifiers = undefined;
-          return result;
-        }
-      }
-    }).filter(x => x).join(', ');
+      })
+      .filter(x => x)
+      .join(', ');
   } else {
     importString += 'tmp';
   }
@@ -94,5 +97,11 @@ function compileImportString(node) {
 }
 
 function compileRequireString(node) {
-  return `require('${node.arguments[0].value}')`;
+  return `require('${getPackageName(node)}')`;
+}
+
+function getPackageName(node) {
+  return t.isTemplateLiteral(node.arguments[0])
+    ? node.arguments[0].quasis[0].value.raw
+    : node.arguments[0].value;
 }
