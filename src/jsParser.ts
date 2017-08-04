@@ -63,10 +63,9 @@ function parse(source) {
 }
 
 function compileImportString(node) {
-  let importString = 'import ';
-  let importSpecifiers = undefined;
+  let importSpecifiers = undefined, importString;
   if (node.specifiers && node.specifiers.length > 0) {
-    importString += node.specifiers
+    importString = node.specifiers
       .map((specifier, i) => {
         if (t.isImportNamespaceSpecifier(specifier)) {
           return `* as ${specifier.local.name}`;
@@ -90,10 +89,9 @@ function compileImportString(node) {
       .filter(x => x)
       .join(', ');
   } else {
-    importString += 'tmp';
+    importString = '* as tmp';
   }
-  importString += ` from '${node.source.value}';`;
-  return importString;
+  return `import ${importString} from '${node.source.value}'; console.log(${importString.replace('* as ', '')});`;
 }
 
 function compileRequireString(node) {
