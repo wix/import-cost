@@ -21,7 +21,7 @@ function gatherPackages(sourceFile: ts.SourceFile) {
       const packageInfo = {
         name: importNode.moduleSpecifier.text,
         line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
-        string: importNode.getText()
+        string: `${importNode.getText()} console.log(${importNode.importClause.getText().replace('* as ', '')});`
       };
       packages.push(packageInfo);
       logger.log('found import declaration:' + packageInfo.string + '|' + packageInfo.line);
