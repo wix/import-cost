@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as workerFarm from 'worker-farm';
 import * as pkgDir from 'pkg-dir';
 import {debouncePromise, DebounceError} from './debouncePromise';
-import {workspace} from 'vscode';
 
 const workers = workerFarm(require.resolve('./webpack'), ['calcSize']);
 const extensionVersion = getVersion(pkgDir.sync(__dirname));

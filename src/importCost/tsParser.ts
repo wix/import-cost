@@ -1,13 +1,8 @@
 import * as ts from 'typescript';
-import logger from './logger';
 
 export function getPackages(fileName, source) {
-  logger.log('parsing AST');
   const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.ES2016, true);
-  logger.log('ast parsed');
-  logger.log('traversing AST');
   const packages = gatherPackages(sourceFile).map(pkg => ({...pkg, fileName}));
-  logger.log('AST traversed');
   return packages;
 }
 
@@ -24,7 +19,6 @@ function gatherPackages(sourceFile: ts.SourceFile) {
         string: `${importNode.getText()} console.log(${importNode.importClause.getText().replace('* as ', '')});`
       };
       packages.push(packageInfo);
-      logger.log('found import declaration:' + packageInfo.string + '|' + packageInfo.line);
     } else if (node.kind === ts.SyntaxKind.CallExpression) {
       const callExpressionNode: any = node;
       if (callExpressionNode.expression.text === 'require') {
@@ -36,7 +30,6 @@ function gatherPackages(sourceFile: ts.SourceFile) {
           string: callExpressionNode.getText()
         };
         packages.push(packageInfo);
-        logger.log('found import declaration:' + packageInfo.string + '|' + packageInfo.line);
       }
     }
     ts.forEachChild(node, gatherPackagesFromNode);

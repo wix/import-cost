@@ -10,12 +10,14 @@ const decorationType = window.createTextEditorDecorationType({
 
 export function flushDecorations(fileName, packages) {
   decorations[fileName] = {};
-  packages.forEach(packageInfo => calculated(packageInfo));
+  packages.forEach(packageInfo => {
+    if (packageInfo.size === undefined) {
+      decorate('Calculating...', packageInfo);
+    } else {
+      calculated(packageInfo);
+    }
+  });
   refreshDecorations(fileName);
-}
-
-export function calculating(packageInfo) {
-  decorate('Calculating...', packageInfo);
 }
 
 export function calculated(packageInfo) {

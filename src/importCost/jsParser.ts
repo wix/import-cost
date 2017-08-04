@@ -1,7 +1,6 @@
 import {traverse} from 'babel-core';
 import * as t from 'babel-types';
 import {parse as jsParse} from 'babylon';
-import logger from './logger';
 
 const PARSE_PLUGINS = [
   'jsx',
@@ -30,7 +29,6 @@ export function getPackages(fileName, source) {
         line: path.node.loc.end.line,
         string: compileImportString(path.node)
       });
-      logger.log('found import declaration:' + packages[packages.length - 1].string);
     },
     CallExpression(path) {
       if (path.node.callee.name === 'require') {
@@ -40,18 +38,12 @@ export function getPackages(fileName, source) {
           line: path.node.loc.end.line,
           string: compileRequireString(path.node)
         });
-        logger.log('found require expression:' + packages[packages.length - 1].string);
       }
     }
   };
 
-  logger.log('parsing AST');
   const ast = parse(source);
-  logger.log('ast parsed');
-  logger.log('traversing AST');
   traverse(ast, visitor);
-  logger.log('AST traversed');
-
   return packages;
 }
 

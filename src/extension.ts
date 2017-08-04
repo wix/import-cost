@@ -1,10 +1,20 @@
-import * as fs from 'fs';
-import {DebounceError} from './debouncePromise';
-import {ExtensionContext, commands, window, Range, Position, workspace} from 'vscode';
-import {getPackages} from './parser';
-import {calculating, calculated, flushDecorations} from './decorator';
-import {getSize, cleanup} from './packageInfo';
+import {ExtensionContext, window, workspace} from 'vscode';
+import {calculated, flushDecorations} from './decorator';
 import logger from './logger';
+import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT} from './importCost';
+import configuration from './config';
+
+function language(fileName) {
+  const typescriptRegex = new RegExp(configuration.typescriptExtensions.join('|'));
+  const javascriptRegex = new RegExp(configuration.javascriptExtensions.join('|'));
+  if (typescriptRegex.test(fileName)) {
+    return TYPESCRIPT;
+  } else if (javascriptRegex.test(fileName)) {
+    return JAVASCRIPT;
+  } else {
+    return undefined;
+  }
+}
 
 export function activate(context: ExtensionContext) {
   try {
@@ -24,38 +34,17 @@ export function deactivate() {
   cleanup();
 }
 
-let pendingCounter = {};
-
+let emitters = {};
 async function processActiveFile(document) {
-  if (document) {
-    pendingCounter[document.fileName] = pendingCounter[document.fileName] || 0;
-    const currentCounter = ++pendingCounter[document.fileName];
-
-    try {
-      const imports = getPackages(document.fileName, document.getText());
-      flushDecorations(document.fileName, []);
-      const promises = imports
-        .filter(packageInfo => !packageInfo.name.startsWith('.'))
-        .map(packageInfo => {
-          calculating(packageInfo);
-          return getSize(packageInfo);
-        })
-        .map(promise =>
-          promise.then(packageInfo => {
-            if (currentCounter === pendingCounter[document.fileName]) {
-              calculated(packageInfo);
-              return packageInfo;
-            } else {
-              return Promise.reject(DebounceError);
-            }
-          })
-        );
-      const packages = (await Promise.all(promises)).filter(x => x);
-      if (currentCounter === pendingCounter[document.fileName]) {
-        flushDecorations(document.fileName, packages);
-      }
-    } catch (e) {
-      logger.log('decoratePackages error:' + e);
+  if (document && language(document.fileName)) {
+    const fileName = document.fileName;
+    if (emitters[fileName]) {
+      emitters[fileName].removeAllListeners();
     }
+    emitters[fileName] = importCost(document.fileName, document.getText(), language(document.fileName));
+    emitters[fileName].on('error', e => logger.log('importCost error:' + e));
+    emitters[fileName].on('start', packages => flushDecorations(document.fileName, packages));
+    emitters[fileName].on('calculated', packageInfo => calculated(packageInfo));
+    emitters[fileName].on('done', packages => flushDecorations(document.fileName, packages));
   }
 }
