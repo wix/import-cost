@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "import-cost",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "dist/src/index.js",
   "files": [
@@ -35,12 +35,13 @@
     "yoshi": "latest"
   },
   "dependencies": {
-    "babel-runtime": "^6.22.0",
     "babel-core": "^6.25.0",
+    "babel-runtime": "^6.22.0",
     "babel-types": "^6.25.0",
     "babili-webpack-plugin": "^0.1.2",
     "babylon": "^6.17.4",
     "css-loader": "^0.28.4",
+    "file-loader": "^0.11.2",
     "memory-fs": "^0.4.1",
     "pkg-dir": "^2.0.0",
     "tmp": "0.0.31",
