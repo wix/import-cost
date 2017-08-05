@@ -1,2 +1,2 @@
-import aaa from 'chai';
-console.log(aaa);
+import {func2} from 'chai';
+console.log(func2);

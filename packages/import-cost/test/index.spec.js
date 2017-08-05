@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import {expect} from 'chai';
 import {importCost as runner, cleanup, JAVASCRIPT, TYPESCRIPT} from '../src';
-import {clearSizeCache} from '../src/packageInfo';
+import {clearSizeCache, cacheFileName} from '../src/packageInfo';
+import {DebounceError} from '../src/debouncePromise';
 
 function fixture(fileName) {
   const workingFolder = typeof wallaby !== 'undefined' ? path.join(wallaby.localProjectDir, 'test') : __dirname;
@@ -37,9 +38,16 @@ function sizeOf(packages, name) {
   return packages.filter(x => x.name === name).shift().size;
 }
 
-async function test(fileName) {
+async function test(fileName, pkg = 'chai', minSize = 10000, maxSize = 15000) {
   const packages = await whenDone(importCost(fixture(fileName)));
-  expect(sizeOf(packages, 'chai')).to.be.greaterThan(500);
+  expect(sizeOf(packages, pkg)).to.be.within(minSize, maxSize);
+}
+
+async function timed(fn) {
+  const time = process.hrtime();
+  await fn();
+  const diff = process.hrtime(time);
+  return Math.round(((diff[0] * 1e9) + diff[1]) / 1e6);
 }
 
 describe('importCost', () => {
@@ -60,6 +68,29 @@ describe('importCost', () => {
   it('calculates size of specifiers import in typescript', () => test('import-specifiers.ts'));
   it('calculates size of mixed import in javascript', () => test('import-mixed.js'));
   it('calculates size of mixed import in typescript', () => test('import-mixed.ts'));
+  it('calculates size of scoped import in javascript', () => test('import-scoped.js', '@angular/core'));
+  it('calculates size of scoped import in typescript', () => test('import-scoped.ts', '@angular/core'));
+  it('calculates size of shaken import in javascript', () => test('import-shaken.js', 'react', 500, 1000));
+  it('calculates size of shaken import in typescript', () => test('import-shaken.ts', 'react', 500, 1000));
+
+  it('caches the results import string & version', async () => {
+    expect(await timed(() => test('import.js'))).to.be.within(100, 1500);
+    expect(await timed(() => test('import-specifiers.js'))).to.be.within(100, 1500);
+    expect(await timed(() => test('import.ts'))).to.be.within(0, 100);
+  });
+  it('debounce any consecutive calculations of same import line', () => {
+    const p1 = expect(whenDone(runner(fixture('import.js'), 'import "chai";', JAVASCRIPT))).to.be.rejectedWith(DebounceError);
+    const p2 = expect(whenDone(runner(fixture('import.js'), 'import "chai/index";', JAVASCRIPT))).to.be.fulfilled;
+    return Promise.all([p1, p2]);
+  });
+  it('caches everything to filesystem', async () => {
+    expect(await timed(() => test('import.js'))).to.be.within(100, 1500);
+    expect(await timed(() => test('import-specifiers.js'))).to.be.within(100, 1500);
+    fs.renameSync(cacheFileName, `${cacheFileName}.bak`);
+    clearSizeCache();
+    fs.renameSync(`${cacheFileName}.bak`, cacheFileName);
+    expect(await timed(() => test('import.ts'))).to.be.within(0, 100);
+  });
 
   it('results in 0 if dependency is missing', async () => {
     const packages = await whenDone(importCost(fixture('failed-missing.js')));
