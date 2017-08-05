@@ -1,1 +1,1 @@
-# import-cost [![Build Status](https://travis-ci.org/wix/import-cost.svg?branch=master)](https://travis-ci.org/wix/import-cost) [![Build status](https://ci.appveyor.com/api/projects/status/hsohgb46ymgysltx?svg=true)](https://ci.appveyor.com/project/shahata/import-cost)
+# import-cost [![Build Status](https://travis-ci.org/wix/vscode-import-cost.svg?branch=master)](https://travis-ci.org/wix/vscode-import-cost) [![Build status](https://ci.appveyor.com/api/projects/status/ssvx49rspwwicig1?svg=true)](https://ci.appveyor.com/project/shahata/vscode-import-cost)
