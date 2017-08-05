@@ -1,4 +1,4 @@
-# Import Cost VSCode Extension [![Build Status](https://travis-ci.org/wix/vscode-import-cost.svg?branch=master)](https://travis-ci.org/wix/vscode-import-cost) [![Build status](https://ci.appveyor.com/api/projects/status/ssvx49rspwwicig1?svg=true)](https://ci.appveyor.com/project/shahata/vscode-import-cost)
+# Import Cost VSCode Extension [![Build Status](https://travis-ci.org/wix/import-cost.svg?branch=master)](https://travis-ci.org/wix/import-cost) [![Build status](https://ci.appveyor.com/api/projects/status/ko48qav9qqb8fv8u?svg=true)](https://ci.appveyor.com/project/shahata/import-cost)
 
 
 This extension will display inline in the editor the size of the imported package.
@@ -55,7 +55,7 @@ Any package size above the mediumPackageSize limit will be considered large.
 
 ### 2.0.0
 
-- Split the project into two packages: 
+- Split the project into two packages:
   - `vscode-import-cost`: VSCode specific extension
   - `import-cost`: The logic of the extension
 

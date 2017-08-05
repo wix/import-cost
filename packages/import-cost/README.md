@@ -1,4 +1,4 @@
-# import-cost [![Build Status](https://travis-ci.org/wix/vscode-import-cost.svg?branch=master)](https://travis-ci.org/wix/vscode-import-cost) [![Build status](https://ci.appveyor.com/api/projects/status/ssvx49rspwwicig1?svg=true)](https://ci.appveyor.com/project/shahata/vscode-import-cost)
+# import-cost [![Build Status](https://travis-ci.org/wix/import-cost.svg?branch=master)](https://travis-ci.org/wix/import-cost) [![Build status](https://ci.appveyor.com/api/projects/status/ko48qav9qqb8fv8u?svg=true)](https://ci.appveyor.com/project/shahata/import-cost)
 
 This node module comes to help people who would like to develop extensions similar to [Import Cost VSCode extension](https://marketplace.visualstudio.com/items?itemName=wix.vscode-import-cost) for additional IDE's such as Atom, WebStorm, Sublime, Vim etc.
 
