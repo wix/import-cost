@@ -1,13 +1,10 @@
 {
   "private": false,
   "name": "import-cost",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "main": "dist/src/index.js",
-  "files": [
-    "src",
-    "dist"
-  ],
+  "files": ["src", "dist"],
   "scripts": {
     "start": "yoshi start",
     "build": ":",
@@ -51,12 +48,8 @@
     "worker-farm": "^1.4.1"
   },
   "babel": {
-    "presets": [
-      "stage-3"
-    ],
-    "plugins": [
-      "transform-runtime"
-    ],
+    "presets": ["stage-3"],
+    "plugins": ["transform-runtime"],
     "env": {
       "test": {
         "presets": [
@@ -71,9 +64,7 @@
         ]
       },
       "development": {
-        "presets": [
-          "env"
-        ]
+        "presets": ["env"]
       }
     }
   },
