@@ -7,9 +7,19 @@
   "engines": {
     "vscode": "^1.12.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["*"],
-  "keywords": ["import", "require", "size", "weight", "webpack"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "keywords": [
+    "import",
+    "require",
+    "size",
+    "weight",
+    "webpack"
+  ],
   "main": "./out/src/extension",
   "contributes": {
     "configuration": {
@@ -43,12 +53,16 @@
         },
         "importCost.typescriptExtensions": {
           "type": "array",
-          "default": ["\\.tsx?$"],
+          "default": [
+            "\\.tsx?$"
+          ],
           "description": "File extensions to be parsed by the Typescript parser"
         },
         "importCost.javascriptExtensions": {
           "type": "array",
-          "default": ["\\.jsx?$"],
+          "default": [
+            "\\.jsx?$"
+          ],
           "description": "File extensions to be parsed by the Javascript parser"
         }
       }
@@ -61,29 +75,17 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "@types/babel-types": "^6.7.16",
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
-    "@types/webpack": "^3.0.4",
     "mocha": "^2.3.3",
+    "typescript": "^2.4.1",
     "tslint": "^5.5.0",
     "tslint-config-wix": "^1.0.25",
     "vscode": "^1.0.0"
   },
   "dependencies": {
-    "babel-core": "^6.25.0",
-    "babel-types": "^6.25.0",
-    "babili-webpack-plugin": "^0.1.2",
-    "babylon": "^6.17.4",
-    "css-loader": "^0.28.4",
     "filesize": "^3.5.10",
-    "memory-fs": "^0.4.1",
-    "pkg-dir": "^2.0.0",
-    "tmp": "0.0.31",
-    "typescript": "^2.4.1",
-    "url-loader": "^0.5.9",
-    "webpack": "^3.2.0",
-    "worker-farm": "^1.4.1"
+    "import-cost": "^1.0.2"
   },
   "icon": "images/import-cost-logo.png",
   "galleryBanner": {

@@ -1,7 +1,7 @@
 import {ExtensionContext, window, workspace} from 'vscode';
 import {calculated, flushDecorations} from './decorator';
 import logger from './logger';
-import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT} from './importCost';
+import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT} from 'import-cost';
 import configuration from './config';
 
 function language(fileName) {
