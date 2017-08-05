@@ -1,0 +1,86 @@
+{
+  "private": false,
+  "name": "import-cost",
+  "version": "1.0.4",
+  "description": "",
+  "main": "dist/src/index.js",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "start": "yoshi start",
+    "build": ":",
+    "precommit": "yoshi lint",
+    "pretest": "yoshi build",
+    "test": "yoshi test",
+    "posttest": "yoshi lint",
+    "release": "yoshi release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wix/import-cost.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wix/import-cost/issues"
+  },
+  "homepage": "https://github.com/wix/import-cost#readme",
+  "devDependencies": {
+    "babel-plugin-transform-runtime": "^6.22.0",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-stage-3": "^6.5.0",
+    "chai": "^3.5.0",
+    "husky": "^0.13.4",
+    "yoshi": "latest"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.22.0",
+    "babel-core": "^6.25.0",
+    "babel-types": "^6.25.0",
+    "babili-webpack-plugin": "^0.1.2",
+    "babylon": "^6.17.4",
+    "css-loader": "^0.28.4",
+    "memory-fs": "^0.4.1",
+    "pkg-dir": "^2.0.0",
+    "tmp": "0.0.31",
+    "typescript": "^2.4.2",
+    "url-loader": "^0.5.9",
+    "webpack": "^3.4.1",
+    "worker-farm": "^1.4.1"
+  },
+  "babel": {
+    "presets": [
+      "stage-3"
+    ],
+    "plugins": [
+      "transform-runtime"
+    ],
+    "env": {
+      "test": {
+        "presets": [
+          [
+            "env",
+            {
+              "targets": {
+                "node": "current"
+              }
+            }
+          ]
+        ]
+      },
+      "development": {
+        "presets": [
+          "env"
+        ]
+      }
+    }
+  },
+  "eslintConfig": {
+    "extends": "wix/esnext"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
+}

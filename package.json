@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "scripts": {
+    "postinstall": "lerna bootstrap",
+    "test": "lerna run test"
+  },
+  "devDependencies": {
+    "lerna": "^2.0.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {}
+}
