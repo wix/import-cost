@@ -53,6 +53,16 @@ Any package size above the mediumPackageSize limit will be considered large.
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 2.0.0
+
+- Split the project into two packages: 
+  - `vscode-import-cost`: VSCode specific extension
+  - `import-cost`: The logic of the extension
+
+  The split was done in order to ease the consumption of the logic from IDEs other than VSCode.
+
+- Various bug fixes
+
 ### 1.3.1
 
 Fix breakage on backticks
