@@ -32,7 +32,6 @@
     "babel-preset-env": "^1.5.2",
     "babel-preset-stage-3": "^6.5.0",
     "chai": "^3.5.0",
-    "husky": "^0.13.4",
     "yoshi": "latest"
   },
   "dependencies": {
