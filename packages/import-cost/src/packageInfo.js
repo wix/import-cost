@@ -6,7 +6,7 @@ import {debouncePromise, DebounceError} from './debouncePromise';
 
 const workers = workerFarm(require.resolve('./webpack'), ['calcSize']);
 const extensionVersion = getVersion(pkgDir.sync(__dirname));
-const cacheFile = path.join(__dirname, `ic-cache-${extensionVersion}`);
+const cacheFileName = path.join(__dirname, `ic-cache-${extensionVersion}`);
 let sizeCache = {};
 const versionsCache = {};
 readSizeCache();
@@ -37,7 +37,7 @@ export async function getSize(pkg) {
 
 function calcPackageSize(packageInfo) {
   return debouncePromise(`${packageInfo.fileName}#${packageInfo.line}`, (resolve, reject) => {
-    const debug = false;
+    const debug = process.env.NODE_ENV === 'test';
     const calcSize = debug ? require('./webpack').calcSize : workers.calcSize;
     calcSize(
       packageInfo,
@@ -46,10 +46,17 @@ function calcPackageSize(packageInfo) {
   });
 }
 
+export function clearSizeCache() {
+  sizeCache = {};
+  if (fs.existsSync(cacheFileName)) {
+    fs.unlinkSync(cacheFileName);
+  }
+}
+
 function readSizeCache() {
   try {
-    if (fs.existsSync(cacheFile)) {
-      sizeCache = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
+    if (fs.existsSync(cacheFileName)) {
+      sizeCache = JSON.parse(fs.readFileSync(cacheFileName, 'utf-8'));
     }
   } catch (e) {
     // silent error
@@ -60,7 +67,7 @@ function saveSizeCache() {
   try {
     const keys = Object.keys(sizeCache).filter(key => typeof sizeCache[key] === 'number' && sizeCache[key] > 0);
     const cache = keys.reduce((obj, key) => ({...obj, [key]: sizeCache[key]}), {});
-    fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2), 'utf-8');
+    fs.writeFileSync(cacheFileName, JSON.stringify(cache, null, 2), 'utf-8');
   } catch (e) {
     // silent error
   }
