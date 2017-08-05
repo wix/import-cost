@@ -18,7 +18,10 @@ function calcSize(packageInfo, callback) {
 
   const compiler = webpack({
     entry: entryPoint.name,
-    plugins: [new BabiliPlugin()],
+    plugins: [
+      new webpack.IgnorePlugin(/^electron$/),
+      new BabiliPlugin()
+    ],
     resolve: {
       modules: [modulesDirectory, 'node_modules']
     },

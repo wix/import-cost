@@ -29,6 +29,7 @@ export async function getSize(pkg) {
         throw e;
       } else {
         sizeCache[key] = 0;
+        return {...pkg, size: 0, error: e};
       }
     }
   }

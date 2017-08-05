@@ -6,8 +6,8 @@ import {importCost as runner, cleanup, JAVASCRIPT, TYPESCRIPT} from '../src';
 import {clearSizeCache, cacheFileName} from '../src/packageInfo';
 import {DebounceError} from '../src/debouncePromise';
 
+const workingFolder = typeof wallaby !== 'undefined' ? path.join(wallaby.localProjectDir, 'test') : __dirname;
 function fixture(fileName) {
-  const workingFolder = typeof wallaby !== 'undefined' ? path.join(wallaby.localProjectDir, 'test') : __dirname;
   return path.join(workingFolder, 'fixtures', fileName);
 }
 
@@ -55,13 +55,20 @@ describe('importCost', () => {
   afterEach(() => clearSizeCache());
   afterEach(() => cleanup());
 
+  // it.only('local file', async () => {
+  //   const result = await whenDone(importCost(path.join(workingFolder, 'index.spec.js'), JAVASCRIPT));
+  //   console.log(result[0].error);
+  //   debugger;
+  // });
+
   it('calculates size of require in javascript', () => test('require.js'));
   it('calculates size of require in typescript', () => test('require.ts'));
   it('calculates size of template require in javascript', () => test('require-template.js'));
   it('calculates size of template require in typescript', () => test('require-template.ts'));
   it('calculates size of import in javascript', () => test('import.js'));
   it('calculates size of import in typescript', () => test('import.ts'));
-  it('calculates size of legacy import in javascript', () => test('import-legacy.js')); //not supported in typescript
+  it('calculates size of legacy import in javascript', () => test('import-legacy.js'));
+  it('calculates size of node import in javascript', () => test('import-node.js', 'node-stuff'));
   it('calculates size of namespace import in javascript', () => test('import-namespace.js'));
   it('calculates size of namespace import in typescript', () => test('import-namespace.ts'));
   it('calculates size of specifiers import in javascript', () => test('import-specifiers.js'));
