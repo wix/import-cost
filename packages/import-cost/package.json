@@ -4,7 +4,10 @@
   "version": "1.0.6",
   "description": "",
   "main": "dist/src/index.js",
-  "files": ["src", "dist"],
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "start": "yoshi start",
     "build": ":",
@@ -29,6 +32,7 @@
     "babel-preset-env": "^1.5.2",
     "babel-preset-stage-3": "^6.5.0",
     "chai": "^3.5.0",
+    "chai-as-promised": "^7.1.1",
     "yoshi": "latest"
   },
   "dependencies": {
@@ -48,8 +52,12 @@
     "worker-farm": "^1.4.1"
   },
   "babel": {
-    "presets": ["stage-3"],
-    "plugins": ["transform-runtime"],
+    "presets": [
+      "stage-3"
+    ],
+    "plugins": [
+      "transform-runtime"
+    ],
     "env": {
       "test": {
         "presets": [
@@ -64,7 +72,9 @@
         ]
       },
       "development": {
-        "presets": ["env"]
+        "presets": [
+          "env"
+        ]
       }
     }
   },

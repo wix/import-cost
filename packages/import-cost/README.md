@@ -35,13 +35,13 @@ Usage as you can see above is pretty straight forward, `importCost()` gets three
 2) `fileContents` - This is a `string` which contains the actual content of the file. We need it because in IDE extension it is usually much faster to get contents from IDE then reading it from filesystem. Also, obviously changes to the file might not have been saved yet, we want to work on the file as the user types to it.
 3) `language` - This effects which AST parser we will use to lookup the imports in the file. As you can see above, you pass either `JAVASCRIPT` or `TYPESCRIPT` to it. Typically IDE can tell you the language of the file, better use the correct API of your IDE then rely on extensions.
 
-In response, `importCost()` returns a standard Node `EventEmitter`. You can read about event emitters in [Node docs](https://nodejs.org/api/events.html#events_class_eventemitter), but typically all you need to know is that you can register a callback for various events we emit using `emitter.on(eventName, callback)`. We also recommend you un-register using `emitter.removeAllListeners()` when the file in question changes, this will help you not be confused with any results that are no longer to that file.
+In response, `importCost()` returns a standard Node `EventEmitter`. You can read about event emitters in [Node docs](https://nodejs.org/api/events.html#events_class_eventemitter), but typically all you need to know is that you can register a callback for various events we emit using `emitter.on(eventName, callback)`. We also recommend you un-register using `emitter.removeAllListeners()` when the file in question changes, this will help you not be confused with any results that are no longer relevant to that file.
 
 ## Events
 
 Following are the events you can listen on for the returned emitter.
 
-### emitter.on('error', e => /* ... */)
+### emitter.on('error', e => /* ... */);
 
 The emitter will emit an `'error'` event for any error that caused it to stop working on the task at hand. Typically, you will not get any other event from the emitter after this error happened. Usually error will be that we failed to parse the file, but that's not really something that you need to act on since it is perfectly fine that user's code is sometimes not valid while he types. `e` will contain the error details, feel free to log it somewhere for cases it might be useful.
 
@@ -51,11 +51,15 @@ The emitter will emit a `'start'` event right after it finished parsing the file
 
 ### emitter.on('calculated', package => /* ... */);
 
-The emitter will emit a `'calculated'` event for each of the packages as results arrive from our thread pool. The callback will receive a `{fileName, line, size}` object. Typically this would be where your extension displays the result in the appropriate line.
+The emitter will emit a `'calculated'` event for each of the packages as results arrive from our thread pool. The callback will receive a `{fileName, line, size}` object. Typically this would be where your extension displays the result in the appropriate line. The `size` in case we failed to calculate (mostly because of missing dependency) will be `0`.
 
 ### emitter.on('done', packages => /* ... */);
 
-The emitter will emit a `'done'` event once we have results for all of the packages. The callback will receive an `Array` of `{fileName, line, size}` object. This is not super helpful since by now you already received a `'calculated'` event for each on of the packages in this array. However, it is a pretty good checkpoint to clear any decorations in lines that do not appear on this list and were left hanging because of some race condition edge cases.
+The emitter will emit a `'done'` event once we have results for all of the packages. The callback will receive an `Array` of `{fileName, line, size}` object. This is not super helpful since by now you already received a `'calculated'` event for each one of the packages in this array. However, it is a pretty good checkpoint to clear any decorations in lines that do not appear on this list and were left hanging because of some race condition edge cases.
+
+### emitter.removeAllListeners();
+
+As mentioned above, we recommend you un-register all of your event listeners using `emitter.removeAllListeners()` when the file in question changes, this will help you not be confused with any results that are no longer to that file.
 
 ## Cleanup
 

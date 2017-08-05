@@ -11,11 +11,25 @@ function fixture(fileName) {
 }
 
 function whenDone(emitter) {
-  return new Promise(resolve => emitter.on('done', resolve));
+  return new Promise((resolve, reject) => {
+    let start;
+    const calculated = [];
+    emitter.on('start', packages => {
+      expect(start).to.equal(undefined);
+      start = packages;
+    });
+    emitter.on('calculated', packages => calculated.push(packages));
+    emitter.on('done', packages => {
+      expect(start.length).to.equal(packages.length);
+      expect(calculated.length).to.equal(packages.length);
+      resolve(packages);
+    });
+    emitter.on('error', reject);
+  });
 }
 
-function importCost(fileName) {
-  const language = fileName.split('.').pop() === 'js' ? JAVASCRIPT : TYPESCRIPT;
+function importCost(fileName, language = undefined) {
+  language = language ? language : fileName.split('.').pop() === 'js' ? JAVASCRIPT : TYPESCRIPT;
   return runner(fileName, fs.readFileSync(fileName, 'utf-8'), language);
 }
 
@@ -47,9 +61,23 @@ describe('importCost', () => {
   it('calculates size of mixed import in javascript', () => test('import-mixed.js'));
   it('calculates size of mixed import in typescript', () => test('import-mixed.ts'));
 
-  it('calculates size of mixed import in javascript', async () => {
-    const fileName = fixture('import-mixed.js');
-    const packages = await whenDone(importCost(fileName));
-    expect(sizeOf(packages, 'chai')).to.be.greaterThan(500);
+  it('results in 0 if dependency is missing', async () => {
+    const packages = await whenDone(importCost(fixture('failed-missing.js')));
+    expect(sizeOf(packages, 'sinon')).to.equal(0);
+  });
+  it('results in 0 if bundle fails', async () => {
+    const packages = await whenDone(importCost(fixture('failed-bundle.js')));
+    expect(sizeOf(packages, 'jest')).to.equal(0);
+  });
+
+  it('errors on broken javascript', () => {
+    return expect(whenDone(importCost(fixture('incomplete.bad_js')))).to.be.rejected;
+  });
+  it('errors on broken typescript', () => {
+    return expect(whenDone(importCost(fixture('incomplete.bad_ts')))).to.be.rejected;
+  });
+  it('completes with empty array for unknown file type', async () => {
+    const packages = await whenDone(importCost(fixture('require.js'), 'flow'));
+    expect(packages).to.eql([]);
   });
 });
