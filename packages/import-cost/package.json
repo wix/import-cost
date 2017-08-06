@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "import-cost",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "",
   "main": "dist/src/index.js",
   "files": [
@@ -15,7 +15,8 @@
     "pretest": "yoshi build",
     "test": "yoshi test",
     "posttest": "yoshi lint",
-    "release": "yoshi release"
+    "release": "yoshi release",
+    "prepublish": "npm test"
   },
   "repository": {
     "type": "git",
