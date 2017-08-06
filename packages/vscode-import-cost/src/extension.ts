@@ -1,20 +1,7 @@
+import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT} from 'import-cost';
 import {ExtensionContext, window, workspace} from 'vscode';
 import {calculated, flushDecorations} from './decorator';
 import logger from './logger';
-import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT} from 'import-cost';
-import configuration from './config';
-
-function language(fileName) {
-  const typescriptRegex = new RegExp(configuration.typescriptExtensions.join('|'));
-  const javascriptRegex = new RegExp(configuration.javascriptExtensions.join('|'));
-  if (typescriptRegex.test(fileName)) {
-    return TYPESCRIPT;
-  } else if (javascriptRegex.test(fileName)) {
-    return JAVASCRIPT;
-  } else {
-    return undefined;
-  }
-}
 
 export function activate(context: ExtensionContext) {
   try {
@@ -46,5 +33,18 @@ async function processActiveFile(document) {
     emitters[fileName].on('start', packages => flushDecorations(document.fileName, packages));
     emitters[fileName].on('calculated', packageInfo => calculated(packageInfo));
     emitters[fileName].on('done', packages => flushDecorations(document.fileName, packages));
+  }
+}
+
+function language(fileName) {
+  const configuration = workspace.getConfiguration('importCost');
+  const typescriptRegex = new RegExp(configuration.typescriptExtensions.join('|'));
+  const javascriptRegex = new RegExp(configuration.javascriptExtensions.join('|'));
+  if (typescriptRegex.test(fileName)) {
+    return TYPESCRIPT;
+  } else if (javascriptRegex.test(fileName)) {
+    return JAVASCRIPT;
+  } else {
+    return undefined;
   }
 }

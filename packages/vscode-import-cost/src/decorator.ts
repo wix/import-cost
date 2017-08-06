@@ -1,12 +1,8 @@
-import {window, Range, Position, DecorationOptions} from 'vscode';
+import {workspace, window, Range, Position} from 'vscode';
 import * as fileSize from 'filesize';
-import configuration from './config';
 
+const configuration = workspace.getConfiguration('importCost');
 const decorations = {};
-let decorationsDebounce;
-const decorationType = window.createTextEditorDecorationType({
-  after: {margin: '0 0 0 1rem'}
-});
 
 export function flushDecorations(fileName, packages) {
   decorations[fileName] = {};
@@ -29,10 +25,28 @@ export function calculated(packageInfo) {
   );
 }
 
-function getEditors(fileName) {
-  return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
+function getDecorationColor(size) {
+  const sizeInKB = size / 1024;
+  if (sizeInKB < configuration.smallPackageSize) {
+    return configuration.smallPackageColor;
+  } else if (sizeInKB < configuration.mediumPackageSize) {
+    return configuration.mediumPackageColor;
+  } else {
+    return configuration.largePackageColor;
+  }
 }
 
+function decorate(text, packageInfo, color = configuration.smallPackageColor) {
+  const {fileName, line} = packageInfo;
+  decorations[fileName][line] = {
+    renderOptions: {after: {contentText: text, color}},
+    range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
+  };
+  refreshDecorations(fileName);
+}
+
+const decorationType = window.createTextEditorDecorationType({after: {margin: '0 0 0 1rem'}});
+let decorationsDebounce;
 function refreshDecorations(fileName, delay = 10) {
   clearTimeout(decorationsDebounce);
   decorationsDebounce = setTimeout(
@@ -47,23 +61,6 @@ function refreshDecorations(fileName, delay = 10) {
   );
 }
 
-function decorate(text, packageInfo, color = configuration.smallPackageColor) {
-  const {fileName, line} = packageInfo;
-  decorations[fileName] = decorations[fileName] || {};
-  decorations[fileName][line] = {
-    renderOptions: {after: {contentText: text, color}},
-    range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
-  };
-  refreshDecorations(fileName);
-}
-
-function getDecorationColor(size) {
-  const sizeInKB = size / 1024;
-  if (sizeInKB < configuration.smallPackageSize) {
-    return configuration.smallPackageColor;
-  }
-  if (sizeInKB < configuration.mediumPackageSize) {
-    return configuration.mediumPackageColor;
-  }
-  return configuration.largePackageColor;
+function getEditors(fileName) {
+  return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
 }
