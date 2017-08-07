@@ -38,14 +38,9 @@ function sizeOf(packages, name) {
   return packages.filter(x => x.name === name).shift().size;
 }
 
-function gzipOf(packages, name) {
-  return packages.filter(x => x.name === name).shift().gzip;
-}
-
 async function test(fileName, pkg = 'chai', minSize = 10000, maxSize = 15000) {
   const packages = await whenDone(importCost(fixture(fileName)));
   expect(sizeOf(packages, pkg)).to.be.within(minSize, maxSize);
-  expect(gzipOf(packages, pkg)).to.be.within(sizeOf(packages, pkg) / 50, sizeOf(packages, pkg) / 1.5);
 }
 
 async function timed(fn) {

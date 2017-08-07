@@ -5,7 +5,6 @@ const pkgDir = require('pkg-dir');
 const tmp = require('tmp');
 const fs = require('fs');
 const path = require('path');
-const {gzipSync} = require('node-zopfli');
 
 function getEntryPoint(packageInfo) {
   const tmpFile = tmp.fileSync();
@@ -53,8 +52,7 @@ function calcSize(packageInfo, callback) {
     }
   });
 
-  const memoryFileSystem = new MemoryFS();
-  compiler.outputFileSystem = memoryFileSystem;
+  compiler.outputFileSystem = new MemoryFS();
 
   compiler.run((err, stats) => {
     entryPoint.removeCallback();
@@ -62,9 +60,7 @@ function calcSize(packageInfo, callback) {
       callback({err: err || stats.toJson().errors});
     } else {
       const size = stats.toJson().assets.filter(x => x.name === 'bundle.js').pop().size;
-      const bundle = path.join(process.cwd(), 'bundle.js');
-      const gzip = gzipSync(memoryFileSystem.readFileSync(bundle), {}).length;
-      callback({size, gzip});
+      callback({size});
     }
   });
 }

@@ -45,7 +45,6 @@
     "css-loader": "^0.28.4",
     "file-loader": "^0.11.2",
     "memory-fs": "^0.4.1",
-    "node-zopfli": "^2.0.2",
     "pkg-dir": "^2.0.0",
     "tmp": "0.0.31",
     "typescript": "^2.4.2",
