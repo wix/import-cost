@@ -9,13 +9,14 @@ const extensionVersion = getVersion(pkgDir.sync(__dirname));
 export const cacheFileName = path.join(__dirname, `ic-cache-${extensionVersion}`);
 let sizeCache = {};
 const versionsCache = {};
+const failedSize = {size: 0, gzip: 0};
 
 export async function getSize(pkg) {
   readSizeCache();
   try {
     versionsCache[pkg.string] = versionsCache[pkg.string] || getPackageVersion(pkg);
   } catch (e) {
-    return {...pkg, size: 0};
+    return {...pkg, ...failedSize};
   }
   const key = `${pkg.string}#${versionsCache[pkg.string]}`;
   if (sizeCache[key] === undefined || sizeCache[key] instanceof Promise) {
@@ -28,12 +29,12 @@ export async function getSize(pkg) {
         delete sizeCache[key];
         throw e;
       } else {
-        sizeCache[key] = 0;
-        return {...pkg, size: 0, error: e};
+        sizeCache[key] = failedSize;
+        return {...pkg, ...sizeCache[key], error: e};
       }
     }
   }
-  return {...pkg, size: sizeCache[key]};
+  return {...pkg, ...sizeCache[key]};
 }
 
 function calcPackageSize(packageInfo) {
@@ -42,7 +43,7 @@ function calcPackageSize(packageInfo) {
     const calcSize = debug ? require('./webpack').calcSize : workers.calcSize;
     calcSize(
       packageInfo,
-      result => (result.err ? reject(result.err) : resolve(result.size))
+      result => (result.err ? reject(result.err) : resolve(result))
     );
   });
 }
@@ -66,7 +67,10 @@ function readSizeCache() {
 
 function saveSizeCache() {
   try {
-    const keys = Object.keys(sizeCache).filter(key => typeof sizeCache[key] === 'number' && sizeCache[key] > 0);
+    const keys = Object.keys(sizeCache).filter(key => {
+      const size = sizeCache[key] && sizeCache[key].size;
+      return typeof size === 'number' && size > 0;
+    });
     const cache = keys.reduce((obj, key) => ({...obj, [key]: sizeCache[key]}), {});
     if (Object.keys(cache).length > 0) {
       fs.writeFileSync(cacheFileName, JSON.stringify(cache, null, 2), 'utf-8');

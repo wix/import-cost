@@ -18,8 +18,9 @@ export function flushDecorations(fileName, packages) {
 
 export function calculated(packageInfo) {
   const size = fileSize(packageInfo.size, {unix: true});
+  const gzip = fileSize(packageInfo.gzip, {unix: true});
   decorate(
-    packageInfo.size > 0 ? `${size}` : '',
+    packageInfo.size > 0 ? `${size} (gzipped: ${gzip})` : '',
     packageInfo,
     getDecorationColor(packageInfo.size)
   );
