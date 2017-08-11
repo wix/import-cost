@@ -53,6 +53,10 @@ Any package size above the mediumPackageSize limit will be considered large.
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 2.1.0
+
+Added gzip size to decorations
+
 ### 2.0.0
 
 - Split the project into two packages:
