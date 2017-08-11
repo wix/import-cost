@@ -17,13 +17,26 @@ export function flushDecorations(fileName, packages) {
 }
 
 export function calculated(packageInfo) {
+  const decorationMessage = getDecorationMessage(packageInfo);
+  decorate(decorationMessage, packageInfo, getDecorationColor(packageInfo.size));
+}
+
+function getDecorationMessage(packageInfo) {
+  if (packageInfo.size <= 0) {
+    return '';
+  }
+
+  let decorationMessage;
   const size = fileSize(packageInfo.size, {unix: true});
   const gzip = fileSize(packageInfo.gzip, {unix: true});
-  decorate(
-    packageInfo.size > 0 ? `${size} (gzipped: ${gzip})` : '',
-    packageInfo,
-    getDecorationColor(packageInfo.size)
-  );
+  if (configuration.bundleSizeDecoration === 'both') {
+    decorationMessage = `${size} (gzipped: ${gzip})`;
+  } else if (configuration.bundleSizeDecoration === 'minified') {
+    decorationMessage = size;
+  } else if (configuration.bundleSizeDecoration === 'gzipped') {
+    decorationMessage = gzip;
+  }
+  return decorationMessage;
 }
 
 function getDecorationColor(size) {

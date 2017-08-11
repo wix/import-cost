@@ -45,13 +45,20 @@ The following properties are configurable:
   // File extensions to be parsed by the Javascript parser
   "importCost.javascriptExtensions": [
     "\\.jsx?$"
-  ]
+  ],
+
+  // Which bundle size to display
+  "importCost.bundleSizeDecoration": "both"
 ```
 Any package size above the mediumPackageSize limit will be considered large.
 
 
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
+
+### 2.2.0
+
+Added configuration param to control which bundle size (minfied/gzipped/both) to display in the decoration
 
 ### 2.1.0
 
