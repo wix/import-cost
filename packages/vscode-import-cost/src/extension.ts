@@ -23,26 +23,30 @@ export function deactivate() {
 
 let emitters = {};
 async function processActiveFile(document) {
-  if (document && language(document.fileName)) {
-    const fileName = document.fileName;
+  if (document && language(document)) {
+    const {fileName} = document;
     if (emitters[fileName]) {
       emitters[fileName].removeAllListeners();
     }
-    emitters[fileName] = importCost(document.fileName, document.getText(), language(document.fileName));
+    emitters[fileName] = importCost(fileName, document.getText(), language(document));
     emitters[fileName].on('error', e => logger.log('importCost error:' + e));
-    emitters[fileName].on('start', packages => flushDecorations(document.fileName, packages));
+    emitters[fileName].on('start', packages => flushDecorations(fileName, packages));
     emitters[fileName].on('calculated', packageInfo => calculated(packageInfo));
-    emitters[fileName].on('done', packages => flushDecorations(document.fileName, packages));
+    emitters[fileName].on('done', packages => flushDecorations(fileName, packages));
   }
 }
 
-function language(fileName) {
+function language({fileName, languageId}) {
   const configuration = workspace.getConfiguration('importCost');
   const typescriptRegex = new RegExp(configuration.typescriptExtensions.join('|'));
   const javascriptRegex = new RegExp(configuration.javascriptExtensions.join('|'));
   if (typescriptRegex.test(fileName)) {
     return TYPESCRIPT;
   } else if (javascriptRegex.test(fileName)) {
+    return JAVASCRIPT;
+  } else   if (languageId === 'typescript') {
+    return TYPESCRIPT;
+  } else if (languageId === 'javascript') {
     return JAVASCRIPT;
   } else {
     return undefined;
