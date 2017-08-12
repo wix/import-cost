@@ -1,7 +1,6 @@
 import {workspace, window, Range, Position} from 'vscode';
 import * as fileSize from 'filesize';
 
-const configuration = workspace.getConfiguration('importCost');
 const decorations = {};
 
 export function flushDecorations(fileName, packages) {
@@ -27,6 +26,7 @@ function getDecorationMessage(packageInfo) {
   }
 
   let decorationMessage;
+  const configuration = workspace.getConfiguration('importCost');
   const size = fileSize(packageInfo.size, {unix: true});
   const gzip = fileSize(packageInfo.gzip, {unix: true});
   if (configuration.bundleSizeDecoration === 'both') {
@@ -40,6 +40,7 @@ function getDecorationMessage(packageInfo) {
 }
 
 function getDecorationColor(size) {
+  const configuration = workspace.getConfiguration('importCost');
   const sizeInKB = size / 1024;
   if (sizeInKB < configuration.smallPackageSize) {
     return configuration.smallPackageColor;
@@ -50,7 +51,7 @@ function getDecorationColor(size) {
   }
 }
 
-function decorate(text, packageInfo, color = configuration.smallPackageColor) {
+function decorate(text, packageInfo, color = getDecorationColor(0)) {
   const {fileName, line} = packageInfo;
   decorations[fileName][line] = {
     renderOptions: {after: {contentText: text, color}},

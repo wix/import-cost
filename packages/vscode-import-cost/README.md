@@ -56,6 +56,10 @@ Any package size above the mediumPackageSize limit will be considered large.
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 2.2.1
+
+Allow config changes without restarting vscode
+
 ### 2.2.0
 
 Added configuration param to control which bundle size (minfied/gzipped/both) to display in the decoration
