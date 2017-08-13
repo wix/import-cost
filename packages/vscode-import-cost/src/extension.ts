@@ -44,9 +44,9 @@ function language({fileName, languageId}) {
     return TYPESCRIPT;
   } else if (javascriptRegex.test(fileName)) {
     return JAVASCRIPT;
-  } else   if (languageId === 'typescript') {
+  } else   if (languageId === 'typescript' || languageId === 'typescriptreact') {
     return TYPESCRIPT;
-  } else if (languageId === 'javascript') {
+  } else if (languageId === 'javascript' || languageId === 'javascriptreact') {
     return JAVASCRIPT;
   } else {
     return undefined;
