@@ -8,9 +8,19 @@
   "engines": {
     "vscode": "^1.12.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["*"],
-  "keywords": ["import", "require", "size", "weight", "webpack"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "keywords": [
+    "import",
+    "require",
+    "size",
+    "weight",
+    "webpack"
+  ],
   "main": "./out/src/extension",
   "contributes": {
     "configuration": {
@@ -44,18 +54,26 @@
         },
         "importCost.typescriptExtensions": {
           "type": "array",
-          "default": ["\\.tsx?$"],
+          "default": [
+            "\\.tsx?$"
+          ],
           "description": "File extensions to be parsed by the Typescript parser"
         },
         "importCost.javascriptExtensions": {
           "type": "array",
-          "default": ["\\.jsx?$"],
+          "default": [
+            "\\.jsx?$"
+          ],
           "description": "File extensions to be parsed by the Javascript parser"
         },
         "importCost.bundleSizeDecoration": {
           "type": "string",
           "default": "both",
-          "enum": ["both", "minified", "gzipped"],
+          "enum": [
+            "both",
+            "minified",
+            "gzipped"
+          ],
           "description": "Which bundle size to display"
         }
       }
