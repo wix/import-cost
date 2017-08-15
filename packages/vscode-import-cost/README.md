@@ -60,6 +60,10 @@ Any package size above the mediumPackageSize limit will be considered large.
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
 
+### 2.3.0
+
+Support languageId detection + react components now consider react & react-dom as externals
+
 ### 2.2.1
 
 Allow config changes without restarting vscode
