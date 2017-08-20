@@ -16,12 +16,13 @@ function getEntryPoint(packageInfo) {
 function calcSize(packageInfo, callback) {
   const entryPoint = getEntryPoint(packageInfo);
   const modulesDirectory = path.join(pkgDir.sync(path.dirname(packageInfo.fileName)), 'node_modules');
-  const externals = packageInfo.name === 'react' || packageInfo.name === 'react-dom' ? {} : {
-    externals: {
-      react: 'React',
-      'react-dom': 'ReactDOM',
-    }
+
+  const externals = {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    lodash: '_'
   };
+  delete externals[packageInfo.name];
 
   const compiler = webpack({
     entry: entryPoint.name,
@@ -54,7 +55,7 @@ function calcSize(packageInfo, callback) {
       child_process: 'empty', //eslint-disable-line
       dns: 'empty'
     },
-    ...externals,
+    externals,
     output: {
       filename: 'bundle.js'
     }
