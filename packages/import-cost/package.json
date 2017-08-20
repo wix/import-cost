@@ -16,7 +16,7 @@
     "test": "yoshi test",
     "posttest": "yoshi lint",
     "release": "yoshi release",
-    "prepublish": "npm test"
+    "prepare": "npm test"
   },
   "repository": {
     "type": "git",
