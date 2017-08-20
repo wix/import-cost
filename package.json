@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "precommit": "lerna run precommit",
-    "postinstall": "lerna bootstrap",
+    "postinstall": "lerna bootstrap --loglevel verbose",
     "test": "lerna run test"
   },
   "devDependencies": {
