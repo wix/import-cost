@@ -107,9 +107,9 @@
     "color": "#1C78C0",
     "theme": "dark"
   },
-  "homepage": "https://github.com/wix/vscode-import-cost/blob/master/README.md",
+  "homepage": "https://github.com/wix/import-cost/blob/master/packages/vscode-import-cost/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wix/vscode-import-cost.git"
+    "url": "https://github.com/wix/import-cost.git"
   }
 }
