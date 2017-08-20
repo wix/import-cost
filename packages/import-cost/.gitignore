@@ -3,4 +3,3 @@
 !test/fixtures/node_modules
 /target
 ic-cache-*
-package-lock.json
