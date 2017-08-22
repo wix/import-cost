@@ -52,13 +52,20 @@ The following properties are configurable:
   ],
 
   // Which bundle size to display
-  "importCost.bundleSizeDecoration": "both"
+  "importCost.bundleSizeDecoration": "both",
+
+  // Display the 'calculating' decoration
+  "importCost.showCalculatingDecoration": true
 ```
 Any package size above the mediumPackageSize limit will be considered large.
 
 
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
+
+### 2.5.0
+
+Add a configuration to control the presentation of the "calculating" decoration
 
 ### 2.4.0
 

@@ -7,7 +7,10 @@ export function flushDecorations(fileName, packages) {
   decorations[fileName] = {};
   packages.forEach(packageInfo => {
     if (packageInfo.size === undefined) {
-      decorate('Calculating...', packageInfo);
+      const configuration = workspace.getConfiguration('importCost');
+      if (configuration.showCalculatingDecoration) {
+        decorate('Calculating...', packageInfo);
+      }
     } else {
       calculated(packageInfo);
     }
