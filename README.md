@@ -11,6 +11,12 @@ This project includes implementation of:
 
 Enjoy!
 
+#### Third-Party Editor Plugin Links
+
+* [Jetbrains IDE Plugin](https://github.com/denofevil/import-cost)
+* [Atom Package](https://atom.io/packages/import-cost-atom)
+
+
 ## Why & How
 I detail the Why and How in this blog post:
 https://medium.com/@yairhaimo/keep-your-bundle-size-under-control-with-import-cost-vscode-extension-5d476b3c5a76
