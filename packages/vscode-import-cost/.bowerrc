@@ -1,0 +1,11 @@
+{
+  "registry": {
+    "search": ["https://bower.herokuapp.com", "http://wix:wix@mirror.wixpress.com:3333"],
+    "register": "http://wix:wix@mirror.wixpress.com:3333",
+    "publish": "http://wix:wix@mirror.wixpress.com:3333"
+  },
+  "directory": "app/bower_components",
+  "resolvers": [
+    "wix-bower-shrinkwrap-resolver"
+  ]
+}
