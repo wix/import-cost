@@ -2,7 +2,7 @@ import ts from 'typescript';
 
 export function getPackages(fileName, source) {
   const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.ES2016, true);
-  const packages = gatherPackages(sourceFile).map(pkg => ({ ...pkg, fileName }));
+  const packages = gatherPackages(sourceFile).map(pkg => ({...pkg, fileName}));
   return packages;
 }
 
@@ -16,9 +16,7 @@ function gatherPackages(sourceFile) {
       const packageInfo = {
         name: importNode.moduleSpecifier.text,
         line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
-        string: `${importNode.getText()}; console.log(${importNode.importClause
-          .getText()
-          .replace('* as ', '')});`
+        string: `${importNode.getText()} console.log(${importNode.importClause.getText().replace('* as ', '')});`
       };
       packages.push(packageInfo);
     } else if (node.kind === ts.SyntaxKind.CallExpression) {
