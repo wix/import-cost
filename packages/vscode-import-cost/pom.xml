@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.wixpress.infra</groupId>
+    <artifactId>vscode-import-cost</artifactId>
+    <packaging>pom</packaging>
+    <name>vscode-import-cost</name>
+    <description>vscode-import-cost</description>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <organization>
+        <name></name>
+    </organization>
+
+    <parent>
+        <groupId>com.wixpress.common</groupId>
+        <artifactId>wix-master-parent</artifactId>
+        <version>100.0.0-SNAPSHOT</version>
+    </parent>
+
+    <developers>
+        <developer>
+            <name>Shahar Talmi</name>
+            <email>shahart@wix.com</email>
+            <roles>
+                <role>owner</role>
+            </roles>
+        </developer>
+    </developers>
+</project>
