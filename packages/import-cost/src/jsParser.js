@@ -85,7 +85,7 @@ function compileImportString(node) {
   } else {
     importString = '* as tmp';
   }
-  return `import ${importString} from '${node.source.value}'; console.log(${importString.replace('* as ', '')});`;
+  return `import ${importString} from '${node.source.value}';\nconsole.log(${importString.replace('* as ', '')});`;
 }
 
 function compileRequireString(node) {

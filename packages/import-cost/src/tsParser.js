@@ -16,7 +16,7 @@ function gatherPackages(sourceFile) {
       const packageInfo = {
         name: importNode.moduleSpecifier.text,
         line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
-        string: `${importNode.getText()} console.log(${importNode.importClause.getText().replace('* as ', '')});`
+        string: `${importNode.getText()}\nconsole.log(${importNode.importClause.getText().replace('* as ', '')});`
       };
       packages.push(packageInfo);
     } else if (node.kind === ts.SyntaxKind.CallExpression) {

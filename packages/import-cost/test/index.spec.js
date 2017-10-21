@@ -72,6 +72,7 @@ describe('importCost', () => {
   it('calculates size of template require in typescript', () => test('require-template.ts'));
   it('calculates size of import in javascript', () => test('import.js'));
   it('calculates size of import in typescript', () => test('import.ts'));
+  it('calculates size of import with no semicolon in typescript', () => test('import-no-semicolon.ts'));
   it('calculates size of legacy import in javascript', () => test('import-legacy.js'));
   it('calculates size of node import in javascript', () => test('import-node.js', 'node-stuff'));
   it('calculates size of namespace import in javascript', () => test('import-namespace.js'));
