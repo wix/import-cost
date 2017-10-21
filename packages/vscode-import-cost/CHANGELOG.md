@@ -1,5 +1,9 @@
 # Changes
 
+## 2.5.1
+
+Fix issue with imports that don't have semicolons in typescript
+
 ## 2.5.0
 
 Add a configuration to control the presentation of the "calculating" decoration
