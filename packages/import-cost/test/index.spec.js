@@ -85,7 +85,8 @@ describe('importCost', () => {
   it('calculates size of scoped import in typescript', () => test('import-scoped.ts', '@angular/core'));
   it('calculates size of shaken import in javascript', () => test('import-shaken.js', 'react', 500, 1000));
   it('calculates size of shaken import in typescript', () => test('import-shaken.ts', 'react', 500, 1000));
-  it('calculates size without exports', () => test('import-exports.js', 'wix-style', 500, 1000));
+  xit('calculates size without exports', () => test('import-exports.js', 'wix-style', 500, 1000));
+  it('calculates size without peerDependencies', () => test('import-peer.js', 'haspeerdeps', 0, 1000));
 
   it('caches the results import string & version', async () => {
     expect(await timed(() => test('import.js'))).to.be.within(100, 1500);
