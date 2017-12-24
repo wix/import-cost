@@ -19,7 +19,7 @@ function calcSize(packageInfo, callback) {
   const modulesDirectory = path.join(packageRootDir, 'node_modules');
   const importedPkg = require(path.join(modulesDirectory, packageInfo.name, 'package.json'));
   const peers = importedPkg.peerDependencies || {};
-  const defaultExternals = []; // ['react', 'react-dom', 'lodash'];
+  const defaultExternals = ['react', 'react-dom', 'lodash'];
   const externals = Object.keys(peers).concat(defaultExternals).filter(p => p !== packageInfo.name);
 
   const compiler = webpack({
