@@ -85,6 +85,8 @@ describe('importCost', () => {
   it('calculates size of scoped import in typescript', () => test('import-scoped.ts', '@angular/core'));
   it('calculates size of shaken import in javascript', () => test('import-shaken.js', 'react', 500, 1000));
   it('calculates size of shaken import in typescript', () => test('import-shaken.ts', 'react', 500, 1000));
+  it('calculates size of production env import in javascript', () => test('import-env.js', 'react-dom', 500, 1000));
+  it('calculates size of production env import in typescript', () => test('import-env.ts', 'react-dom', 500, 1000));
   it('calculates size without exports', () => test('import-exports.js', 'wix-style', 500, 1000));
 
   it('caches the results import string & version', async () => {
