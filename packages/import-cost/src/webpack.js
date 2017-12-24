@@ -15,14 +15,12 @@ function getEntryPoint(packageInfo) {
 
 function calcSize(packageInfo, callback) {
   const entryPoint = getEntryPoint(packageInfo);
-  const modulesDirectory = path.join(pkgDir.sync(path.dirname(packageInfo.fileName)), 'node_modules');
-
-  const externals = {
-    react: 'React',
-    'react-dom': 'ReactDOM',
-    lodash: '_'
-  };
-  delete externals[packageInfo.name];
+  const packageRootDir = pkgDir.sync(path.dirname(packageInfo.fileName));
+  const modulesDirectory = path.join(packageRootDir, 'node_modules');
+  const importedPkg = require(path.join(modulesDirectory, packageInfo.name, 'package.json'));
+  const peers = importedPkg.peerDependencies || {};
+  const defaultExternals = ['react', 'react-dom', 'lodash'];
+  const externals = Object.keys(peers).concat(defaultExternals).filter(p => p !== packageInfo.name);
 
   const compiler = webpack({
     entry: entryPoint.name,

@@ -1,0 +1,1 @@
+import hasPeer from 'haspeerdeps';
