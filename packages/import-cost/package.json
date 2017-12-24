@@ -9,13 +9,13 @@
     "dist"
   ],
   "scripts": {
-    "start": "yoshi start",
+    "start": "haste start",
     "build": ":",
-    "precommit": "yoshi lint",
-    "pretest": "yoshi build",
-    "test": "yoshi test",
-    "posttest": "yoshi lint",
-    "release": "yoshi release",
+    "precommit": "haste lint",
+    "pretest": "haste build",
+    "test": "haste test",
+    "posttest": "haste lint",
+    "release": "haste release",
     "prepare": "npm test"
   },
   "repository": {
@@ -34,7 +34,7 @@
     "babel-preset-stage-3": "^6.5.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^7.1.1",
-    "yoshi": "latest"
+    "haste-preset-yoshi": "latest"
   },
   "dependencies": {
     "babel-core": "^6.25.0",
@@ -84,5 +84,8 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "haste": {
+    "preset": "yoshi"
   }
 }
