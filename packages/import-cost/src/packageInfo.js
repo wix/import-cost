@@ -3,9 +3,10 @@ import path from 'path';
 import workerFarm from 'worker-farm';
 import pkgDir from 'pkg-dir';
 import {debouncePromise, DebounceError} from './debouncePromise';
+import {getPackageVersion, parseJson} from './utils';
 
 const workers = workerFarm(require.resolve('./webpack'), ['calcSize']);
-const extensionVersion = getVersion(pkgDir.sync(__dirname));
+const extensionVersion = parseJson(pkgDir.sync(__dirname)).version;
 export const cacheFileName = path.join(__dirname, `ic-cache-${extensionVersion}`);
 let sizeCache = {};
 const versionsCache = {};
@@ -78,23 +79,6 @@ function saveSizeCache() {
   } catch (e) {
     // silent error
   }
-}
-
-function getVersion(dir) {
-  const pkg = path.join(dir, 'package.json');
-  return JSON.parse(fs.readFileSync(pkg, 'utf-8')).version;
-}
-
-function getPackageVersion(pkg) {
-  const modulesDirectory = path.join(pkgDir.sync(path.dirname(pkg.fileName)), 'node_modules');
-  const pkgParts = pkg.name.split('/');
-  let pkgName = pkgParts.shift();
-  if (pkgName.startsWith('@')) {
-    pkgName = path.join(pkgName, pkgParts.shift());
-  }
-
-  const version = getVersion(path.join(modulesDirectory, pkgName));
-  return `${pkgName}@${version}`;
 }
 
 export function cleanup() {

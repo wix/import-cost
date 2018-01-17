@@ -6,6 +6,7 @@ const tmp = require('tmp');
 const fs = require('fs');
 const path = require('path');
 const {gzipSync} = require('zlib');
+const {getPackageJson} = require('./utils');
 
 function getEntryPoint(packageInfo) {
   const tmpFile = tmp.fileSync();
@@ -17,8 +18,7 @@ function calcSize(packageInfo, callback) {
   const entryPoint = getEntryPoint(packageInfo);
   const packageRootDir = pkgDir.sync(path.dirname(packageInfo.fileName));
   const modulesDirectory = path.join(packageRootDir, 'node_modules');
-  const importedPkg = require(path.join(modulesDirectory, packageInfo.name, 'package.json'));
-  const peers = importedPkg.peerDependencies || {};
+  const peers = getPackageJson(packageInfo).peerDependencies || {};
   const defaultExternals = ['react', 'react-dom', 'lodash'];
   const externals = Object.keys(peers).concat(defaultExternals).filter(p => p !== packageInfo.name);
 
