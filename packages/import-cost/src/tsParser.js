@@ -16,8 +16,14 @@ function gatherPackages(sourceFile) {
       const packageInfo = {
         name: importNode.moduleSpecifier.text,
         line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
-        string: `${importNode.getText()}\nconsole.log(${importNode.importClause.getText().replace('* as ', '')});`
+        string: importNode.getText()
       };
+
+      const importClause = importNode.importClause && importNode.importClause.getText().replace('* as ', '');
+      if (importClause) {
+        packageInfo.string += `\nconsole.log(${importClause});`;
+      }
+
       packages.push(packageInfo);
     } else if (node.kind === ts.SyntaxKind.CallExpression) {
       const callExpressionNode = node;
