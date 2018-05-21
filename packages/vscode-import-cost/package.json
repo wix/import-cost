@@ -12,7 +12,10 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onLanguage:javacript",
+    "onLanguage:javacriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact"
   ],
   "keywords": [
     "import",
