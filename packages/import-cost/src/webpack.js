@@ -71,7 +71,7 @@ function calcSize(packageInfo, callback) {
       callback({err: err || stats.toJson().errors});
     } else {
       const size = stats.toJson().assets.filter(x => x.name === 'bundle.js').pop().size;
-      const bundle = path.join(process.cwd(), 'bundle.js');
+      const bundle = path.join(process.cwd(), 'dist', 'bundle.js');
       const gzip = gzipSync(memoryFileSystem.readFileSync(bundle), {}).length;
       callback({size, gzip});
     }
