@@ -1,5 +1,13 @@
 # Changes
 
+## 2.7.0
+
+- Upgrade to Webpack 4 for better runtime performance
+- More specific activation events for better load performance
+- Limit number of workers to not use up all the system's resources
+- Limit workers retry amount to fail and stop running in faulty situations
+- Handle legacy Typescript imports
+
 ## 2.5.1
 
 Fix issue with imports that don't have semicolons in typescript
