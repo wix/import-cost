@@ -55,7 +55,10 @@ The following properties are configurable:
   "importCost.bundleSizeDecoration": "both",
 
   // Display the 'calculating' decoration
-  "importCost.showCalculatingDecoration": true
+  "importCost.showCalculatingDecoration": true,
+
+  // Print debug messages in output channel
+  "importCost.debug": false
 ```
 Any package size above the mediumPackageSize limit will be considered large.
 
