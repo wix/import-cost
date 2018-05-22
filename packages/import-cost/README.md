@@ -22,7 +22,7 @@ emitter.on('calculated', package => /* show size of this single package */);
 emitter.on('done', packages => /* show sizes of all those packages */);
 emitter.removeAllListeners(); /* ask to stop getting events in case file was updated */)
 
-//...
+// ...
 
 cleanup(); /* do this when you shutdown your extension in order to kill our thread pool */
 ```
