@@ -1,9 +1,11 @@
 import {workspace, window, Range, Position} from 'vscode';
 import * as fileSize from 'filesize';
+import logger from './logger';
 
 const decorations = {};
 
 export function flushDecorations(fileName, packages) {
+  logger.log(`Flushing decorations ${JSON.stringify(packages, null , 2)}`);
   decorations[fileName] = {};
   packages.forEach(packageInfo => {
     if (packageInfo.size === undefined) {
@@ -56,6 +58,7 @@ function getDecorationColor(size) {
 
 function decorate(text, packageInfo, color = getDecorationColor(0)) {
   const {fileName, line} = packageInfo;
+  logger.log(`Setting Decoration: ${text}, ${JSON.stringify(packageInfo, null, 2)}`);
   decorations[fileName][line] = {
     renderOptions: {after: {contentText: text, color}},
     range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))

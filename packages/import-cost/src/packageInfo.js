@@ -5,12 +5,14 @@ import pkgDir from 'pkg-dir';
 import {debouncePromise, DebounceError} from './debouncePromise';
 import {getPackageVersion, parseJson} from './utils';
 
-const workers = workerFarm(require.resolve('./webpack'), ['calcSize']);
+const MAX_WORKER_RETRIES = 3;
+const MAX_CONCURRENT_WORKERS = require('os').cpus().length - 1;
+const workers = workerFarm({maxConcurrentWorkers: MAX_CONCURRENT_WORKERS, maxRetries: MAX_WORKER_RETRIES}, require.resolve('./webpack'), ['calcSize']);
 const extensionVersion = parseJson(pkgDir.sync(__dirname)).version;
-export const cacheFileName = path.join(__dirname, `ic-cache-${extensionVersion}`);
 let sizeCache = {};
 const versionsCache = {};
 const failedSize = {size: 0, gzip: 0};
+export const cacheFileName = path.join(__dirname, `ic-cache-${extensionVersion}`);
 
 export async function getSize(pkg) {
   readSizeCache();

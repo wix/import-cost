@@ -1,9 +1,9 @@
-import {OutputChannel, ExtensionContext, window} from 'vscode';
+import {OutputChannel, ExtensionContext, window, workspace} from 'vscode';
 
 class Logger {
   private channel: OutputChannel;
   private context: ExtensionContext;
-  private debug: boolean = false;
+  private debug: boolean = !!workspace.getConfiguration('importCost').debug;
 
   init(context: ExtensionContext) {
     this.context = context;

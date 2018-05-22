@@ -5,6 +5,7 @@ import logger from './logger';
 
 export function activate(context: ExtensionContext) {
   try {
+    process.env.NODE_ENV = !!workspace.getConfiguration('importCost').debug ? 'test' : 'production';
     logger.init(context);
     logger.log('starting...');
     workspace.onDidChangeTextDocument(ev => processActiveFile(ev.document));
@@ -29,7 +30,7 @@ async function processActiveFile(document) {
       emitters[fileName].removeAllListeners();
     }
     emitters[fileName] = importCost(fileName, document.getText(), language(document));
-    emitters[fileName].on('error', e => logger.log('importCost error:' + e));
+    emitters[fileName].on('error', e => logger.log(`importCost error: ${e}`));
     emitters[fileName].on('start', packages => flushDecorations(fileName, packages));
     emitters[fileName].on('calculated', packageInfo => calculated(packageInfo));
     emitters[fileName].on('done', packages => flushDecorations(fileName, packages));
@@ -40,13 +41,9 @@ function language({fileName, languageId}) {
   const configuration = workspace.getConfiguration('importCost');
   const typescriptRegex = new RegExp(configuration.typescriptExtensions.join('|'));
   const javascriptRegex = new RegExp(configuration.javascriptExtensions.join('|'));
-  if (typescriptRegex.test(fileName)) {
+  if (languageId === 'typescript' || languageId === 'typescriptreact' || typescriptRegex.test(fileName)) {
     return TYPESCRIPT;
-  } else if (javascriptRegex.test(fileName)) {
-    return JAVASCRIPT;
-  } else   if (languageId === 'typescript' || languageId === 'typescriptreact') {
-    return TYPESCRIPT;
-  } else if (languageId === 'javascript' || languageId === 'javascriptreact') {
+  } else if (languageId === 'javascript' || languageId === 'javascriptreact' || javascriptRegex.test(fileName)) {
     return JAVASCRIPT;
   } else {
     return undefined;
