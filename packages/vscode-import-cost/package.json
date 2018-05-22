@@ -12,8 +12,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:javacript",
-    "onLanguage:javacriptreact",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
     "onLanguage:typescript",
     "onLanguage:typescriptreact"
   ],
@@ -83,6 +83,11 @@
           "type": "boolean",
           "default": true,
           "description": "Display the 'calculating' decoration when starting to calculate the size"
+        },
+        "importCost.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug logging"
         }
       }
     }
