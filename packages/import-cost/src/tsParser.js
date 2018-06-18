@@ -14,6 +14,7 @@ function gatherPackages(sourceFile) {
     if (ts.isImportDeclaration(node)) {
       const importNode = node;
       const packageInfo = {
+        fileName: sourceFile.fileName,
         name: importNode.moduleSpecifier.text,
         line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
         string: importNode.getText()
