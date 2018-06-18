@@ -10,21 +10,53 @@ function gatherPackages(sourceFile) {
   const packages = [];
   gatherPackagesFromNode(sourceFile);
 
+  function getNamedImports(namedBindings) {
+    const namedImportElements = (namedBindings.elements || []);
+    if (!namedImportElements.length) {
+      throw new Error('NamedImports must have at east one element');
+    }
+    const namedImports = `{ ${namedImportElements.map(elem => (elem.propertyName || elem.name).text).sort().join(', ')} }`;
+    return namedImports;
+  }
+
   function gatherPackagesFromNode(node) {
     if (ts.isImportDeclaration(node)) {
       const importNode = node;
+      const importClauses = [];
+      if (importNode.importClause) {
+        // Default import
+        if (importNode.importClause.name) {
+          importClauses.push(importNode.importClause.name.escapedText);
+        }
+
+        if (importNode.importClause.namedBindings) {
+          if (ts.isNamespaceImport(importNode.importClause.namedBindings)) {
+            // NamespaceImport: * as <varname>
+            importClauses.push(`* as ${importNode.importClause.namedBindings.name.escapedText}`);
+          } else if (ts.isNamedImports(importNode.importClause.namedBindings)) {
+            const namedImports = getNamedImports(importNode.importClause.namedBindings);
+            importClauses.push(namedImports);
+          } else {
+            throw new Error(`Unknown named binding kind ${importNode.importClause.namedBindings.kind}`);
+          }
+        } else if (!importClauses.length) {
+          // Unnamed imports are unknown; just calculate the size of the default import?
+          importClauses.push('tmp');
+        }
+      } else {
+        // Global import
+        importClauses.push(`* as tmp`);
+      }
+      const importClauseText = importClauses.join(', ');
+      const importPropertiesText = importClauses.map(clause => clause.replace(/^\* as /, '')).join(', ');
+      const importStatement = `import ${importClauseText} from '${importNode.moduleSpecifier.text}';\nconsole.log(${importPropertiesText});`;
+
       const packageInfo = {
         fileName: sourceFile.fileName,
         name: importNode.moduleSpecifier.text,
         line: sourceFile.getLineAndCharacterOfPosition(importNode.getStart()).line + 1,
-        string: importNode.getText()
+        string: importStatement
       };
-
-      const importClause = importNode.importClause && importNode.importClause.getText().replace('* as ', '');
-      if (importClause) {
-        packageInfo.string += `\nconsole.log(${importClause});`;
-      }
-
       packages.push(packageInfo);
     } else if (ts.isCallExpression(node)) {
       const callExpressionNode = node;
