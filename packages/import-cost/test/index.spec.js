@@ -100,6 +100,18 @@ describe('importCost', () => {
     expect(await timed(() => test('import-specifiers.js'))).to.be.within(100, 1500);
     expect(await timed(() => test('import.ts'))).to.be.within(0, 100);
   });
+  it('ignores order of javascript imports for caching purposes', async () => {
+    expect(await timed(() => test('import-specifiers.js'))).to.be.within(100, 1500);
+    expect(await timed(() => test('import-specifiers-reversed.js'))).to.be.within(0, 100);
+    expect(await timed(() => test('import-mixed.js'))).to.be.within(100, 1500);
+    expect(await timed(() => test('import-mixed-reversed.js'))).to.be.within(0, 100);
+  });
+  it('ignores order of typescript imports for caching purposes', async () => {
+    expect(await timed(() => test('import-specifiers.ts'))).to.be.within(100, 1500);
+    expect(await timed(() => test('import-specifiers-reversed.ts'))).to.be.within(0, 100);
+    expect(await timed(() => test('import-mixed.ts'))).to.be.within(100, 1500);
+    expect(await timed(() => test('import-mixed-reversed.ts'))).to.be.within(0, 100);
+  });
   it('debounce any consecutive calculations of same import line', () => {
     const p1 = expect(whenDone(runner(fixture('import.js'), 'import "chai";', JAVASCRIPT))).to.be.rejectedWith(DebounceError);
     const p2 = expect(whenDone(runner(fixture('import.js'), 'import "chai/index";', JAVASCRIPT))).to.be.fulfilled;
