@@ -11,7 +11,7 @@ function gatherPackages(sourceFile) {
   gatherPackagesFromNode(sourceFile);
 
   function gatherPackagesFromNode(node) {
-    if (node.kind === ts.SyntaxKind.ImportDeclaration) {
+    if (ts.isImportDeclaration(node)) {
       const importNode = node;
       const packageInfo = {
         name: importNode.moduleSpecifier.text,
@@ -25,7 +25,7 @@ function gatherPackages(sourceFile) {
       }
 
       packages.push(packageInfo);
-    } else if (node.kind === ts.SyntaxKind.CallExpression) {
+    } else if (ts.isCallExpression(node)) {
       const callExpressionNode = node;
       if (callExpressionNode.expression.text === 'require') {
         const packageName = callExpressionNode.arguments[0].text;
