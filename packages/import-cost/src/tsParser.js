@@ -43,13 +43,15 @@ function gatherPackages(sourceFile) {
           // Unnamed imports are unknown; just calculate the size of the default import?
           importClauses.push('tmp');
         }
-      } else {
-        // Global import
-        importClauses.push(`* as tmp`);
       }
-      const importClauseText = importClauses.join(', ');
-      const importPropertiesText = importClauses.map(clause => clause.replace(/^\* as /, '')).join(', ');
-      const importStatement = `import ${importClauseText} from '${importNode.moduleSpecifier.text}';\nconsole.log(${importPropertiesText});`;
+      let importStatement;
+      if (importClauses.length > 0) {
+        const importClauseText = importClauses.join(', ');
+        const importPropertiesText = importClauses.map(clause => clause.replace(/^\* as /, '')).join(', ');
+        importStatement = `import ${importClauseText} from '${importNode.moduleSpecifier.text}';\nconsole.log(${importPropertiesText});`;
+      } else {
+        importStatement = `import '${importNode.moduleSpecifier.text}';`;
+      }
 
       const packageInfo = {
         fileName: sourceFile.fileName,
