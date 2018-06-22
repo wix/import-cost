@@ -5,7 +5,6 @@ import logger from './logger';
 
 export function activate(context: ExtensionContext) {
   try {
-    process.env.NODE_ENV = !!workspace.getConfiguration('importCost').debug ? 'test' : 'production';
     logger.init(context);
     logger.log('starting...');
     workspace.onDidChangeTextDocument(ev => processActiveFile(ev.document));
