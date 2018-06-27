@@ -72,6 +72,7 @@ describe('importCost', () => {
   it('calculates size of template require in typescript', () => test('require-template.ts'));
   it('calculates size of import in javascript', () => test('import.js'));
   it('calculates size of import in typescript', () => test('import.ts'));
+  it('calculates size of import require in typescript', () => test('import-require.ts'));
   it('calculates size of aliased import in javascript', () => test('import-aliased.js'));
   it('calculates size of aliased import in typescript', () => test('import-aliased.ts'));
   it('calculates size of import with no semicolon in typescript', () => test('import-no-semicolon.ts'));

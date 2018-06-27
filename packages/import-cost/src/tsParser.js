@@ -60,6 +60,16 @@ function gatherPackages(sourceFile) {
         string: importStatement
       };
       packages.push(packageInfo);
+    } else if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference) &&
+               node.moduleReference.expression && ts.isStringLiteral(node.moduleReference.expression)) {
+      const packageName = node.moduleReference.expression.text;
+      const packageInfo = {
+        fileName: sourceFile.fileName,
+        name: packageName,
+        line: sourceFile.getLineAndCharacterOfPosition(node.moduleReference.getStart()).line + 1,
+        string: `const aaa = require('${packageName}')`
+      };
+      packages.push(packageInfo);
     } else if (ts.isCallExpression(node)) {
       const callExpressionNode = node;
       if (callExpressionNode.expression.text === 'require') {
