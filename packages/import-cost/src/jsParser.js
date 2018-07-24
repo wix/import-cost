@@ -1,6 +1,6 @@
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
-import {parse as jsParse} from '@babel/parser';
+import { parse as jsParse } from '@babel/parser';
 
 const PARSE_PLUGINS = [
   'jsx',
@@ -16,7 +16,7 @@ const PARSE_PLUGINS = [
   'exponentiationOperator',
   'asyncGenerators',
   'functionBind',
-  'functionSent'
+  'functionSent',
 ];
 
 export function getPackages(fileName, source) {
@@ -27,7 +27,7 @@ export function getPackages(fileName, source) {
         fileName,
         name: path.node.source.value,
         line: path.node.loc.end.line,
-        string: compileImportString(path.node)
+        string: compileImportString(path.node),
       });
     },
     CallExpression(path) {
@@ -36,10 +36,10 @@ export function getPackages(fileName, source) {
           fileName,
           name: getPackageName(path.node),
           line: path.node.loc.end.line,
-          string: compileRequireString(path.node)
+          string: compileRequireString(path.node),
         });
       }
-    }
+    },
   };
 
   const ast = parse(source);
@@ -50,14 +50,15 @@ export function getPackages(fileName, source) {
 function parse(source) {
   return jsParse(source, {
     sourceType: 'module',
-    plugins: PARSE_PLUGINS
+    plugins: PARSE_PLUGINS,
   });
 }
 
 function compileImportString(node) {
   let importSpecifiers, importString;
   if (node.specifiers && node.specifiers.length > 0) {
-    importString = [].concat(node.specifiers)
+    importString = []
+      .concat(node.specifiers)
       .sort((s1, s2) => {
         // Import specifiers are in statement order, which for mixed imports must be either "defaultImport, * as namespaceImport"
         // or "defaultImport, { namedImport [as alias]... } according to current ECMA-262.
@@ -79,7 +80,10 @@ function compileImportString(node) {
             importSpecifiers = '{';
           }
           importSpecifiers += specifier.imported.name;
-          if (node.specifiers[i + 1] && t.isImportSpecifier(node.specifiers[i + 1])) {
+          if (
+            node.specifiers[i + 1] &&
+            t.isImportSpecifier(node.specifiers[i + 1])
+          ) {
             importSpecifiers += ', ';
             return undefined;
           } else {
@@ -96,7 +100,9 @@ function compileImportString(node) {
   } else {
     importString = '* as tmp';
   }
-  return `import ${importString} from '${node.source.value}';\nconsole.log(${importString.replace('* as ', '')});`;
+  return `import ${importString} from '${
+    node.source.value
+  }';\nconsole.log(${importString.replace('* as ', '')});`;
 }
 
 function compileRequireString(node) {
@@ -104,7 +110,7 @@ function compileRequireString(node) {
 }
 
 function getPackageName(node) {
-  return t.isTemplateLiteral(node.arguments[0]) ?
-    node.arguments[0].quasis[0].value.raw :
-    node.arguments[0].value;
+  return t.isTemplateLiteral(node.arguments[0])
+    ? node.arguments[0].quasis[0].value.raw
+    : node.arguments[0].value;
 }

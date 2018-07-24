@@ -5,8 +5,8 @@ const pkgDir = require('pkg-dir');
 const tmp = require('tmp');
 const fs = require('fs');
 const path = require('path');
-const {gzipSync} = require('zlib');
-const {getPackageJson} = require('./utils');
+const { gzipSync } = require('zlib');
+const { getPackageJson } = require('./utils');
 
 function getEntryPoint(packageInfo) {
   const tmpFile = tmp.fileSync();
@@ -20,33 +20,38 @@ function calcSize(packageInfo, callback) {
   const modulesDirectory = path.join(packageRootDir, 'node_modules');
   const peers = getPackageJson(packageInfo).peerDependencies || {};
   const defaultExternals = ['react', 'react-dom', 'lodash'];
-  const externals = Object.keys(peers).concat(defaultExternals).filter(p => p !== packageInfo.name);
+  const externals = Object.keys(peers)
+    .concat(defaultExternals)
+    .filter(p => p !== packageInfo.name);
 
   const compiler = webpack({
     entry: entryPoint.name,
     plugins: [
       new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify('production')
+        'process.env.NODE_ENV': JSON.stringify('production'),
       }),
       new webpack.optimize.ModuleConcatenationPlugin(),
       new webpack.IgnorePlugin(/^electron$/),
-      new BabiliPlugin()
+      new BabiliPlugin(),
     ],
     resolve: {
-      modules: [modulesDirectory, 'node_modules']
+      modules: [modulesDirectory, 'node_modules'],
     },
     module: {
-      rules: [{
-        test: /\.s?css$/,
-        use: 'css-loader'
-      }, {
-        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|wav)(\?.*)?$/,
-        loader: 'url-loader',
-        options: {
-          name: '[path][name].[ext]?[hash]',
-          limit: 10000
-        }
-      }]
+      rules: [
+        {
+          test: /\.s?css$/,
+          use: 'css-loader',
+        },
+        {
+          test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|wav)(\?.*)?$/,
+          loader: 'url-loader',
+          options: {
+            name: '[path][name].[ext]?[hash]',
+            limit: 10000,
+          },
+        },
+      ],
     },
     node: {
       fs: 'empty',
@@ -54,12 +59,12 @@ function calcSize(packageInfo, callback) {
       tls: 'empty',
       module: 'empty',
       child_process: 'empty', //eslint-disable-line
-      dns: 'empty'
+      dns: 'empty',
     },
     externals,
     output: {
-      filename: 'bundle.js'
-    }
+      filename: 'bundle.js',
+    },
   });
 
   const memoryFileSystem = new MemoryFS();
@@ -68,14 +73,17 @@ function calcSize(packageInfo, callback) {
   compiler.run((err, stats) => {
     entryPoint.removeCallback();
     if (err || stats.toJson().errors.length > 0) {
-      callback({err: err || stats.toJson().errors});
+      callback({ err: err || stats.toJson().errors });
     } else {
-      const size = stats.toJson().assets.filter(x => x.name === 'bundle.js').pop().size;
+      const size = stats
+        .toJson()
+        .assets.filter(x => x.name === 'bundle.js')
+        .pop().size;
       const bundle = path.join(process.cwd(), 'dist', 'bundle.js');
       const gzip = gzipSync(memoryFileSystem.readFileSync(bundle), {}).length;
-      callback({size, gzip});
+      callback({ size, gzip });
     }
   });
 }
 
-module.exports = {calcSize};
+module.exports = { calcSize };
