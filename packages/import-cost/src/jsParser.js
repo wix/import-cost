@@ -1,6 +1,6 @@
-import {traverse} from 'babel-core';
-import * as t from 'babel-types';
-import {parse as jsParse} from 'babylon';
+import traverse from '@babel/traverse';
+import * as t from '@babel/types';
+import {parse as jsParse} from '@babel/parser';
 
 const PARSE_PLUGINS = [
   'jsx',

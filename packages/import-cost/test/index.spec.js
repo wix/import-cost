@@ -80,6 +80,7 @@ describe('importCost', () => {
   it('calculates size of legacy import in typescript', () => test('import-legacy.ts'));
   it('calculates size of node import in javascript', () => test('import-node.js', 'node-stuff'));
   it('calculates size of namespace import in javascript', () => test('import-namespace.js'));
+  // it.only('calculates size of imports in a file with react fragments', () => test('react-fragments.jsx'));
   it('calculates size of namespace import in typescript', () => test('import-namespace.ts'));
   it('calculates size of specifiers import in javascript', () => test('import-specifiers.js'));
   it('calculates size of specifiers import in typescript', () => test('import-specifiers.ts'));
