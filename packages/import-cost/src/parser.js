@@ -1,5 +1,5 @@
-import {getPackages as getPackagesFromJS} from './jsParser';
-import {getPackages as getPackagesFromTS} from './tsParser';
+import { getPackages as getPackagesFromJS } from './jsParser';
+import { getPackages as getPackagesFromTS } from './tsParser';
 
 export const TYPESCRIPT = 'typescript';
 export const JAVASCRIPT = 'javascript';

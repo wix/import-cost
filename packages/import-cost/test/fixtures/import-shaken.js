@@ -1,2 +1,3 @@
-import {func2} from 'react';
+import { func2 } from 'react';
+
 console.log(func2);

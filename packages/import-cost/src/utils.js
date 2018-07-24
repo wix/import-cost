@@ -17,7 +17,10 @@ function getPackageName(pkg) {
 }
 
 function getPackageDirectory(pkg) {
-  const modulesDirectory = path.join(pkgDir.sync(path.dirname(pkg.fileName)), 'node_modules');
+  const modulesDirectory = path.join(
+    pkgDir.sync(path.dirname(pkg.fileName)),
+    'node_modules',
+  );
   return path.join(modulesDirectory, getPackageName(pkg));
 }
 
@@ -29,4 +32,4 @@ function getPackageJson(pkg) {
   return parseJson(getPackageDirectory(pkg));
 }
 
-module.exports = {getPackageJson, getPackageVersion, parseJson};
+module.exports = { getPackageJson, getPackageVersion, parseJson };
