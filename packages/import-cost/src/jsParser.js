@@ -65,7 +65,7 @@ function compileImportString(node) {
         // Given that two equivalent import statements can only differ in the order of the items in a NamedImports block,
         // we only need to sort these items in relation to each other to normalise the statements for caching purposes.
         // Where the node is anything other than ImportSpecifier (Babel terminoligy for NamedImports), preserve the original statement order.
-        if (t.isImportSpecifier(s1) && t.isImportSpecifier(s1)) {
+        if (t.isImportSpecifier(s1) && t.isImportSpecifier(s2)) {
           return s1.imported.name < s2.imported.name ? -1 : 1;
         }
         return 0;
