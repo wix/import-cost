@@ -10,7 +10,7 @@ const PARSE_PLUGINS = [
   'doExpressions',
   'trailingFunctionCommas',
   'objectRestSpread',
-  ['decorators', { decoratorsBeforeExport: false }],
+  ['decorators', { decoratorsBeforeExport: true }],
   'classProperties',
   'exportExtensions',
   'exponentiationOperator',
