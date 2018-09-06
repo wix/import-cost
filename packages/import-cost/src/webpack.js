@@ -2,15 +2,15 @@ const webpack = require('webpack');
 const MemoryFS = require('memory-fs');
 const BabiliPlugin = require('babili-webpack-plugin');
 const pkgDir = require('pkg-dir');
-const tmp = require('tmp');
+const tempy = require('tempy');
 const fs = require('fs');
 const path = require('path');
 const { gzipSync } = require('zlib');
 const { getPackageJson } = require('./utils');
 
 function getEntryPoint(packageInfo) {
-  const tmpFile = tmp.fileSync();
-  fs.writeFileSync(tmpFile.name, packageInfo.string, 'utf-8');
+  const tmpFile = tempy.file({ extension: 'js' });
+  fs.writeFileSync(tmpFile, packageInfo.string, 'utf-8');
   return tmpFile;
 }
 
@@ -25,7 +25,7 @@ function calcSize(packageInfo, callback) {
     .filter(p => p !== packageInfo.name);
 
   const compiler = webpack({
-    entry: entryPoint.name,
+    entry: entryPoint,
     plugins: [
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify('production'),
@@ -71,7 +71,6 @@ function calcSize(packageInfo, callback) {
   compiler.outputFileSystem = memoryFileSystem;
 
   compiler.run((err, stats) => {
-    entryPoint.removeCallback();
     if (err || stats.toJson().errors.length > 0) {
       callback({ err: err || stats.toJson().errors });
     } else {
