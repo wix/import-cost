@@ -48,7 +48,6 @@
     "memory-fs": "^0.4.1",
     "pkg-dir": "^2.0.0",
     "tempy": "^0.2.1",
-    "typescript": "^2.4.2",
     "url-loader": "^0.5.9",
     "webpack": "^4",
     "worker-farm": "^1.4.1"

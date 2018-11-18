@@ -1,10 +1,10 @@
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 import { parse as jsParse } from '@babel/parser';
+import { TYPESCRIPT } from './parser';
 
 const PARSE_PLUGINS = [
   'jsx',
-  'flow',
   'asyncFunctions',
   'classConstructorCall',
   'doExpressions',
@@ -18,8 +18,10 @@ const PARSE_PLUGINS = [
   'functionBind',
   'functionSent',
 ];
+const PARSE_JS_PLUGINS = ['flow', ...PARSE_PLUGINS];
+const PARSE_TS_PLUGINS = ['typescript', ...PARSE_PLUGINS];
 
-export function getPackages(fileName, source) {
+export function getPackages(fileName, source, language) {
   const packages = [];
   const visitor = {
     ImportDeclaration(path) {
@@ -42,15 +44,16 @@ export function getPackages(fileName, source) {
     },
   };
 
-  const ast = parse(source);
+  const ast = parse(source, language);
   traverse(ast, visitor);
   return packages;
 }
 
-function parse(source) {
+function parse(source, language) {
+  const plugins = language === TYPESCRIPT ? PARSE_TS_PLUGINS : PARSE_JS_PLUGINS;
   return jsParse(source, {
     sourceType: 'module',
-    plugins: PARSE_PLUGINS,
+    plugins,
   });
 }
 

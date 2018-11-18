@@ -85,8 +85,8 @@ describe('importCost', () => {
     test('require-template.ts'));
   it('calculates size of import in javascript', () => test('import.js'));
   it('calculates size of import in typescript', () => test('import.ts'));
-  it('calculates size of import require in typescript', () =>
-    test('import-require.ts'));
+  it('calculate size of imports in a file contaning typescript features not supportted by babel', () =>
+    test('typescript-not-supported-features.ts'));
   it('calculates size of aliased import in javascript', () =>
     test('import-aliased.js'));
   it('calculates size of aliased import in typescript', () =>
