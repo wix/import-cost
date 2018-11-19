@@ -8,14 +8,21 @@ import { getPackageVersion, parseJson } from './utils';
 const MAX_WORKER_RETRIES = 3;
 const MAX_CONCURRENT_WORKERS = require('os').cpus().length - 1;
 
-const workers = workerFarm(
-  {
-    maxConcurrentWorkers: MAX_CONCURRENT_WORKERS,
-    maxRetries: MAX_WORKER_RETRIES,
-  },
-  require.resolve('./webpack'),
-  ['calcSize'],
-);
+const debug = process.env.NODE_ENV === 'test';
+let workers = null;
+
+function initWorkers(config) {
+  workers = workerFarm(
+    {
+      maxConcurrentWorkers: debug ? 1 : MAX_CONCURRENT_WORKERS,
+      maxRetries: MAX_WORKER_RETRIES,
+      maxCallTime: config.maxCallTime || Infinity,
+    },
+    require.resolve('./webpack'),
+    ['calcSize'],
+  );
+}
+
 const extensionVersion = parseJson(pkgDir.sync(__dirname)).version;
 let sizeCache = {};
 const versionsCache = {};
@@ -25,7 +32,7 @@ export const cacheFileName = path.join(
   `ic-cache-${extensionVersion}`,
 );
 
-export async function getSize(pkg) {
+export async function getSize(pkg, config) {
   readSizeCache();
   try {
     versionsCache[pkg.string] =
@@ -36,7 +43,7 @@ export async function getSize(pkg) {
   const key = `${pkg.string}#${versionsCache[pkg.string]}`;
   if (sizeCache[key] === undefined || sizeCache[key] instanceof Promise) {
     try {
-      sizeCache[key] = sizeCache[key] || calcPackageSize(pkg);
+      sizeCache[key] = sizeCache[key] || calcPackageSize(pkg, config);
       sizeCache[key] = await sizeCache[key];
       saveSizeCache();
     } catch (e) {
@@ -52,15 +59,19 @@ export async function getSize(pkg) {
   return { ...pkg, ...sizeCache[key] };
 }
 
-function calcPackageSize(packageInfo) {
+function calcPackageSize(packageInfo, config) {
+  if (!workers) {
+    initWorkers(config);
+  }
+
   return debouncePromise(
     `${packageInfo.fileName}#${packageInfo.line}`,
     (resolve, reject) => {
-      const debug = process.env.NODE_ENV === 'test';
-      const calcSize = debug ? require('./webpack').calcSize : workers.calcSize;
-      calcSize(
-        packageInfo,
-        result => (result.err ? reject(result.err) : resolve(result)),
+      const calcSize = config.concurrent
+        ? workers.calcSize
+        : require('./webpack').calcSize;
+      calcSize(packageInfo, (err, result) =>
+        err ? reject(err) : resolve(result),
       );
     },
   );
@@ -102,5 +113,8 @@ function saveSizeCache() {
 }
 
 export function cleanup() {
-  workerFarm.end(workers);
+  if (workers) {
+    workerFarm.end(workers);
+    workers = null;
+  }
 }

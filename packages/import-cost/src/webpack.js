@@ -80,7 +80,7 @@ function calcSize(packageInfo, callback) {
         .pop().size;
       const bundle = path.join(process.cwd(), 'dist', 'bundle.js');
       const gzip = gzipSync(memoryFileSystem.readFileSync(bundle), {}).length;
-      callback({ size, gzip });
+      callback(null, { size, gzip });
     }
   });
 }

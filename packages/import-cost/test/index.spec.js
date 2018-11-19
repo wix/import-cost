@@ -7,6 +7,9 @@ import { importCost as runner, cleanup, JAVASCRIPT, TYPESCRIPT } from '../src';
 import { clearSizeCache, cacheFileName } from '../src/packageInfo';
 import { DebounceError } from '../src/debouncePromise';
 
+const DEFAULT_CONFIG = {
+  concurrent: false
+};
 const workingFolder =
   typeof wallaby !== 'undefined'
     ? path.join(wallaby.localProjectDir, 'test')
@@ -33,13 +36,13 @@ function whenDone(emitter) {
   });
 }
 
-function importCost(fileName, language = undefined) {
+function importCost(fileName, language = undefined, config = DEFAULT_CONFIG) {
   language = language
     ? language
     : fileName.split('.').pop() === 'js'
       ? JAVASCRIPT
       : TYPESCRIPT;
-  return runner(fileName, fs.readFileSync(fileName, 'utf-8'), language);
+  return runner(fileName, fs.readFileSync(fileName, 'utf-8'), language, config);
 }
 
 function sizeOf(packages, name) {
@@ -177,11 +180,11 @@ describe('importCost', () => {
   });
   it('debounce any consecutive calculations of same import line', () => {
     const p1 = expect(
-      whenDone(runner(fixture('import.js'), 'import "chai";', JAVASCRIPT)),
+      whenDone(runner(fixture('import.js'), 'import "chai";', JAVASCRIPT, DEFAULT_CONFIG)),
     ).to.be.rejectedWith(DebounceError);
     const p2 = expect(
       whenDone(
-        runner(fixture('import.js'), 'import "chai/index";', JAVASCRIPT),
+        runner(fixture('import.js'), 'import "chai/index";', JAVASCRIPT, DEFAULT_CONFIG),
       ),
     ).to.be.fulfilled;
     return Promise.all([p1, p2]);
@@ -218,5 +221,11 @@ describe('importCost', () => {
   it('completes with empty array for unknown file type', async () => {
     const packages = await whenDone(importCost(fixture('require.js'), 'flow'));
     expect(packages).to.eql([]);
+  });
+
+  it('should handle timeouts gracefully', async () => {
+    const packages = await whenDone(importCost(fixture('require.js'), JAVASCRIPT, { concurrent: true, maxCallTime: 10 }));
+    expect(packages[0].size).to.equal(0);
+    expect(packages[0].error.type).to.equal('TimeoutError');
   });
 });
