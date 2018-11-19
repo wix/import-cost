@@ -28,7 +28,8 @@ async function processActiveFile(document) {
     if (emitters[fileName]) {
       emitters[fileName].removeAllListeners();
     }
-    emitters[fileName] = importCost(fileName, document.getText(), language(document));
+    const {timeout} = workspace.getConfiguration('importCost');
+    emitters[fileName] = importCost(fileName, document.getText(), language(document), {concurrent: true, maxCallTime: timeout});
     emitters[fileName].on('error', e => logger.log(`importCost error: ${e}`));
     emitters[fileName].on('start', packages => flushDecorations(fileName, packages));
     emitters[fileName].on('calculated', packageInfo => calculated(packageInfo));

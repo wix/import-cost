@@ -13,7 +13,12 @@ export function cleanup() {
   kill();
 }
 
-export function importCost(fileName, text, language) {
+export function importCost(
+  fileName,
+  text,
+  language,
+  config = { maxCallTime: Infinity, concurrent: true },
+) {
   const emitter = new EventEmitter();
   setTimeout(async () => {
     try {
@@ -22,7 +27,7 @@ export function importCost(fileName, text, language) {
       );
       emitter.emit('start', imports);
       const promises = imports
-        .map(packageInfo => getSize(packageInfo))
+        .map(packageInfo => getSize(packageInfo, config))
         .map(promise =>
           promise.then(packageInfo => {
             emitter.emit('calculated', packageInfo);

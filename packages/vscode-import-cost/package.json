@@ -88,6 +88,11 @@
           "type": "boolean",
           "default": false,
           "description": "Enable debug logging"
+        },
+        "importCost.timeout": {
+          "type": "number",
+          "default": 10000,
+          "description": "Size calculation timeout (requires restart)"
         }
       }
     }
