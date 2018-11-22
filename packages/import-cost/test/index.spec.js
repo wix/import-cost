@@ -141,6 +141,8 @@ describe('importCost', () => {
     test('import-externals.js', 'wix-style', 500, 1200));
   it('calculates size without peerDependencies', () =>
     test('import-peer.js', 'haspeerdeps', 0, 1200));
+  it.only('calculates browser module size', () =>
+    test('import-browser.js', 'browser-stuff', 0, 1200));
 
   it('caches the results import string & version', async () => {
     expect(await timed(() => test('import.js'))).to.be.within(100, 1500);
