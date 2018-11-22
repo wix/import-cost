@@ -1,17 +1,29 @@
 import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT} from 'import-cost';
-import {ExtensionContext, window, workspace} from 'vscode';
-import {calculated, flushDecorations} from './decorator';
+import {ExtensionContext, window, workspace, commands} from 'vscode';
+import {calculated, flushDecorations, clearDecorations} from './decorator';
 import logger from './logger';
+
+let isActive = true;
 
 export function activate(context: ExtensionContext) {
   try {
     logger.init(context);
     logger.log('starting...');
-    workspace.onDidChangeTextDocument(ev => processActiveFile(ev.document));
-    window.onDidChangeActiveTextEditor(ev => ev && processActiveFile(ev.document));
-    if (window.activeTextEditor) {
+    workspace.onDidChangeTextDocument(ev => isActive && processActiveFile(ev.document));
+    window.onDidChangeActiveTextEditor(ev => ev && isActive && processActiveFile(ev.document));
+    if (window.activeTextEditor && isActive) {
       processActiveFile(window.activeTextEditor.document);
     }
+
+    context.subscriptions.push(commands.registerCommand('importCost.toggle', () => {
+      isActive = !isActive;
+      if (isActive && window.activeTextEditor) {
+        processActiveFile(window.activeTextEditor.document);
+      } else {
+        deactivate();
+        clearDecorations();
+      }
+    }));
   } catch (e) {
     logger.log('wrapping error: ' + e);
   }

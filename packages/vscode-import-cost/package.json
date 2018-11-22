@@ -95,7 +95,13 @@
           "description": "Size calculation timeout (requires restart)"
         }
       }
-    }
+    },
+    "commands": [
+      {
+        "command": "importCost.toggle",
+        "title": "Toggle import cost"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "tslint {src,test}/**/*.ts && tsc -p ./",
