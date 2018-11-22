@@ -34,6 +34,7 @@
     "babel-preset-stage-3": "^6.5.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^7.1.1",
+    "proxyquire": "^2.1.0",
     "yoshi": "^3.20.2"
   },
   "dependencies": {

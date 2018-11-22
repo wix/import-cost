@@ -141,6 +141,12 @@ describe('importCost', () => {
     test('import-externals.js', 'wix-style', 500, 1200));
   it('calculates size without peerDependencies', () =>
     test('import-peer.js', 'haspeerdeps', 0, 1200));
+  it('supports a monorepo-like structure', () =>
+    test('./yarn-workspace/import-nested-project.js', 'chai'));
+  it('supports a monorepo-like structure with scoped module', () =>
+    test('./yarn-workspace/import-with-scope.js', '@angular/core'));
+  it('supports a monorepo-like structure with scoped module and file name', () =>
+    test('./yarn-workspace/import-with-scope-filename.js', '@angular/core/index.js'));
 
   it('caches the results import string & version', async () => {
     expect(await timed(() => test('import.js'))).to.be.within(100, 1500);

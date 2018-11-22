@@ -6,7 +6,7 @@ const tempy = require('tempy');
 const fs = require('fs');
 const path = require('path');
 const { gzipSync } = require('zlib');
-const { getPackageJson } = require('./utils');
+const { getPackageJson, getPackageModuleContainer } = require('./utils');
 
 function getEntryPoint(packageInfo) {
   const tmpFile = tempy.file({ extension: 'js' });
@@ -35,7 +35,11 @@ function calcSize(packageInfo, callback) {
       new BabiliPlugin(),
     ],
     resolve: {
-      modules: [modulesDirectory, 'node_modules'],
+      modules: [
+        modulesDirectory,
+        getPackageModuleContainer(packageInfo),
+        'node_modules',
+      ],
     },
     module: {
       rules: [

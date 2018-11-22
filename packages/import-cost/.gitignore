@@ -1,6 +1,7 @@
 /dist
 /node_modules
 !test/fixtures/node_modules
+!test/fixtures/yarn-workspace/node_modules
 /target
 ic-cache-*
 package-lock.json
