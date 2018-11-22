@@ -1,5 +1,21 @@
 # Changes
 
+## 2.11.0
+- Ability to toggle the extension
+- Support monorepo structure
+
+## 2.10.0
+- Use Babel to parse Typescript. Drop TS Parser
+- Handle bundle size calculation timeout gracefully
+
+## 2.9.0
+- Handle decorators
+
+## 2.8.0
+- Update to Babel 7
+- Upgrade to Yoshi 3 toolkit
+- Add support for `import module = require("module")`
+
 ## 2.7.0
 
 - Upgrade to Webpack 4 for better runtime performance
