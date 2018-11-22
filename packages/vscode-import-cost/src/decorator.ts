@@ -85,3 +85,9 @@ function refreshDecorations(fileName, delay = 10) {
 function getEditors(fileName) {
   return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
 }
+
+export function clearDecorations() {
+  window.visibleTextEditors.forEach(textEditor => {
+    return textEditor.setDecorations(decorationType, []);
+  });
+}
