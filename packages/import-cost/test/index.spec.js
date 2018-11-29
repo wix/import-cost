@@ -174,7 +174,7 @@ describe('importCost', () => {
     expect(await timed(() => test('import-mixed.js'))).to.be.within(100, 1500);
     expect(await timed(() => test('import-mixed-reversed.js'))).to.be.within(
       0,
-      100
+      120
     );
   });
   it('ignores order of typescript imports for caching purposes', async () => {
