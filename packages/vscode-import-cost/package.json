@@ -124,6 +124,7 @@
     "vscode": "^1.0.0"
   },
   "dependencies": {
+    "ajv": "^6.6.1",
     "filesize": "^3.5.10",
     "import-cost": "^1.8.0"
   },
