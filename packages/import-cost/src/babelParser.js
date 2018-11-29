@@ -17,6 +17,7 @@ const PARSE_PLUGINS = [
   'asyncGenerators',
   'functionBind',
   'functionSent',
+  'dynamicImport',
 ];
 const PARSE_JS_PLUGINS = ['flow', ...PARSE_PLUGINS];
 const PARSE_TS_PLUGINS = ['typescript', ...PARSE_PLUGINS];
@@ -24,21 +25,28 @@ const PARSE_TS_PLUGINS = ['typescript', ...PARSE_PLUGINS];
 export function getPackages(fileName, source, language) {
   const packages = [];
   const visitor = {
-    ImportDeclaration(path) {
+    ImportDeclaration({ node }) {
       packages.push({
         fileName,
-        name: path.node.source.value,
-        line: path.node.loc.end.line,
-        string: compileImportString(path.node),
+        name: node.source.value,
+        line: node.loc.end.line,
+        string: compileImportString(node),
       });
     },
-    CallExpression(path) {
-      if (path.node.callee.name === 'require') {
+    CallExpression({ node }) {
+      if (node.callee.name === 'require') {
         packages.push({
           fileName,
-          name: getPackageName(path.node),
-          line: path.node.loc.end.line,
-          string: compileRequireString(path.node),
+          name: getPackageName(node),
+          line: node.loc.end.line,
+          string: compileRequireString(node),
+        });
+      } else if (node.callee.type === 'Import') {
+        packages.push({
+          fileName,
+          name: getPackageName(node),
+          line: node.loc.end.line,
+          string: compileImportExpressionString(node),
         });
       }
     },
@@ -110,6 +118,10 @@ function compileImportString(node) {
 
 function compileRequireString(node) {
   return `require('${getPackageName(node)}')`;
+}
+
+function compileImportExpressionString(node) {
+  return `import('${getPackageName(node)}').then(res => console.log(res));`;
 }
 
 function getPackageName(node) {

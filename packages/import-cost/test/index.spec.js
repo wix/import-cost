@@ -8,7 +8,7 @@ import { clearSizeCache, cacheFileName } from '../src/packageInfo';
 import { DebounceError } from '../src/debouncePromise';
 
 const DEFAULT_CONFIG = {
-  concurrent: false
+  concurrent: false,
 };
 const workingFolder =
   typeof wallaby !== 'undefined'
@@ -40,8 +40,8 @@ function importCost(fileName, language = undefined, config = DEFAULT_CONFIG) {
   language = language
     ? language
     : fileName.split('.').pop() === 'js'
-      ? JAVASCRIPT
-      : TYPESCRIPT;
+    ? JAVASCRIPT
+    : TYPESCRIPT;
   return runner(fileName, fs.readFileSync(fileName, 'utf-8'), language, config);
 }
 
@@ -58,7 +58,7 @@ async function test(fileName, pkg = 'chai', minSize = 10000, maxSize = 15000) {
   expect(sizeOf(packages, pkg)).to.be.within(minSize, maxSize);
   expect(gzipOf(packages, pkg)).to.be.within(
     sizeOf(packages, pkg) / 50,
-    sizeOf(packages, pkg) / 1.5,
+    sizeOf(packages, pkg) / 1.5
   );
 }
 
@@ -146,52 +146,71 @@ describe('importCost', () => {
   it('supports a monorepo-like structure with scoped module', () =>
     test('./yarn-workspace/import-with-scope.js', '@angular/core'));
   it('supports a monorepo-like structure with scoped module and file name', () =>
-    test('./yarn-workspace/import-with-scope-filename.js', '@angular/core/index.js'));
+    test(
+      './yarn-workspace/import-with-scope-filename.js',
+      '@angular/core/index.js'
+    ));
+  it('calculates size of a dynamic import in javascript', () =>
+    test('dynamic-import.js'));
+  it('calculates size of a dynamic import in typescript', () =>
+    test('dynamic-import.ts'));
 
   it('caches the results import string & version', async () => {
     expect(await timed(() => test('import.js'))).to.be.within(100, 1500);
     expect(await timed(() => test('import-specifiers.js'))).to.be.within(
       100,
-      1500,
+      1500
     );
     expect(await timed(() => test('import.ts'))).to.be.within(0, 100);
   });
   it('ignores order of javascript imports for caching purposes', async () => {
     expect(await timed(() => test('import-specifiers.js'))).to.be.within(
       100,
-      1500,
+      1500
     );
     expect(
-      await timed(() => test('import-specifiers-reversed.js')),
+      await timed(() => test('import-specifiers-reversed.js'))
     ).to.be.within(0, 100);
     expect(await timed(() => test('import-mixed.js'))).to.be.within(100, 1500);
     expect(await timed(() => test('import-mixed-reversed.js'))).to.be.within(
       0,
-      100,
+      120
     );
   });
   it('ignores order of typescript imports for caching purposes', async () => {
     expect(await timed(() => test('import-specifiers.ts'))).to.be.within(
       100,
-      1500,
+      1500
     );
     expect(
-      await timed(() => test('import-specifiers-reversed.ts')),
+      await timed(() => test('import-specifiers-reversed.ts'))
     ).to.be.within(0, 100);
     expect(await timed(() => test('import-mixed.ts'))).to.be.within(100, 1500);
     expect(await timed(() => test('import-mixed-reversed.ts'))).to.be.within(
       0,
-      100,
+      100
     );
   });
   it('debounce any consecutive calculations of same import line', () => {
     const p1 = expect(
-      whenDone(runner(fixture('import.js'), 'import "chai";', JAVASCRIPT, DEFAULT_CONFIG)),
+      whenDone(
+        runner(
+          fixture('import.js'),
+          'import "chai";',
+          JAVASCRIPT,
+          DEFAULT_CONFIG
+        )
+      )
     ).to.be.rejectedWith(DebounceError);
     const p2 = expect(
       whenDone(
-        runner(fixture('import.js'), 'import "chai/index";', JAVASCRIPT, DEFAULT_CONFIG),
-      ),
+        runner(
+          fixture('import.js'),
+          'import "chai/index";',
+          JAVASCRIPT,
+          DEFAULT_CONFIG
+        )
+      )
     ).to.be.fulfilled;
     return Promise.all([p1, p2]);
   });
@@ -199,7 +218,7 @@ describe('importCost', () => {
     expect(await timed(() => test('import.js'))).to.be.within(100, 1500);
     expect(await timed(() => test('import-specifiers.js'))).to.be.within(
       100,
-      1500,
+      1500
     );
     fs.renameSync(cacheFileName, `${cacheFileName}.bak`);
     clearSizeCache();
@@ -230,7 +249,12 @@ describe('importCost', () => {
   });
 
   it('should handle timeouts gracefully', async () => {
-    const packages = await whenDone(importCost(fixture('require.js'), JAVASCRIPT, { concurrent: true, maxCallTime: 10 }));
+    const packages = await whenDone(
+      importCost(fixture('require.js'), JAVASCRIPT, {
+        concurrent: true,
+        maxCallTime: 10,
+      })
+    );
     expect(packages[0].size).to.equal(0);
     expect(packages[0].error.type).to.equal('TimeoutError');
   });

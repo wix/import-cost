@@ -78,12 +78,17 @@ function calcSize(packageInfo, callback) {
     if (err || stats.toJson().errors.length > 0) {
       callback({ err: err || stats.toJson().errors });
     } else {
-      const size = stats
+      const bundles = stats
         .toJson()
-        .assets.filter(x => x.name === 'bundle.js')
-        .pop().size;
-      const bundle = path.join(process.cwd(), 'dist', 'bundle.js');
-      const gzip = gzipSync(memoryFileSystem.readFileSync(bundle), {}).length;
+        .assets.filter(asset => asset.name.includes('bundle.js'));
+      const size = bundles.reduce((sum, pkg) => sum + pkg.size, 0);
+      const gzip = bundles
+        .map(bundle => path.join(process.cwd(), 'dist', bundle.name))
+        .map(
+          bundleFile =>
+            gzipSync(memoryFileSystem.readFileSync(bundleFile), {}).length,
+        )
+        .reduce((sum, gzipSize) => sum + gzipSize, 0);
       callback(null, { size, gzip });
     }
   });
