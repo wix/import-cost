@@ -1,5 +1,11 @@
 # Changes
 
+## 2.12.0
+- Add support for dynamic imports
+
+## 2.11.1
+- Fix configuration description
+
 ## 2.11.0
 - Ability to toggle the extension
 - Support monorepo structure
