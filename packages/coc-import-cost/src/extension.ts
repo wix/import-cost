@@ -1,6 +1,6 @@
 import {cleanup} from 'import-cost';
 import {ExtensionContext, languages, commands} from 'coc.nvim';
-import ImportCostCodeLensProvider from './decorator';
+import ImportCostCodeLensProvider from './codeLensProvider';
 import logger from './logger';
 
 let active = true;
