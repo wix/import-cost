@@ -5,6 +5,7 @@
   "license": "MIT",
   "version": "1.0.0",
   "publisher": "wix",
+  "files": ["src", "lib"],
   "categories": ["Other"],
   "activationEvents": [
     "onLanguage:javascript",
