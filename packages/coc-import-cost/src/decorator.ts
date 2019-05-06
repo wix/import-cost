@@ -8,9 +8,6 @@ import {
 import fileSize from 'filesize';
 import logger from './logger';
 
-const calculatedCodeLens = {};
-const emitters = {};
-
 function language(doc) {
   const fileName = doc.uri;
   const languageId = doc.fileType;
@@ -82,60 +79,24 @@ export default class ImportCostCodeLensProvider implements CodeLensProvider {
 
       const fileName = getFileName(document.uri);
       const {timeout} = workspace.getConfiguration('importCost');
-      calculatedCodeLens[fileName] = {};
       try {
-        emitters[fileName] = importCost(
+        const emitter = importCost(
           fileName,
           document.getText(),
           language(document),
           {concurrent: true, maxCallTime: timeout}
         );
 
-        emitters[fileName].on('start', packages => {
-          try {
-            flushCodeLens(fileName, packages);
-            packages.forEach(packageInfo => {
-              if (packageInfo.size === undefined) {
-                const configuration = workspace.getConfiguration('importCost');
-                if (configuration.showCalculatingDecoration) {
-                  makeCodeLens('Calculating...', packageInfo);
-                }
-              } else {
-                calculated(packageInfo);
-              }
-            });
-          } catch (e) {
-            logger.log(`Exception in start emitter: ${e}`);
-          }
-        });
-
-        emitters[fileName].on('calculated', packageInfo => {
-          try {
-            logger.log(
-              `calculated ${packageInfo.name}: ${JSON.stringify(
-                packageInfo,
-                null,
-                2
-              )}`
-            );
-            const {fileName: pkgInfoFileName, line} = packageInfo;
-            calculatedCodeLens[pkgInfoFileName][line] = getDecorationMessage(
-              packageInfo
-            );
-          } catch (e) {
-            logger.log(`Exception in calculated emitter: ${e}`);
-          }
-        });
-
-        emitters[fileName].on('done', packages => {
+        emitter.on('done', packages => {
           try {
             const imports = packages.filter(pkg => pkg.size > 0).map(pkg => {
               logger.log(
                 `done with ${pkg.name}: ${JSON.stringify(pkg, null, 2)}`
               );
-              return makeCodeLens(getDecorationMessage(pkg), pkg);
+              return calculated(pkg);
             });
 
+            logger.log(`resolving promise with: ${JSON.stringify({imports}, null, 2)}`);
             resolve(imports);
           } catch (e) {
             logger.log(`Exception in done emitter: ${e}`);
@@ -143,7 +104,7 @@ export default class ImportCostCodeLensProvider implements CodeLensProvider {
           }
         });
 
-        emitters[fileName].on('error', e => {
+        emitter.on('error', e => {
           logger.log(
             `error while calculating import costs for ${fileName}: ${e}`
           );
@@ -158,10 +119,14 @@ export default class ImportCostCodeLensProvider implements CodeLensProvider {
     codeLens: CodeLens,
     token: CancellationToken
   ): Promise<CodeLens> {
-    const fileName = codeLens.data.fileName;
-
-    return calculatedCodeLens[fileName][codeLens.range.start.line];
+    return Promise.resolve(codeLens);
   }
+}
+
+function calculated(packageInfo) {
+  const decorationMessage = getDecorationMessage(packageInfo);
+
+  return makeCodeLens(decorationMessage, packageInfo);
 }
 
 function makeCodeLens(text, packageInfo) {
@@ -175,28 +140,6 @@ function makeCodeLens(text, packageInfo) {
     range: {start: position, end: position},
     data: {fileName}
   };
-  calculatedCodeLens[fileName][line] = codeLens;
+
   return codeLens;
-}
-
-export function calculated(packageInfo) {
-  const decorationMessage = getDecorationMessage(packageInfo);
-  makeCodeLens(decorationMessage, packageInfo);
-}
-
-export function flushCodeLens(fileName, packages?) {
-  logger.log(`Flushing decorations ${JSON.stringify(packages, null, 2)}`);
-  calculatedCodeLens[fileName] = {};
-  if (packages) {
-    packages.forEach(packageInfo => {
-      if (packageInfo.size === undefined) {
-        const configuration = workspace.getConfiguration('importCost');
-        if (configuration.showCalculatingDecoration) {
-          makeCodeLens('Calculating...', packageInfo);
-        }
-      } else {
-        calculated(packageInfo);
-      }
-    });
-  }
 }
