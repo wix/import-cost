@@ -15,6 +15,7 @@ Enjoy!
 
 * [Jetbrains IDE Plugin](https://github.com/denofevil/import-cost)
 * [Atom Package](https://atom.io/packages/import-cost-atom)
+* [Vim Plugin](https://github.com/wix/import-cost/tree/master/packages/coc-import-cost) ([coc.nvim](https://github.com/neoclide/coc.nvim) extension)
 * [Vim Plugin](https://github.com/yardnsm/vim-import-cost)
 
 

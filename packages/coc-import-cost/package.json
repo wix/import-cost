@@ -1,0 +1,105 @@
+{
+  "name": "coc-import-cost",
+  "displayName": "Import Cost",
+  "description": "Display import/require package size in the editor",
+  "license": "MIT",
+  "version": "1.0.0",
+  "publisher": "wix",
+  "categories": ["Other"],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:javascript.jsx",
+    "onLanguage:typescript",
+    "onLanguage:typescript.tsx",
+    "onLanguage:typescript.jsx",
+    "onLanguage:typescriptreact"
+  ],
+  "keywords": ["coc.nvim", "import", "require", "size", "weight", "webpack"],
+  "main": "./lib/extension.js",
+  "engines": {
+    "coc": "^0.0.66"
+  },
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Import Cost configuration",
+      "properties": {
+        "importCost.typescriptExtensions": {
+          "type": "array",
+          "default": ["\\.tsx?$"],
+          "description": "File extensions to be parsed by the Typescript parser"
+        },
+        "importCost.javascriptExtensions": {
+          "type": "array",
+          "default": ["\\.jsx?$"],
+          "description": "File extensions to be parsed by the Javascript parser"
+        },
+        "importCost.bundleSizeDecoration": {
+          "type": "string",
+          "default": "both",
+          "enum": ["both", "minified", "gzipped"],
+          "description": "Which bundle size to display"
+        },
+        "importCost.showCalculatingDecoration": {
+          "type": "boolean",
+          "default": true,
+          "description":
+            "Display the 'calculating' decoration when starting to calculate the size"
+        },
+        "importCost.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug logging"
+        },
+        "importCost.timeout": {
+          "type": "number",
+          "default": 10000,
+          "description":
+            "Size calculation timeout in milliseconds (requires restart)"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "importCost.toggle",
+        "title": "Toggle import cost"
+      }
+    ]
+  },
+  "scripts": {
+    "coc:prepublish": "tslint {src,test}/**/*.ts && tsc -p ./",
+    "compile": "tslint {src,test}/**/*.ts && tsc -watch -p ./",
+    "pretest": "npm run coc:prepublish",
+    "precommit": "npm run coc:prepublish",
+    "prebublish": "npm run coc:prepublish",
+    "test": ":",
+    "build": ":"
+  },
+  "devDependencies": {
+    "@chemzqm/tsconfig": "0.0.3",
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "coc.nvim": "^0.0.66",
+    "husky": "^0.14.3",
+    "mocha": "^2.3.3",
+    "tslint": "^5.5.0",
+    "tslint-config-wix": "^1.0.25",
+    "typescript": "3.4.5"
+  },
+  "dependencies": {
+    "filesize": "^3.5.10",
+    "import-cost": "^1.8.0"
+  },
+  "icon": "images/import-cost-logo.png",
+  "galleryBanner": {
+    "color": "#1C78C0",
+    "theme": "dark"
+  },
+  "homepage":
+    "https://github.com/wix/import-cost/blob/master/packages/coc-import-cost/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wix/import-cost.git"
+  }
+}
