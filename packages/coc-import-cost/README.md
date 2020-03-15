@@ -6,7 +6,8 @@ The extension utilizes webpack with babili-webpack-plugin in order to detect the
 
 ## Requirements
 
-This is an extension for [coc.nvim](https://github.com/neoclide/coc.nvim) and requires that it be installed first.
+- This is an extension for [coc.nvim](https://github.com/neoclide/coc.nvim) and requires that it be installed first.
+- Your project must use webpack already, i.e.: it won't work with a pure Node project.
 
 ## Installation
 
