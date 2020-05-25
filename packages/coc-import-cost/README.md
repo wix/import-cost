@@ -16,6 +16,11 @@ Once you have `coc.nvim` installed, open Vim/Neovim, and execute:
 :CocInstall coc-import-cost
 ```
 
+You'll also need to enable the code lens feature in coc (`:CocConfig`):
+```
+"codeLens.enable": true
+```
+
 ## Features
 
 Calculates the size of imports and requires.
