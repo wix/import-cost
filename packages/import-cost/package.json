@@ -38,11 +38,11 @@
     "yoshi": "^3.20.2"
   },
   "dependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/parser": "^7.0.0",
-    "@babel/runtime": "^7.0.0",
-    "@babel/traverse": "^7.0.0",
-    "@babel/types": "^7.0.0",
+    "@babel/core": "^7.12.9",
+    "@babel/parser": "^7.12.7",
+    "@babel/runtime": "^7.12.5",
+    "@babel/traverse": "^7.12.9",
+    "@babel/types": "^7.12.7",
     "babili-webpack-plugin": "^0.1.2",
     "css-loader": "^0.28.4",
     "file-loader": "^0.11.2",
