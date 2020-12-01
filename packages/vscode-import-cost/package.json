@@ -125,7 +125,7 @@
   },
   "dependencies": {
     "filesize": "^3.5.10",
-    "import-cost": "^1.8.0"
+    "import-cost": "^1.9.0"
   },
   "icon": "images/import-cost-logo.png",
   "galleryBanner": {
