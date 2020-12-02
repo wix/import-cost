@@ -68,6 +68,7 @@ function calcSize(packageInfo, callback) {
     externals,
     output: {
       filename: 'bundle.js',
+      libraryTarget: 'commonjs2',
     },
   });
 
