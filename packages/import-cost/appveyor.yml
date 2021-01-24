@@ -5,3 +5,8 @@ environment:
 platform:
   - x86
   - x64
+
+install:
+  # https://www.appveyor.com/docs/lang/nodejs-iojs/#installing-any-version-of-nodejs-or-iojs
+  - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:PLATFORM
+  - npm install
