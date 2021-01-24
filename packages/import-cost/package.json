@@ -43,14 +43,13 @@
     "@babel/runtime": "^7.12.5",
     "@babel/traverse": "^7.12.9",
     "@babel/types": "^7.12.7",
-    "babili-webpack-plugin": "^0.1.2",
     "css-loader": "^0.28.4",
     "file-loader": "^0.11.2",
     "memory-fs": "^0.4.1",
     "pkg-dir": "^2.0.0",
     "tempy": "^0.2.1",
     "url-loader": "^0.5.9",
-    "webpack": "^4",
+    "webpack": "^5",
     "worker-farm": "^1.4.1"
   },
   "babel": {

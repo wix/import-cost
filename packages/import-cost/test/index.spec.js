@@ -53,12 +53,17 @@ function gzipOf(packages, name) {
   return packages.filter(x => x.name === name).shift().gzip;
 }
 
-async function test(fileName, pkg = 'chai', minSize = 10000, maxSize = 15000) {
-  const packages = await whenDone(importCost(fixture(fileName)));
-  expect(sizeOf(packages, pkg)).to.be.within(minSize, maxSize);
+function getPackages(fileName) {
+  return whenDone(importCost(fixture(fileName)));
+}
+
+async function test(fileName, pkg = 'chai', minSize = 10000, maxSize = 15000, gzipLowBound = 0.01, gzipHighBound = 0.8) {
+  const packages = await getPackages(fileName);
+  const size = sizeOf(packages, pkg);
+  expect(size).to.be.within(minSize, maxSize);
   expect(gzipOf(packages, pkg)).to.be.within(
-    sizeOf(packages, pkg) / 50,
-    sizeOf(packages, pkg) / 1.5
+    size * gzipLowBound,
+    size * gzipHighBound
   );
 }
 
@@ -100,8 +105,8 @@ describe('importCost', () => {
     test('import-legacy.js'));
   it('calculates size of legacy import in typescript', () =>
     test('import-legacy.ts'));
-  it('calculates size of node import in javascript', () =>
-    test('import-node.js', 'node-stuff'));
+  it('doesnt calculate size of node import in javascript', () =>
+    test('import-node.js', 'node-stuff', 0, 0));
   it('calculates size of namespace import in javascript', () =>
     test('import-namespace.js'));
   // yoshi uses babel 6 which does not support shorthand react fragments <> </>
@@ -130,17 +135,17 @@ describe('importCost', () => {
   it('calculates size of scoped import in typescript', () =>
     test('import-scoped.ts', '@angular/core'));
   it('calculates size of shaken import in javascript', () =>
-    test('import-shaken.js', 'react', 500, 1200));
+    test('import-shaken.js', 'react', 50, 100, 1, 1.5)); // gzip actually increases the size because of overhead
   it('calculates size of shaken import in typescript', () =>
-    test('import-shaken.ts', 'react', 500, 1200));
+    test('import-shaken.ts', 'react', 50, 100, 1, 1.5)); // gzip actually increases the size because of overhead
   it('calculates size of production env import in javascript', () =>
-    test('import-env.js', 'react-dom', 500, 1200));
+    test('import-env.js', 'react-dom', 50, 100, 1, 1.5)); // gzip actually increases the size because of overhead
   it('calculates size of production env import in typescript', () =>
-    test('import-env.ts', 'react-dom', 500, 1200));
+    test('import-env.ts', 'react-dom', 50, 100, 1, 1.5)); // gzip actually increases the size because of overhead
   it('calculates size without externals', () =>
-    test('import-externals.js', 'wix-style', 500, 1200));
+    test('import-externals.js', 'wix-style', 200, 300));
   it('calculates size without peerDependencies', () =>
-    test('import-peer.js', 'haspeerdeps', 0, 1200));
+    test('import-peer.js', 'haspeerdeps', 0, 100, 1, 1.5)); // gzip actually increases the size because of overhead
   it('supports a monorepo-like structure', () =>
     test('./yarn-workspace/import-nested-project.js', 'chai'));
   it('supports a monorepo-like structure with scoped module', () =>
