@@ -10,8 +10,8 @@
   ],
   "scripts": {
     "build": "rm -rf dist && babel src -d dist",
+    "pretest": "npm run build",
     "test": "ts-mocha -p tsconfig.test.json test/mocha-setup.js test/**/*.spec.ts",
-    "posttest": ":",
     "prepare": "npm test"
   },
   "repository": {
