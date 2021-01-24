@@ -6,9 +6,11 @@ import { expect } from 'chai';
 import { importCost as runner, cleanup, JAVASCRIPT, TYPESCRIPT } from '../src';
 import { clearSizeCache, cacheFileName } from '../src/packageInfo';
 import { DebounceError } from '../src/debouncePromise';
+declare var wallaby: any;
 
 const DEFAULT_CONFIG = {
   concurrent: false,
+  maxCallTime: Infinity
 };
 const workingFolder =
   typeof wallaby !== 'undefined'
