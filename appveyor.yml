@@ -1,5 +1,5 @@
 install:
-  - ps: Install-Product node 8.9.1 x64
+  - ps: Install-Product node 12.20.0 x64
 
 build_script:
   - npm install
