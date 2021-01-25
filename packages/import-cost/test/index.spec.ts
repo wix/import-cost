@@ -137,17 +137,17 @@ describe('importCost', () => {
   it('calculates size of scoped import in typescript', () =>
     test('import-scoped.ts', '@angular/core'));
   it('calculates size of shaken import in javascript', () =>
-    test('import-shaken.js', 'react', 50, 100, 1, 1.5)); // gzip actually increases the size because of overhead
+    test('import-shaken.js', 'react', 350, 450));
   it('calculates size of shaken import in typescript', () =>
-    test('import-shaken.ts', 'react', 50, 100, 1, 1.5)); // gzip actually increases the size because of overhead
+    test('import-shaken.ts', 'react', 350, 450));
   it('calculates size of production env import in javascript', () =>
-    test('import-env.js', 'react-dom', 50, 100, 1, 1.5)); // gzip actually increases the size because of overhead
+    test('import-env.js', 'react-dom', 350, 450));
   it('calculates size of production env import in typescript', () =>
-    test('import-env.ts', 'react-dom', 50, 100, 1, 1.5)); // gzip actually increases the size because of overhead
+    test('import-env.ts', 'react-dom', 350, 450));
   it('calculates size without externals', () =>
-    test('import-externals.js', 'wix-style', 200, 300));
+    test('import-externals.js', 'wix-style', 350, 450));
   it('calculates size without peerDependencies', () =>
-    test('import-peer.js', 'haspeerdeps', 0, 100, 1, 1.5)); // gzip actually increases the size because of overhead
+    test('import-peer.js', 'haspeerdeps', 350, 450));
   it('supports a monorepo-like structure', () =>
     test('./yarn-workspace/import-nested-project.js', 'chai'));
   it('supports a monorepo-like structure with scoped module', () =>
