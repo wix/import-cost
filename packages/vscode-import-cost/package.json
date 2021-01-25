@@ -1,31 +1,31 @@
 {
-  "name": "vscode-import-cost",
-  "displayName": "Import Cost",
-  "description": "Display import/require package size in the editor",
-  "license": "MIT",
-  "version": "2.13.0",
-  "publisher": "wix",
-  "engines": {
+	"name": "vscode-import-cost",
+	"displayName": "Import Cost",
+	"description": "Display import/require package size in the editor",
+	"license": "MIT",
+	"version": "2.13.0",
+	"publisher": "wix",
+	"engines": {
 		"vscode": "^1.52.0"
 	},
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onLanguage:javascript",
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onLanguage:javascript",
     "onLanguage:javascriptreact",
     "onLanguage:typescript",
     "onLanguage:typescriptreact"
-  ],
-  "keywords": [
+	],
+	"keywords": [
     "import",
     "require",
     "size",
     "weight",
     "webpack"
   ],
-  "main": "./out/src/extension",
-  "contributes": {
+	"main": "./out/extension.js",
+	"contributes": {
     "configuration": {
       "type": "object",
       "title": "Import Cost configuration",
@@ -103,39 +103,26 @@
       }
     ]
   },
-  "scripts": {
-    "vscode:prepublish": "tsc -p ./",
-    "old:vscode:prepublish": "tslint {src,test}/**/*.ts && tsc -p ./",
-    "compile": "tsc -watch -p ./",
-    "old:compile": "tslint {src,test}/**/*.ts && tsc -watch -p ./",
-    "pretest": "npm run vscode:prepublish",
-    "precommit": "npm run vscode:prepublish",
-    "prebublish": "npm run vscode:prepublish",
-    "test": ":",
-    "build": ":"
-  },
-  "devDependencies": {
-    "@types/mocha": "^2.2.32",
-    "@types/node": "^12.11.7",
-    "@types/vscode": "^1.52.0",
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": ":"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.52.0",
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.0",
+		"@types/node": "^14.0.27",
+		"eslint": "^7.6.0",
+		"@typescript-eslint/eslint-plugin": "^3.8.0",
+		"@typescript-eslint/parser": "^3.8.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.1.3",
+		"vscode-test": "^1.4.0",
     "husky": "^0.14.3",
-    "mocha": "^2.3.3",
-    "tslint": "^5.5.0",
-    "tslint-config-wix": "^1.0.25",
     "typescript": "^4.1.3"
-  },
-  "dependencies": {
-    "filesize": "^3.5.10",
-    "import-cost": "^1.9.0"
-  },
-  "icon": "images/import-cost-logo.png",
-  "galleryBanner": {
-    "color": "#1C78C0",
-    "theme": "dark"
-  },
-  "homepage": "https://github.com/wix/import-cost/blob/master/packages/vscode-import-cost/README.md",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wix/import-cost.git"
-  }
+	}
 }
