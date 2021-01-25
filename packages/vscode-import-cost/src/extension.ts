@@ -1,5 +1,5 @@
 import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT} from 'import-cost';
-import {ExtensionContext, window, workspace, commands} from 'vscode';
+import {ExtensionContext, TextDocument, window, workspace, commands} from 'vscode';
 import {calculated, flushDecorations, clearDecorations} from './decorator';
 import logger from './logger';
 
@@ -34,7 +34,7 @@ export function deactivate() {
 }
 
 let emitters = {};
-async function processActiveFile(document) {
+async function processActiveFile(document: TextDocument) {
   if (document && language(document)) {
     const {fileName} = document;
     if (emitters[fileName]) {

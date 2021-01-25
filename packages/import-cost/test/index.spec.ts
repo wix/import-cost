@@ -136,6 +136,10 @@ describe('importCost', () => {
     test('import-scoped.js', '@angular/core'));
   it('calculates size of scoped import in typescript', () =>
     test('import-scoped.ts', '@angular/core'));
+  it('calculates size of scoped esm import in javascript', () =>
+    test('import-scoped-esm.js', '@angular/core/esm'));
+  it('calculates size of scoped esm import in typescript', () =>
+    test('import-scoped-esm.ts', '@angular/core/esm'));
   it('calculates size of shaken import in javascript', () =>
     test('import-shaken.js', 'react', 350, 450));
   it('calculates size of shaken import in typescript', () =>
