@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { expect } from 'chai';
-import { importCost as runner, cleanup, JAVASCRIPT, TYPESCRIPT } from '../src';
+import { importCost as runner, cleanup, JAVASCRIPT, TYPESCRIPT, VUE } from '../src';
 import { clearSizeCache, cacheFileName } from '../src/packageInfo';
 import { DebounceError } from '../src/debouncePromise';
 declare var wallaby: any;
@@ -38,12 +38,17 @@ function whenDone(emitter) {
   });
 }
 
-function importCost(fileName, language = undefined, config = DEFAULT_CONFIG) {
-  language = language
-    ? language
-    : fileName.split('.').pop() === 'js'
-    ? JAVASCRIPT
-    : TYPESCRIPT;
+const LANGUAGES = {
+  ts: TYPESCRIPT,
+  js: JAVASCRIPT,
+  vue: VUE
+}
+
+function importCost(fileName, language = null, config = DEFAULT_CONFIG) {
+  if (!language) {
+    const extension = fileName.split('.').pop();
+    language = LANGUAGES[extension];
+  }
   return runner(fileName, fs.readFileSync(fileName, 'utf-8'), language, config);
 }
 
@@ -165,6 +170,8 @@ describe('importCost', () => {
     test('dynamic-import.js'));
   it('calculates size of a dynamic import in typescript', () =>
     test('dynamic-import.ts'));
+  it('calculates size of a vue script', () =>
+    test('vue.vue'));
 
   it('caches the results import string & version', async () => {
     expect(await timed(() => test('import.js'))).to.be.within(100, 1500);
