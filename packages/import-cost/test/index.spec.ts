@@ -254,11 +254,15 @@ describe('importCost', () => {
   });
 
   it('errors on broken javascript', () => {
-    return expect(whenDone(importCost(fixture('incomplete.bad_js')))).to.be
+    return expect(whenDone(importCost(fixture('incomplete.bad.js')))).to.be
       .rejected;
   });
   it('errors on broken typescript', () => {
-    return expect(whenDone(importCost(fixture('incomplete.bad_ts')))).to.be
+    return expect(whenDone(importCost(fixture('incomplete.bad.ts')))).to.be
+      .rejected;
+  });
+  it('errors on broken vue', () => {
+    return expect(whenDone(importCost(fixture('incomplete.bad.vue')))).to.be
       .rejected;
   });
   it('completes with empty array for unknown file type', async () => {
