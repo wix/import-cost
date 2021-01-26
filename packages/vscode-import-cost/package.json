@@ -16,7 +16,8 @@
     "onLanguage:javascriptreact",
     "onLanguage:typescript",
     "onLanguage:typescriptreact",
-    "onLanguage:vue"
+    "onLanguage:vue",
+    "onLanguage:svelte"
 	],
 	"keywords": [
     "import",
@@ -76,6 +77,13 @@
             "\\.vue$"
           ],
           "description": "File extensions to be parsed by the Vue parser"
+        },
+        "importCost.svelteExtensions": {
+          "type": "array",
+          "default": [
+            "\\.svelte$"
+          ],
+          "description": "File extensions to be parsed by the Svelte parser"
         },
         "importCost.bundleSizeDecoration": {
           "type": "string",

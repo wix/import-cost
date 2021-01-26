@@ -1,4 +1,4 @@
-import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT, VUE} from 'import-cost';
+import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT, VUE, SVELTE} from 'import-cost';
 import {ExtensionContext, TextDocument, window, workspace, commands} from 'vscode';
 import {calculated, flushDecorations, clearDecorations} from './decorator';
 import logger from './logger';
@@ -50,12 +50,17 @@ async function processActiveFile(document: TextDocument) {
 }
 
 function language({fileName, languageId}) {
+  if (languageId === 'Log') {
+    return;
+  }
   const configuration = workspace.getConfiguration('importCost');
   const typescriptRegex = new RegExp(configuration.typescriptExtensions.join('|'));
   const javascriptRegex = new RegExp(configuration.javascriptExtensions.join('|'));
   const vueRegex = new RegExp(configuration.vueExtensions.join('|'));
-  if (languageId === 'vue' || vueRegex.test(fileName)) {
-    logger.log(`DETECTED VUE`);
+  const svelteRegex = new RegExp(configuration.svelteExtensions.join('|'));
+  if (languageId === 'svelte' || svelteRegex.test(fileName)) {
+    return SVELTE;
+  } else if (languageId === 'vue' || vueRegex.test(fileName)) {
     return VUE;
   } else if (languageId === 'typescript' || languageId === 'typescriptreact' || typescriptRegex.test(fileName)) {
     return TYPESCRIPT;
