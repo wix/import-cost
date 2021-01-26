@@ -15,7 +15,8 @@
 		"onLanguage:javascript",
     "onLanguage:javascriptreact",
     "onLanguage:typescript",
-    "onLanguage:typescriptreact"
+    "onLanguage:typescriptreact",
+    "onLanguage:vue"
 	],
 	"keywords": [
     "import",
@@ -68,6 +69,13 @@
             "\\.jsx?$"
           ],
           "description": "File extensions to be parsed by the Javascript parser"
+        },
+        "importCost.vueExtensions": {
+          "type": "array",
+          "default": [
+            "\\.vue$"
+          ],
+          "description": "File extensions to be parsed by the Vue parser"
         },
         "importCost.bundleSizeDecoration": {
           "type": "string",

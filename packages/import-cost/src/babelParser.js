@@ -22,14 +22,14 @@ const PARSE_PLUGINS = [
 const PARSE_JS_PLUGINS = ['flow', ...PARSE_PLUGINS];
 const PARSE_TS_PLUGINS = ['typescript', ...PARSE_PLUGINS];
 
-export function getPackages(fileName, source, language) {
+export function getPackages(fileName, source, language, lineOffset = 0) {
   const packages = [];
   const visitor = {
     ImportDeclaration({ node }) {
       packages.push({
         fileName,
         name: node.source.value,
-        line: node.loc.end.line,
+        line: node.loc.end.line + lineOffset,
         string: compileImportString(node),
       });
     },
@@ -38,14 +38,14 @@ export function getPackages(fileName, source, language) {
         packages.push({
           fileName,
           name: getPackageName(node),
-          line: node.loc.end.line,
+          line: node.loc.end.line + lineOffset,
           string: compileRequireString(node),
         });
       } else if (node.callee.type === 'Import') {
         packages.push({
           fileName,
           name: getPackageName(node),
-          line: node.loc.end.line,
+          line: node.loc.end.line + lineOffset,
           string: compileImportExpressionString(node),
         });
       }
