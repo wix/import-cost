@@ -6,6 +6,7 @@ import { expect } from 'chai';
 import { importCost as runner, cleanup, JAVASCRIPT, TYPESCRIPT, VUE } from '../src';
 import { clearSizeCache, cacheFileName } from '../src/packageInfo';
 import { DebounceError } from '../src/debouncePromise';
+import { SVELTE } from '../src/parser';
 declare var wallaby: any;
 
 const DEFAULT_CONFIG = {
@@ -41,7 +42,8 @@ function whenDone(emitter) {
 const LANGUAGES = {
   ts: TYPESCRIPT,
   js: JAVASCRIPT,
-  vue: VUE
+  vue: VUE,
+  svelte: SVELTE
 }
 
 function importCost(fileName, language = null, config = DEFAULT_CONFIG) {
@@ -172,6 +174,8 @@ describe('importCost', () => {
     test('dynamic-import.ts'));
   it('calculates size of a vue script', () =>
     test('vue.vue'));
+  it('calculates size of a svelte script', () =>
+    test('svelte.svelte'));
 
   it('caches the results import string & version', async () => {
     expect(await timed(() => test('import.js'))).to.be.within(100, 1500);

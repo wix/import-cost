@@ -2,7 +2,7 @@ import { getSize } from './packageInfo';
 import { getPackages } from './parser';
 import { EventEmitter } from 'events';
 
-export { TYPESCRIPT, JAVASCRIPT, VUE } from './parser';
+export { TYPESCRIPT, JAVASCRIPT, VUE, SVELTE } from './parser';
 export { cleanup } from './packageInfo';
 
 export function importCost(fileName, text, language, config = { maxCallTime: Infinity, concurrent: true }) {
