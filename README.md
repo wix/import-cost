@@ -2,8 +2,9 @@
 [![](https://vsmarketplacebadge.apphb.com/version/wix.vscode-import-cost.svg)](https://marketplace.visualstudio.com/items?itemName=wix.vscode-import-cost) [![](https://vsmarketplacebadge.apphb.com/installs/wix.vscode-import-cost.svg)](https://marketplace.visualstudio.com/items?itemName=wix.vscode-import-cost)
 
 This extension will display inline in the editor the size of the imported package.
-The extension utilizes webpack with babili-webpack-plugin in order to detect the imported size.
-![Example Image](https://file-wkbcnlcvbn.now.sh/import-cost.gif)
+The extension utilizes webpack in order to detect the imported size.
+
+![Example Image](https://citw.dev/_next/image?url=%2Fposts%2Fimport-cost%2F1quov3TFpgG2ur7myCLGtsA.gif&w=1080&q=75)
 
 This project includes implementation of:
  * Import Cost [VSCode extension](packages/vscode-import-cost) - install it from [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=wix.vscode-import-cost)
@@ -21,7 +22,7 @@ Enjoy!
 
 ## Why & How
 I detail the Why and How in this blog post:
-https://medium.com/@yairhaimo/keep-your-bundle-size-under-control-with-import-cost-vscode-extension-5d476b3c5a76
+https://citw.dev/posts/import-cost
 
 ## Developer guidelines
 
