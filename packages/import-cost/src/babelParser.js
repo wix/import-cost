@@ -26,12 +26,14 @@ export function getPackages(fileName, source, language, lineOffset = 0) {
   const packages = [];
   const visitor = {
     ImportDeclaration({ node }) {
-      packages.push({
-        fileName,
-        name: node.source.value,
-        line: node.loc.end.line + lineOffset,
-        string: compileImportString(node),
-      });
+      if (node.importKind !== 'type') {
+        packages.push({
+          fileName,
+          name: node.source.value,
+          line: node.loc.end.line + lineOffset,
+          string: compileImportString(node),
+        });
+      }
     },
     CallExpression({ node }) {
       if (node.callee.name === 'require') {
