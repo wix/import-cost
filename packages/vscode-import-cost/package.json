@@ -3,7 +3,7 @@
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
   "license": "MIT",
-  "version": "2.14.0",
+  "version": "2.15.0",
   "publisher": "wix",
   "engines": {
     "vscode": "^1.52.0"
