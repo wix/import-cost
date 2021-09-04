@@ -48,7 +48,7 @@ Thanks to lerna, we have a symbolic link in the `vscode-import-cost` node module
 
 ```sh
 $ ls -la packages/vscode-import-cost/node_modules | grep import-cost
-lrwxr-xr-x    1 shahart  staff    17 Aug  6 09:38 import-cost -> ../../import-cost
+lrwxr-xr-x    1 shahar  staff    17 Aug  6 09:38 import-cost -> ../../import-cost
 ```
 
 If anything goes wrong and link does not exist, just run the following commands at the root of this project and lerna will sort it out:
