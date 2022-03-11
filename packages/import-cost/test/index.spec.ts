@@ -148,17 +148,17 @@ describe('importCost', () => {
   it('calculates size of scoped esm import in typescript', () =>
     test('import-scoped-esm.ts', '@angular/core/esm'));
   it('calculates size of shaken import in javascript', () =>
-    test('import-shaken.js', 'react', 350, 450));
+    test('import-shaken.js', 'react', 200, 300));
   it('calculates size of shaken import in typescript', () =>
-    test('import-shaken.ts', 'react', 350, 450));
+    test('import-shaken.ts', 'react', 200, 300));
   it('calculates size of production env import in javascript', () =>
-    test('import-env.js', 'react-dom', 350, 450));
+    test('import-env.js', 'react-dom', 200, 300));
   it('calculates size of production env import in typescript', () =>
-    test('import-env.ts', 'react-dom', 350, 450));
+    test('import-env.ts', 'react-dom', 200, 300));
   it('calculates size without externals', () =>
-    test('import-externals.js', 'wix-style', 350, 450));
+    test('import-externals.js', 'wix-style', 200, 300));
   it('calculates size without peerDependencies', () =>
-    test('import-peer.js', 'haspeerdeps', 350, 450));
+    test('import-peer.js', 'haspeerdeps', 200, 300));
   it('supports a monorepo-like structure', () =>
     test('./yarn-workspace/import-nested-project.js', 'chai'));
   it('supports a monorepo-like structure with scoped module', () =>
