@@ -29,7 +29,7 @@ function calcSize(packageInfo, callback) {
 				'process.env.NODE_ENV': JSON.stringify('production'),
 			}),
 			new webpack.optimize.ModuleConcatenationPlugin(),
-			new webpack.IgnorePlugin(/^electron$/),
+			new webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }),
 		],
 		resolve: {
 			modules: [modulesDirectory, getPackageModuleContainer(packageInfo), 'node_modules'],
