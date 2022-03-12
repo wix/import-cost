@@ -26,7 +26,7 @@ https://citw.dev/posts/import-cost
 
 ## Developer guidelines
 
-In this project we use [lerna](https://lerna.js.org) for managing the multiple packages.
+In this project we use [npm workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces) for managing the multiple packages.
 
 ### Getting started
 
@@ -44,14 +44,14 @@ Once VSCode workspaces are open:
 
 ### Applying changes
 
-Thanks to lerna, we have a symbolic link in the `vscode-import-cost` node modules folder to the local `import-cost`, which makes applying changes very easy. You can verify that link exists by running the following command:
+Thanks to npm workspaces, we have a symbolic link in the `vscode-import-cost` node modules folder to the local `import-cost`, which makes applying changes very easy. You can verify that link exists by running the following command:
 
 ```sh
 $ ls -la packages/vscode-import-cost/node_modules | grep import-cost
 lrwxr-xr-x    1 shahar  staff    17 Aug  6 09:38 import-cost -> ../../import-cost
 ```
 
-If anything goes wrong and link does not exist, just run the following commands at the root of this project and lerna will sort it out:
+If anything goes wrong and link does not exist, just run the following commands at the root of this project and npm will sort it out:
 ```sh
 $ git clean -xdf
 $ npm install
@@ -82,7 +82,7 @@ $ git push
 $ git clean -xdf && npm install && vsce publish
 ```
 
-See how in the last step we had to clean everything and do a clean `npm install` in the extension folder? This is an important step so that `vsce publish` will bundle everything correctly when publishing the extension. After that's done, you'll need to run following command so that lerna will sort everything out again:
+See how in the last step we had to clean everything and do a clean `npm install` in the extension folder? This is an important step so that `vsce publish` will bundle everything correctly when publishing the extension. After that's done, you'll need to run following command so that npm will sort everything out again:
 ```
 $ cd ../..
 $ git clean -xdf

@@ -1,5 +1,2 @@
 lerna-debug.log
-old_packages
 node_modules
-**/dist
-**/out
