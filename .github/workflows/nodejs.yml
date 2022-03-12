@@ -2,7 +2,12 @@ name: build
 on: [push]
 jobs:
   test:
-    runs-on: ubuntu-latest
+    env:
+      CI: true
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
     - id: nvm
@@ -12,6 +17,7 @@ jobs:
         node-version: '${{ steps.nvm.outputs.NVMRC }}'
     - run: npm install
     - run: npm run lint
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
     - run: npm test
-      env:
-        CI: true
+      if: runner.os != 'Linux'
