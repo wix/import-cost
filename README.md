@@ -21,7 +21,7 @@ Enjoy!
 
 
 ## Why & How
-I detail the Why and How in this blog post:
+We detail the why and how in this blog post:
 https://citw.dev/posts/import-cost
 
 ## Developer guidelines

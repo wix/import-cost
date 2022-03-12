@@ -36,7 +36,7 @@ Currently supports:
 
 ## Why & How
 
-Yair details the Why and How in this blog post:
+We detail the why and how in this blog post:
 [https://medium.com/@yairhaimo/keep-your-bundle-size-under-control-with-import-cost-vscode-extension-5d476b3c5a76]()
 
 ## Configuration
