@@ -16,8 +16,8 @@ jobs:
       with:
         node-version: '${{ steps.nvm.outputs.NVMRC }}'
     - run: npm install
-    - run: npm run lint-all
-    - run: xvfb-run -a npm run test-all
+    - run: npm run lint
+    - run: xvfb-run -a npm run test
       if: matrix.os == 'ubuntu-latest'
-    - run: npm run test-all
+    - run: npm run test
       if: matrix.os != 'ubuntu-latest'

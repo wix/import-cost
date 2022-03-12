@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "lint-all": "eslint . && npm run lint --workspaces --if-present",
-    "test-all": "npm run test --workspaces --if-present"
+    "lint": "eslint . && npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
   },
   "devDependencies": {
     "eslint": "^8.3.0",
