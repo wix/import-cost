@@ -1,22 +1,17 @@
-import {OutputChannel, ExtensionContext, workspace} from 'coc.nvim';
+import {workspace, window} from 'coc.nvim';
 
 class Logger {
-  private channel: OutputChannel;
-  private context: ExtensionContext;
-  private debug: boolean = !!workspace.getConfiguration('importCost').debug;
+  private channel;
 
-  init(context: ExtensionContext) {
-    this.context = context;
-    if (this.debug) {
-      this.channel = workspace.createOutputChannel('ImportCost');
+  init(context) {
+    if (workspace.getConfiguration('importCost').debug) {
+      this.channel = window.createOutputChannel('ImportCost');
       context.subscriptions.push(this.channel);
     }
   }
 
   log(text: string) {
-    if (this.debug) {
-      this.channel.appendLine(text);
-    }
+    this.channel?.appendLine(text);
   }
 }
 

@@ -99,7 +99,7 @@ export default class ImportCostCodeLensProvider implements CodeLensProvider {
             resolve(imports);
           } catch (e) {
             logger.log(`Exception in done emitter: ${e}`);
-            resolve();
+            resolve([]);
           }
         });
 
@@ -109,7 +109,7 @@ export default class ImportCostCodeLensProvider implements CodeLensProvider {
           );
         });
       } catch (e) {
-        resolve();
+        resolve([]);
       }
     });
   }
