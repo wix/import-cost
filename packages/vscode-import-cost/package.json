@@ -132,7 +132,7 @@
     "@vscode/test-electron": "^2.1.2"
   },
   "dependencies": {
-    "filesize": "^3.5.10",
+    "filesize": "^8.0.7",
     "import-cost": "^3.0.0"
   },
   "icon": "images/import-cost-logo.png",
