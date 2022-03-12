@@ -87,10 +87,8 @@
     ]
   },
   "scripts": {
-    "lint": "tslint {src,test}/**/*.ts",
-    "compile": "tslint {src,test}/**/*.ts && tsc -watch -p ./",
-    "pretest": "tsc -p ./",
-    "test": ":"
+    "lint": "tslint {src,test}/**/*.ts && tsc -p ./",
+    "compile": "tslint {src,test}/**/*.ts && tsc -watch -p ./"
   },
   "devDependencies": {
     "@chemzqm/tsconfig": "0.0.3",
