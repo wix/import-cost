@@ -3,37 +3,36 @@ const fileSize = require('filesize');
 const logger = require('./logger');
 
 const decorations = {};
+const decorationType = window.createTextEditorDecorationType({
+  after: { margin: '0 0 0 1rem' },
+});
 
-function flushDecorations(fileName, packages) {
-  logger.log(`Flushing decorations ${JSON.stringify(packages, null, 2)}`);
+function setDecorations(fileName, packages) {
   decorations[fileName] = {};
-  packages.forEach(packageInfo => {
-    if (packageInfo.size === undefined) {
-      const configuration = workspace.getConfiguration('importCost');
-      if (configuration.showCalculatingDecoration) {
-        decorate('Calculating...', packageInfo);
-      }
-    } else {
-      calculated(packageInfo);
-    }
-  });
-  refreshDecorations(fileName);
+  packages.forEach(packageInfo => decorate(fileName, packageInfo));
+  flushDecorationsDebounced(fileName);
 }
 
-function calculated(packageInfo) {
-  const decorationMessage = getDecorationMessage(packageInfo);
-  decorate(
-    decorationMessage,
-    packageInfo,
-    getDecorationColor(packageInfo.size),
+function decorate(fileName, packageInfo) {
+  const { line } = packageInfo;
+  decorations[fileName][line] = packageInfo;
+}
+
+function calculated(fileName, packageInfo) {
+  logger.log(
+    `Calculated: ${JSON.stringify({
+      ...packageInfo,
+      ...(packageInfo.error ? { error: true } : {}),
+    })}`,
   );
+  decorate(fileName, packageInfo);
+  flushDecorationsDebounced(fileName);
 }
 
 function getDecorationMessage(packageInfo) {
-  if (packageInfo.size <= 0) {
-    return '';
+  if (!packageInfo) {
+    return 'Calculating...';
   }
-
   let decorationMessage;
   const configuration = workspace.getConfiguration('importCost');
   const size = fileSize(packageInfo.size, { unix: true });
@@ -48,8 +47,9 @@ function getDecorationMessage(packageInfo) {
   return decorationMessage;
 }
 
-function getDecorationColor(size) {
+function getDecorationColor(packageInfo) {
   const configuration = workspace.getConfiguration('importCost');
+  const size = packageInfo?.size || 0;
   const sizeInKB = size / 1024;
   if (sizeInKB < configuration.smallPackageSize) {
     return configuration.smallPackageColor;
@@ -60,53 +60,59 @@ function getDecorationColor(size) {
   }
 }
 
-function decorate(text, packageInfo, color = getDecorationColor(0)) {
-  const { fileName, line } = packageInfo;
-  logger.log(
-    `Setting Decoration: ${text}, ${JSON.stringify(packageInfo, null, 2)}`,
-  );
-  decorations[fileName][line] = {
+function decoration(line, packageInfo) {
+  const text = getDecorationMessage(packageInfo);
+  const color = getDecorationColor(packageInfo);
+  return {
     renderOptions: { after: { contentText: text, color } },
     range: new Range(
       new Position(line - 1, 1024),
       new Position(line - 1, 1024),
     ),
   };
-  refreshDecorations(fileName);
 }
 
-const decorationType = window.createTextEditorDecorationType({
-  after: { margin: '0 0 0 1rem' },
-});
 let decorationsDebounce;
-function refreshDecorations(fileName, delay = 10) {
+function flushDecorationsDebounced(fileName) {
   clearTimeout(decorationsDebounce);
-  decorationsDebounce = setTimeout(
-    () =>
-      getEditors(fileName).forEach(editor => {
-        editor.setDecorations(
-          decorationType,
-          Object.keys(decorations[fileName]).map(x => decorations[fileName][x]),
-        );
-      }),
-    delay,
-  );
+  decorationsDebounce = setTimeout(() => flushDecorations(fileName), 10);
 }
 
-function getEditors(fileName) {
-  return window.visibleTextEditors.filter(
-    editor => editor.document.fileName === fileName,
-  );
+function flushDecorations(fileName) {
+  let arr = {};
+  const { showCalculatingDecoration } =
+    workspace.getConfiguration('importCost');
+  Object.entries(decorations[fileName]).forEach(([line, packageInfo]) => {
+    if (packageInfo.size === undefined && showCalculatingDecoration) {
+      arr[line] = decoration(line, undefined);
+    } else if (packageInfo.size > 0) {
+      arr[line] = decoration(line, packageInfo);
+    }
+  });
+
+  const log = Object.entries(arr)
+    .map(([line, decoration]) => {
+      const message = decoration.renderOptions.after.contentText;
+      return `${fileName}, ${line}, ${message}`;
+    })
+    .join('\n');
+  logger.log(`Setting decorations:\n${log}`);
+
+  window.visibleTextEditors
+    .filter(editor => editor.document.fileName === fileName)
+    .forEach(editor => {
+      editor.setDecorations(decorationType, Object.values(arr));
+    });
 }
 
 function clearDecorations() {
   window.visibleTextEditors.forEach(textEditor => {
-    return textEditor.setDecorations(decorationType, []);
+    textEditor.setDecorations(decorationType, []);
   });
 }
 
 module.exports = {
-  flushDecorations,
+  setDecorations,
   calculated,
   clearDecorations,
 };

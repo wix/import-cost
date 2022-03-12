@@ -1,15 +1,60 @@
-const assert = require('assert');
+const { expect } = require('chai');
+const { workspace, extensions } = require('vscode');
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-const vscode = require('vscode');
-// const myExtension = require('../extension');
-
-describe('Extension Test Suite', () => {
-  vscode.window.showInformationMessage('Start all tests.');
-
-  it('Sample test', () => {
-    assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-    assert.strictEqual(-1, [1, 2, 3].indexOf(0));
+function whenDone(emitter) {
+  return new Promise((resolve, reject) => {
+    const calculated = [];
+    emitter.onLog(log => {
+      if (log.startsWith('Calculated: ')) {
+        calculated.push(JSON.parse(log.replace('Calculated: ', '')));
+        if (calculated[calculated.length - 1].error) reject(log);
+      }
+      if (
+        log.startsWith('Setting decorations:') &&
+        !log.includes('Calculating...')
+      ) {
+        resolve(calculated);
+      }
+    });
   });
+}
+
+async function importCost(fixture, language = 'javascript') {
+  await workspace.openTextDocument({ content: fixture, language });
+  await extensions.getExtension('wix.vscode-import-cost').activate();
+  return extensions.getExtension('wix.vscode-import-cost').exports.logger;
+}
+
+function sizeOf(packages, name) {
+  return packages.filter(x => x.name === name).shift().size;
+}
+
+function gzipOf(packages, name) {
+  return packages.filter(x => x.name === name).shift().gzip;
+}
+
+async function getPackages(fixture) {
+  return whenDone(await importCost(fixture));
+}
+
+async function verify(
+  fixture,
+  pkg = 'chai',
+  minSize = 10000,
+  maxSize = 15000,
+  gzipLowBound = 0.01,
+  gzipHighBound = 0.8,
+) {
+  const packages = await getPackages(fixture);
+  const size = sizeOf(packages, pkg);
+  expect(size).to.be.within(minSize, maxSize);
+  expect(gzipOf(packages, pkg)).to.be.within(
+    size * gzipLowBound,
+    size * gzipHighBound,
+  );
+}
+
+describe('Import Cost VSCode Extension', () => {
+  it('Should report module bundle size', () =>
+    verify('const fileSize = require("filesize");\n', 'filesize', 2000, 3000));
 });

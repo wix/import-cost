@@ -1,70 +1,54 @@
 const { window, workspace, commands } = require('vscode');
 const { importCost, cleanup, Lang } = require('import-cost');
-const {
-  calculated,
-  flushDecorations,
-  clearDecorations,
-} = require('./decorator');
+const { calculated, setDecorations, clearDecorations } = require('./decorator');
 const logger = require('./logger');
 
 let isActive = true;
 
 function activate(context) {
   try {
-    logger.init(context);
     logger.log('starting...');
-    workspace.onDidChangeTextDocument(
-      ev => isActive && processActiveFile(ev.document),
-    );
-    window.onDidChangeActiveTextEditor(
-      ev => ev && isActive && processActiveFile(ev.document),
-    );
-    if (window.activeTextEditor && isActive) {
-      processActiveFile(window.activeTextEditor.document);
-    }
+    workspace.onDidChangeTextDocument(ev => processActiveFile(ev.document));
+    window.onDidChangeActiveTextEditor(ev => processActiveFile(ev?.document));
+    processActiveFile(window.activeTextEditor?.document);
 
     context.subscriptions.push(
       commands.registerCommand('importCost.toggle', () => {
         isActive = !isActive;
-        if (isActive && window.activeTextEditor) {
-          processActiveFile(window.activeTextEditor.document);
+        if (isActive) {
+          processActiveFile(window.activeTextEditor?.document);
         } else {
           deactivate();
-          clearDecorations();
         }
       }),
     );
   } catch (e) {
     logger.log('wrapping error: ' + e);
   }
+  return { logger };
 }
 
 function deactivate() {
   cleanup();
+  logger.dispose();
+  clearDecorations();
 }
 
 let emitters = {};
 async function processActiveFile(document) {
-  if (document && language(document)) {
+  if (isActive && document && language(document)) {
     const { fileName } = document;
-    if (emitters[fileName]) {
-      emitters[fileName].removeAllListeners();
-    }
+    emitters[fileName]?.removeAllListeners();
+
     const { timeout } = workspace.getConfiguration('importCost');
-    emitters[fileName] = importCost(
-      fileName,
-      document.getText(),
-      language(document),
-      { concurrent: true, maxCallTime: timeout },
-    );
-    emitters[fileName].on('error', e => logger.log(`importCost error: ${e}`));
-    emitters[fileName].on('start', packages =>
-      flushDecorations(fileName, packages),
-    );
-    emitters[fileName].on('calculated', packageInfo => calculated(packageInfo));
-    emitters[fileName].on('done', packages =>
-      flushDecorations(fileName, packages),
-    );
+    const config = { concurrent: true, maxCallTime: timeout };
+    const text = document.getText();
+    const emitter = importCost(fileName, text, language(document), config);
+    emitter.on('error', e => logger.log(`importCost error: ${e}`));
+    emitter.on('start', packages => setDecorations(fileName, packages));
+    emitter.on('calculated', packageInfo => calculated(fileName, packageInfo));
+    emitter.on('done', packages => setDecorations(fileName, packages));
+    emitters[fileName] = emitter;
   }
 }
 

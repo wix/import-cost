@@ -97,7 +97,6 @@ describe('importCost', () => {
   // it.only('local file', async () => {
   //   const result = await whenDone(importCost(path.join(workingFolder, 'index.spec.js'), JAVASCRIPT));
   //   console.log(result[0].error);
-  //   debugger;
   // });
 
   it('calculates size of require in javascript', () => verify('require.js'));

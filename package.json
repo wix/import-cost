@@ -29,8 +29,7 @@
       "plugin:prettier/recommended"
     ],
     "rules": {
-      "mocha/no-mocha-arrows": "off",
-      "mocha/no-setup-in-describe": "off"
+      "mocha/no-mocha-arrows": "off"
     }
   },
   "prettier": {
