@@ -17,8 +17,8 @@ jobs:
         node-version: '${{ steps.nvm.outputs.NVMRC }}'
     - run: npm install
     - run: npm run lint
-      if: runner.os == 'Linux'
+      if: matrix.os != 'windows-latest'
     - run: xvfb-run -a npm test
-      if: runner.os == 'Linux'
+      if: matrix.os == 'ubuntu-latest'
     - run: npm test
-      if: runner.os != 'Linux'
+      if: matrix.os != 'ubuntu-latest'

@@ -87,9 +87,9 @@
     ]
   },
   "scripts": {
-    "coc:prepublish": "tslint {src,test}/**/*.ts && tsc -p ./",
+    "lint": "tslint {src,test}/**/*.ts",
     "compile": "tslint {src,test}/**/*.ts && tsc -watch -p ./",
-    "pretest": "npm run coc:prepublish",
+    "pretest": "tsc -p ./",
     "test": ":"
   },
   "devDependencies": {
