@@ -1,9 +1,8 @@
 {
-  "name": "import-cost-monorepo",
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "lint": "eslint .",
+    "lint": "eslint . && npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
   },
   "devDependencies": {
