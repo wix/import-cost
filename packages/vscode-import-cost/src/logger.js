@@ -1,8 +1,8 @@
-const {window, workspace} = require('vscode');
+const { window, workspace } = require('vscode');
 
 class Logger {
   init(context) {
-    if (!!workspace.getConfiguration('importCost').debug) {
+    if (workspace.getConfiguration('importCost').debug) {
       this.channel = window.createOutputChannel('ImportCost');
       context.subscriptions.push(this.channel);
     }

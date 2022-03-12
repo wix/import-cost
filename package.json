@@ -1,15 +1,46 @@
 {
   "private": true,
   "scripts": {
-    "precommit": "lerna run precommit",
+    "prepare": "husky install",
     "postinstall": "lerna bootstrap --loglevel verbose",
     "test": "lerna run test"
   },
   "devDependencies": {
-    "lerna": "^2.5.1"
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-mocha": "^10.0.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.2",
+    "lerna": "^2.5.1",
+    "prettier": "^2.5.0"
   },
   "workspaces": [
     "packages/*"
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2021": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:mocha/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "rules": {
+      "mocha/no-mocha-arrows": "off",
+      "mocha/no-setup-in-describe": "off"
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "quoteProps": "consistent",
+    "arrowParens": "avoid"
+  },
+  "lint-staged": {
+    "*.js": "eslint --fix"
+  }
 }

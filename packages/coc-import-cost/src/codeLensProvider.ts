@@ -71,10 +71,9 @@ export default class ImportCostCodeLensProvider implements CodeLensProvider {
   }
 
   public provideCodeLenses(
-    document: TextDocument,
-    token: CancellationToken
+    document: TextDocument
   ): Promise<CodeLens[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (!this.isActive()) { resolve([]); }
 
       const fileName = getFileName(document.uri);
@@ -116,8 +115,7 @@ export default class ImportCostCodeLensProvider implements CodeLensProvider {
   }
 
   public resolveCodeLens(
-    codeLens: CodeLens,
-    token: CancellationToken
+    codeLens: CodeLens
   ): Promise<CodeLens> {
     return Promise.resolve(codeLens);
   }
@@ -130,7 +128,7 @@ function calculated(packageInfo) {
 }
 
 function makeCodeLens(text, packageInfo) {
-  const {fileName, line} = packageInfo;
+  const {fileName} = packageInfo;
   const position = {line: packageInfo.line - 1, character: 1024};
   logger.log(
     `Setting Decoration: ${text}, ${JSON.stringify(packageInfo, null, 2)}`

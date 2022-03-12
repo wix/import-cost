@@ -3,7 +3,7 @@ const Lang = {
   JAVASCRIPT: 'javascript',
   VUE: 'vue',
   SVELTE: 'svelte',
-}
+};
 
 module.exports = {
   Lang,

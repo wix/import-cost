@@ -1,8 +1,8 @@
-// import get from 'lodash/get';
-// import React from 'react';
+import get from 'lodash/get';
+import React from 'react';
 
-// export const Comp = () => (
-//   <>
-//     <div>hello</div>
-//   </>
-// );
+export const Comp = () => (
+  <>
+    <div>hello</div>
+  </>
+);

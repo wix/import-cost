@@ -1,11 +1,11 @@
-const {workspace, window, Range, Position} = require('vscode');
+const { workspace, window, Range, Position } = require('vscode');
 const fileSize = require('filesize');
 const logger = require('./logger');
 
 const decorations = {};
 
 function flushDecorations(fileName, packages) {
-  logger.log(`Flushing decorations ${JSON.stringify(packages, null , 2)}`);
+  logger.log(`Flushing decorations ${JSON.stringify(packages, null, 2)}`);
   decorations[fileName] = {};
   packages.forEach(packageInfo => {
     if (packageInfo.size === undefined) {
@@ -22,7 +22,11 @@ function flushDecorations(fileName, packages) {
 
 function calculated(packageInfo) {
   const decorationMessage = getDecorationMessage(packageInfo);
-  decorate(decorationMessage, packageInfo, getDecorationColor(packageInfo.size));
+  decorate(
+    decorationMessage,
+    packageInfo,
+    getDecorationColor(packageInfo.size),
+  );
 }
 
 function getDecorationMessage(packageInfo) {
@@ -32,8 +36,8 @@ function getDecorationMessage(packageInfo) {
 
   let decorationMessage;
   const configuration = workspace.getConfiguration('importCost');
-  const size = fileSize(packageInfo.size, {unix: true});
-  const gzip = fileSize(packageInfo.gzip, {unix: true});
+  const size = fileSize(packageInfo.size, { unix: true });
+  const gzip = fileSize(packageInfo.gzip, { unix: true });
   if (configuration.bundleSizeDecoration === 'both') {
     decorationMessage = `${size} (gzipped: ${gzip})`;
   } else if (configuration.bundleSizeDecoration === 'minified') {
@@ -57,16 +61,23 @@ function getDecorationColor(size) {
 }
 
 function decorate(text, packageInfo, color = getDecorationColor(0)) {
-  const {fileName, line} = packageInfo;
-  logger.log(`Setting Decoration: ${text}, ${JSON.stringify(packageInfo, null, 2)}`);
+  const { fileName, line } = packageInfo;
+  logger.log(
+    `Setting Decoration: ${text}, ${JSON.stringify(packageInfo, null, 2)}`,
+  );
   decorations[fileName][line] = {
-    renderOptions: {after: {contentText: text, color}},
-    range: new Range(new Position(line - 1, 1024), new Position(line - 1, 1024))
+    renderOptions: { after: { contentText: text, color } },
+    range: new Range(
+      new Position(line - 1, 1024),
+      new Position(line - 1, 1024),
+    ),
   };
   refreshDecorations(fileName);
 }
 
-const decorationType = window.createTextEditorDecorationType({after: {margin: '0 0 0 1rem'}});
+const decorationType = window.createTextEditorDecorationType({
+  after: { margin: '0 0 0 1rem' },
+});
 let decorationsDebounce;
 function refreshDecorations(fileName, delay = 10) {
   clearTimeout(decorationsDebounce);
@@ -75,15 +86,17 @@ function refreshDecorations(fileName, delay = 10) {
       getEditors(fileName).forEach(editor => {
         editor.setDecorations(
           decorationType,
-          Object.keys(decorations[fileName]).map(x => decorations[fileName][x])
+          Object.keys(decorations[fileName]).map(x => decorations[fileName][x]),
         );
       }),
-    delay
+    delay,
   );
 }
 
 function getEditors(fileName) {
-  return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
+  return window.visibleTextEditors.filter(
+    editor => editor.document.fileName === fileName,
+  );
 }
 
 function clearDecorations() {
@@ -95,5 +108,5 @@ function clearDecorations() {
 module.exports = {
   flushDecorations,
   calculated,
-  clearDecorations
+  clearDecorations,
 };

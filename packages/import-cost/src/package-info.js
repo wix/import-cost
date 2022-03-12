@@ -29,10 +29,7 @@ const extensionVersion = parseJson(pkgDir.sync(__dirname)).version;
 let sizeCache = {};
 const versionsCache = {};
 const failedSize = { size: 0, gzip: 0 };
-const cacheFileName = path.join(
-  __dirname,
-  `ic-cache-${extensionVersion}`,
-);
+const cacheFileName = path.join(__dirname, `ic-cache-${extensionVersion}`);
 
 async function getSize(pkg, config) {
   readSizeCache();
@@ -70,9 +67,7 @@ function calcPackageSize(packageInfo, config) {
     `${packageInfo.fileName}#${packageInfo.line}`,
     (resolve, reject) => {
       const fn = config.concurrent ? workers.calcSize : calcSize;
-      fn(packageInfo, (err, result) =>
-        err ? reject(err) : resolve(result),
-      );
+      fn(packageInfo, (err, result) => (err ? reject(err) : resolve(result)));
     },
   );
 }
@@ -123,5 +118,5 @@ module.exports = {
   getSize,
   clearSizeCache,
   cleanup,
-  cacheFileName
+  cacheFileName,
 };

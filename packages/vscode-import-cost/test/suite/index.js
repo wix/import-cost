@@ -5,8 +5,8 @@ const glob = require('glob');
 function run() {
   // Create the mocha test
   const mocha = new Mocha({
-    ui: 'tdd',
-    color: true
+    ui: 'bdd',
+    color: true,
   });
 
   const testsRoot = path.resolve(__dirname, '..');
@@ -38,5 +38,5 @@ function run() {
 }
 
 module.exports = {
-  run
+  run,
 };

@@ -5,4 +5,5 @@ const enum foo {
   C
 }
 import aaaa from 'chai';
+
 console.log(aaaa);

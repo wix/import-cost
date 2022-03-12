@@ -60,7 +60,8 @@ function getPackages(fileName, source, language, lineOffset = 0) {
 }
 
 function parse(source, language) {
-  const plugins = language === Lang.TYPESCRIPT ? PARSE_TS_PLUGINS : PARSE_JS_PLUGINS;
+  const plugins =
+    language === Lang.TYPESCRIPT ? PARSE_TS_PLUGINS : PARSE_JS_PLUGINS;
   return jsParse(source, {
     sourceType: 'module',
     plugins,
@@ -113,8 +114,9 @@ function compileImportString(node) {
   } else {
     importString = '* as tmp';
   }
-  return `import ${importString} from '${node.source.value
-    }';\nconsole.log(${importString.replace('* as ', '')});`;
+  return `import ${importString} from '${
+    node.source.value
+  }';\nconsole.log(${importString.replace('* as ', '')});`;
 }
 
 function compileRequireString(node) {
@@ -132,5 +134,5 @@ function getPackageName(node) {
 }
 
 module.exports = {
-  getPackages
+  getPackages,
 };
