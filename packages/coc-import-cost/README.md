@@ -1,4 +1,4 @@
-# Import Cost coc.nvim Extension [![Build Status](https://travis-ci.org/wix/import-cost.svg?branch=master)](https://travis-ci.org/wix/import-cost) [![Build status](https://ci.appveyor.com/api/projects/status/ko48qav9qqb8fv8u?svg=true)](https://ci.appveyor.com/project/shahata/import-cost)
+# Import Cost coc.nvim Extension ![Build Status](https://github.com/wix/import-cost/workflows/build/badge.svg)
 
 This extension will display inline in the editor the size of the imported package.
 The extension utilizes webpack with babili-webpack-plugin in order to detect the imported size.
