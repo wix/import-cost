@@ -7,7 +7,7 @@
     "src"
   ],
   "scripts": {
-    "test": "mocha test/mocha-setup.js test/**/*.spec.js"
+    "test": "mocha -t 3000 test/mocha-setup.js test/**/*.spec.js"
   },
   "repository": {
     "type": "git",
