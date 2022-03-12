@@ -1,0 +1,17 @@
+name: build
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - id: nvm
+      run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '${{ steps.nvm.outputs.NVMRC }}'
+    - run: npm install
+    - run: npm run lint
+    - run: npm test
+      env:
+        CI: true

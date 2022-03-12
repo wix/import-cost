@@ -3,6 +3,7 @@
   "scripts": {
     "prepare": "husky install",
     "postinstall": "lerna bootstrap --loglevel verbose",
+    "lint": "eslint .",
     "test": "lerna run test"
   },
   "devDependencies": {
