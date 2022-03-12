@@ -15,7 +15,7 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '${{ steps.nvm.outputs.NVMRC }}'
-    - run: npm ci
+    - run: npm install
     - run: npm run lint
     - run: xvfb-run -a npm test
       if: matrix.os == 'ubuntu-latest'
