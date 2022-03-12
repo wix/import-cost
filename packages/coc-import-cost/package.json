@@ -90,21 +90,18 @@
     "coc:prepublish": "tslint {src,test}/**/*.ts && tsc -p ./",
     "compile": "tslint {src,test}/**/*.ts && tsc -watch -p ./",
     "pretest": "npm run coc:prepublish",
-    "precommit": "npm run coc:prepublish",
-    "prebublish": "npm run coc:prepublish",
-    "test": ":",
-    "build": ":"
+    "test": ":"
   },
   "devDependencies": {
     "@chemzqm/tsconfig": "0.0.3",
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
     "coc.nvim": "^0.0.66",
-    "husky": "^0.14.3",
     "mocha": "^2.3.3",
     "tslint": "^5.5.0",
     "tslint-config-wix": "^1.0.25",
-    "typescript": "3.4.5"
+    "typescript": "3.4.5",
+    "vscode-languageserver-protocol": "3.15.0-next.4"
   },
   "dependencies": {
     "filesize": "^3.5.10",
