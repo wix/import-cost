@@ -1,13 +1,9 @@
-/* global wallaby */
-/* eslint-disable */
-import fs from 'fs';
-import path from 'path';
-import { expect } from 'chai';
-import { importCost as runner, cleanup, JAVASCRIPT, TYPESCRIPT, VUE } from '../src';
-import { clearSizeCache, cacheFileName } from '../src/packageInfo';
-import { DebounceError } from '../src/debouncePromise';
-import { SVELTE } from '../src/parser';
-declare var wallaby: any;
+const fs = require('fs');
+const path = require('path');
+const { expect } = require('chai');
+const { importCost: runner, cleanup, Lang } = require('../src/index.js');
+const { clearSizeCache, cacheFileName } = require('../src/package-info.js');
+const { DebounceError } = require('../src/debounce-promise.js');
 
 const DEFAULT_CONFIG = {
   concurrent: false,
@@ -40,10 +36,10 @@ function whenDone(emitter) {
 }
 
 const LANGUAGES = {
-  ts: TYPESCRIPT,
-  js: JAVASCRIPT,
-  vue: VUE,
-  svelte: SVELTE
+  ts: Lang.TYPESCRIPT,
+  js: Lang.JAVASCRIPT,
+  vue: Lang.VUE,
+  svelte: Lang.SVELTE
 }
 
 function importCost(fileName, language = null, config = DEFAULT_CONFIG) {
@@ -219,7 +215,7 @@ describe('importCost', () => {
         runner(
           fixture('import.js'),
           'import "chai";',
-          JAVASCRIPT,
+          LANGUAGES.js,
           DEFAULT_CONFIG
         )
       )
@@ -229,7 +225,7 @@ describe('importCost', () => {
         runner(
           fixture('import.js'),
           'import "chai/index";',
-          JAVASCRIPT,
+          LANGUAGES.js,
           DEFAULT_CONFIG
         )
       )
@@ -276,7 +272,7 @@ describe('importCost', () => {
 
   it('should handle timeouts gracefully', async () => {
     const packages = await whenDone(
-      importCost(fixture('require.js'), JAVASCRIPT, {
+      importCost(fixture('require.js'), LANGUAGES.js, {
         concurrent: true,
         maxCallTime: 10,
       })

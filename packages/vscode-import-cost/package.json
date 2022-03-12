@@ -3,10 +3,10 @@
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
   "license": "MIT",
-  "version": "2.15.0",
+  "version": "3.0.0",
   "publisher": "wix",
   "engines": {
-    "vscode": "^1.52.0"
+    "vscode": "^1.65.0"
   },
   "categories": [
     "Other"
@@ -26,7 +26,7 @@
     "weight",
     "webpack"
   ],
-  "main": "./out/extension.js",
+  "main": "./src/extension.js",
   "contributes": {
     "configuration": {
       "type": "object",
@@ -120,30 +120,20 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "test": ":"
+    "test": "node ./test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.52.0",
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.0.0",
-    "@types/node": "^14.0.27",
-    "eslint": "^7.6.0",
-    "@typescript-eslint/eslint-plugin": "^3.8.0",
-    "@typescript-eslint/parser": "^3.8.0",
-    "glob": "^7.1.6",
-    "mocha": "^8.1.3",
-    "vscode-test": "^1.4.0",
-    "husky": "^0.14.3",
-    "typescript": "^4.1.3"
+    "@types/vscode": "^1.65.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "14.x",
+    "glob": "^7.2.0",
+    "mocha": "^9.2.1",
+    "@vscode/test-electron": "^2.1.2"
   },
   "dependencies": {
     "filesize": "^3.5.10",
-    "import-cost": "^2.2.0"
+    "import-cost": "^3.0.0"
   },
   "icon": "images/import-cost-logo.png",
   "galleryBanner": {

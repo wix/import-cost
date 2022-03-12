@@ -1,11 +1,10 @@
-import { getSize } from './packageInfo';
-import { getPackages } from './parser';
-import { EventEmitter } from 'events';
+const { getSize } = require('./package-info.js');
+const { getPackages } = require('./parser.js');
+const { EventEmitter } = require('events');
+const { Lang } = require('./langs.js');
+const { cleanup } = require('./package-info.js');
 
-export { TYPESCRIPT, JAVASCRIPT, VUE, SVELTE } from './parser';
-export { cleanup } from './packageInfo';
-
-export function importCost(fileName, text, language, config = { maxCallTime: Infinity, concurrent: true }) {
+function importCost(fileName, text, language, config = { maxCallTime: Infinity, concurrent: true }) {
 	const emitter = new EventEmitter();
 	setTimeout(async () => {
 		try {
@@ -27,3 +26,9 @@ export function importCost(fileName, text, language, config = { maxCallTime: Inf
 	}, 0);
 	return emitter;
 }
+
+module.exports = {
+	importCost,
+	cleanup,
+	Lang,
+};

@@ -5,8 +5,13 @@
   "license": "MIT",
   "version": "1.0.1",
   "publisher": "wix",
-  "files": ["src", "lib"],
-  "categories": ["Other"],
+  "files": [
+    "src",
+    "lib"
+  ],
+  "categories": [
+    "Other"
+  ],
   "activationEvents": [
     "onLanguage:javascript",
     "onLanguage:javascriptreact",
@@ -16,7 +21,14 @@
     "onLanguage:typescript.jsx",
     "onLanguage:typescriptreact"
   ],
-  "keywords": ["coc.nvim", "import", "require", "size", "weight", "webpack"],
+  "keywords": [
+    "coc.nvim",
+    "import",
+    "require",
+    "size",
+    "weight",
+    "webpack"
+  ],
   "main": "./lib/extension.js",
   "engines": {
     "coc": "^0.0.66"
@@ -28,25 +40,32 @@
       "properties": {
         "importCost.typescriptExtensions": {
           "type": "array",
-          "default": ["\\.tsx?$"],
+          "default": [
+            "\\.tsx?$"
+          ],
           "description": "File extensions to be parsed by the Typescript parser"
         },
         "importCost.javascriptExtensions": {
           "type": "array",
-          "default": ["\\.jsx?$"],
+          "default": [
+            "\\.jsx?$"
+          ],
           "description": "File extensions to be parsed by the Javascript parser"
         },
         "importCost.bundleSizeDecoration": {
           "type": "string",
           "default": "both",
-          "enum": ["both", "minified", "gzipped"],
+          "enum": [
+            "both",
+            "minified",
+            "gzipped"
+          ],
           "description": "Which bundle size to display"
         },
         "importCost.showCalculatingDecoration": {
           "type": "boolean",
           "default": true,
-          "description":
-            "Display the 'calculating' decoration when starting to calculate the size"
+          "description": "Display the 'calculating' decoration when starting to calculate the size"
         },
         "importCost.debug": {
           "type": "boolean",
@@ -56,8 +75,7 @@
         "importCost.timeout": {
           "type": "number",
           "default": 10000,
-          "description":
-            "Size calculation timeout in milliseconds (requires restart)"
+          "description": "Size calculation timeout in milliseconds (requires restart)"
         }
       }
     },
@@ -97,8 +115,7 @@
     "color": "#1C78C0",
     "theme": "dark"
   },
-  "homepage":
-    "https://github.com/wix/import-cost/blob/master/packages/coc-import-cost/README.md",
+  "homepage": "https://github.com/wix/import-cost/blob/master/packages/coc-import-cost/README.md",
   "repository": {
     "type": "git",
     "url": "https://github.com/wix/import-cost.git"

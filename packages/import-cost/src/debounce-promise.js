@@ -1,8 +1,8 @@
 const promises = {};
 
-export const DebounceError = new Error('DebounceError');
+const DebounceError = new Error('DebounceError');
 
-export function debouncePromise(key, fn, delay = 500) {
+function debouncePromise(key, fn, delay = 500) {
   const promise = new Promise((resolve, reject) => {
     setTimeout(
       () =>
@@ -14,3 +14,8 @@ export function debouncePromise(key, fn, delay = 500) {
   });
   return (promises[key] = promise);
 }
+
+module.exports = {
+  DebounceError,
+  debouncePromise,
+};

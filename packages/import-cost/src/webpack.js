@@ -5,7 +5,7 @@ const tempy = require('tempy');
 const fs = require('fs');
 const path = require('path');
 const { gzipSync } = require('zlib');
-const { getPackageJson, getPackageModuleContainer } = require('./utils');
+const { getPackageJson, getPackageModuleContainer } = require('./utils.js');
 
 function getEntryPoint(packageInfo) {
 	const tmpFile = tempy.file({ extension: 'js' });
@@ -79,10 +79,10 @@ function calcSize(packageInfo, callback) {
 		if (err || stats.toJson().errors.length > 0) {
 			callback({ err: err || stats.toJson().errors });
 		} else {
-      const bundles = stats.toJson().assets.filter((asset) => asset.name.includes('bundle.js'));
+			const bundles = stats.toJson().assets.filter((asset) => asset.name.includes('bundle.js'));
 			const size = bundles.reduce((sum, pkg) => sum + pkg.size, 0);
 			const gzip = bundles
-        .map((bundle) => path.join(process.cwd(), 'dist', bundle.name))
+				.map((bundle) => path.join(process.cwd(), 'dist', bundle.name))
 				.map((bundleFile) => gzipSync(memoryFileSystem.readFileSync(bundleFile), {}).length)
 				.reduce((sum, gzipSize) => sum + gzipSize, 0);
 			callback(null, { size, gzip });
@@ -90,4 +90,6 @@ function calcSize(packageInfo, callback) {
 	});
 }
 
-module.exports = { calcSize };
+module.exports = {
+	calcSize,
+};

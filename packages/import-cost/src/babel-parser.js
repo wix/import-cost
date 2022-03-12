@@ -1,7 +1,7 @@
-import traverse from '@babel/traverse';
-import * as t from '@babel/types';
-import { parse as jsParse } from '@babel/parser';
-import { TYPESCRIPT } from './parser';
+const t = require('@babel/types');
+const traverse = require('@babel/traverse').default;
+const { parse: jsParse } = require('@babel/parser');
+const { Lang } = require('./langs.js');
 
 const PARSE_PLUGINS = [
   'jsx',
@@ -22,7 +22,7 @@ const PARSE_PLUGINS = [
 const PARSE_JS_PLUGINS = ['flow', ...PARSE_PLUGINS];
 const PARSE_TS_PLUGINS = ['typescript', ...PARSE_PLUGINS];
 
-export function getPackages(fileName, source, language, lineOffset = 0) {
+function getPackages(fileName, source, language, lineOffset = 0) {
   const packages = [];
   const visitor = {
     ImportDeclaration({ node }) {
@@ -60,7 +60,7 @@ export function getPackages(fileName, source, language, lineOffset = 0) {
 }
 
 function parse(source, language) {
-  const plugins = language === TYPESCRIPT ? PARSE_TS_PLUGINS : PARSE_JS_PLUGINS;
+  const plugins = language === Lang.TYPESCRIPT ? PARSE_TS_PLUGINS : PARSE_JS_PLUGINS;
   return jsParse(source, {
     sourceType: 'module',
     plugins,
@@ -76,8 +76,8 @@ function compileImportString(node) {
         // Import specifiers are in statement order, which for mixed imports must be either "defaultImport, * as namespaceImport"
         // or "defaultImport, { namedImport [as alias]... } according to current ECMA-262.
         // Given that two equivalent import statements can only differ in the order of the items in a NamedImports block,
-        // we only need to sort these items in relation to each other to normalise the statements for caching purposes.
-        // Where the node is anything other than ImportSpecifier (Babel terminoligy for NamedImports), preserve the original statement order.
+        // we only need to sort these items in relation to each other to normalize the statements for caching purposes.
+        // Where the node is anything other than ImportSpecifier (Babel terminology for NamedImports), preserve the original statement order.
         if (t.isImportSpecifier(s1) && t.isImportSpecifier(s2)) {
           return s1.imported.name < s2.imported.name ? -1 : 1;
         }
@@ -113,9 +113,8 @@ function compileImportString(node) {
   } else {
     importString = '* as tmp';
   }
-  return `import ${importString} from '${
-    node.source.value
-  }';\nconsole.log(${importString.replace('* as ', '')});`;
+  return `import ${importString} from '${node.source.value
+    }';\nconsole.log(${importString.replace('* as ', '')});`;
 }
 
 function compileRequireString(node) {
@@ -131,3 +130,7 @@ function getPackageName(node) {
     ? node.arguments[0].quasis[0].value.raw
     : node.arguments[0].value;
 }
+
+module.exports = {
+  getPackages
+};

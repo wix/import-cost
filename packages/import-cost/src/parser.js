@@ -1,10 +1,6 @@
-import cheerio from 'cheerio';
-import { getPackages as getPackagesFromJS } from './babelParser';
-
-export const TYPESCRIPT = 'typescript';
-export const JAVASCRIPT = 'javascript';
-export const VUE = 'vue';
-export const SVELTE = 'svelte';
+const cheerio = require('cheerio');
+const { getPackages: getPackagesFromJS } = require('./babel-parser.js');
+const { Lang } = require('./langs.js');
 
 function extractScriptFromHtml(html) {
 	try {
@@ -27,14 +23,18 @@ function getScriptTagLineNumber(html) {
 	return 0;
 }
 
-export function getPackages(fileName, source, language) {
-	if ([SVELTE, VUE].some((l) => l === language)) {
+function getPackages(fileName, source, language) {
+	if ([Lang.SVELTE, Lang.VUE].some((l) => l === language)) {
 		const scriptSource = extractScriptFromHtml(source);
 		const scriptLine = getScriptTagLineNumber(source);
-		return getPackagesFromJS(fileName, scriptSource, TYPESCRIPT, scriptLine);
-	} else if ([TYPESCRIPT, JAVASCRIPT].some((l) => l === language)) {
+		return getPackagesFromJS(fileName, scriptSource, Lang.TYPESCRIPT, scriptLine);
+	} else if ([Lang.TYPESCRIPT, Lang.JAVASCRIPT].some((l) => l === language)) {
 		return getPackagesFromJS(fileName, source, language);
 	} else {
 		return [];
 	}
 }
+
+module.exports = {
+	getPackages,
+};

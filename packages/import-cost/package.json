@@ -1,43 +1,22 @@
 {
-  "private": false,
   "name": "import-cost",
-  "version": "2.2.0",
-  "description": "",
-  "main": "dist/index.js",
+  "version": "3.0.0",
+  "main": "src/index.js",
+  "license": "MIT",
   "files": [
-    "src",
-    "dist"
+    "src"
   ],
   "scripts": {
-    "build": "rm -rf dist && babel src -d dist",
-    "pretest": "npm run build",
-    "test": "ts-mocha -p tsconfig.test.json test/mocha-setup.js test/**/*.spec.ts",
-    "prepare": "npm test"
+    "test": "mocha test/mocha-setup.js test/**/*.spec.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wix/import-cost.git"
+    "url": "git@github.com:wix/import-cost.git"
   },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/wix/import-cost/issues"
-  },
-  "homepage": "https://github.com/wix/import-cost#readme",
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10",
-    "@babel/plugin-transform-runtime": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
-    "babel-plugin-transform-runtime": "^6.22.0",
-    "babel-preset-env": "^1.5.2",
-    "babel-preset-stage-3": "^6.5.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^8.2.1",
-    "proxyquire": "^2.1.0",
-    "ts-mocha": "^8.0.0",
-    "typescript": "^4.1.3"
+    "mocha": "^8.2.1"
   },
   "dependencies": {
     "@babel/core": "^7.12.9",
@@ -54,8 +33,5 @@
     "url-loader": "^0.5.9",
     "webpack": "^5",
     "worker-farm": "^1.4.1"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
   }
 }

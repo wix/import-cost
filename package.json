@@ -6,7 +6,6 @@
     "test": "lerna run test"
   },
   "devDependencies": {
-    "husky": "^0.14.3",
     "lerna": "^2.5.1"
   },
   "workspaces": [

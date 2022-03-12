@@ -60,9 +60,8 @@ function getPackageJson(pkg) {
 }
 
 module.exports = {
-  getPackageJson,
-  getPackageModuleContainer,
-  getPackageDirectory,
-  getPackageVersion,
   parseJson,
+  getPackageModuleContainer,
+  getPackageVersion,
+  getPackageJson,
 };

@@ -1,10 +1,10 @@
-import {workspace, window, Range, Position} from 'vscode';
-import * as fileSize from 'filesize';
-import logger from './logger';
+const {workspace, window, Range, Position} = require('vscode');
+const fileSize = require('filesize');
+const logger = require('./logger');
 
 const decorations = {};
 
-export function flushDecorations(fileName, packages) {
+function flushDecorations(fileName, packages) {
   logger.log(`Flushing decorations ${JSON.stringify(packages, null , 2)}`);
   decorations[fileName] = {};
   packages.forEach(packageInfo => {
@@ -20,7 +20,7 @@ export function flushDecorations(fileName, packages) {
   refreshDecorations(fileName);
 }
 
-export function calculated(packageInfo) {
+function calculated(packageInfo) {
   const decorationMessage = getDecorationMessage(packageInfo);
   decorate(decorationMessage, packageInfo, getDecorationColor(packageInfo.size));
 }
@@ -86,8 +86,14 @@ function getEditors(fileName) {
   return window.visibleTextEditors.filter(editor => editor.document.fileName === fileName);
 }
 
-export function clearDecorations() {
+function clearDecorations() {
   window.visibleTextEditors.forEach(textEditor => {
     return textEditor.setDecorations(decorationType, []);
   });
 }
+
+module.exports = {
+  flushDecorations,
+  calculated,
+  clearDecorations
+};

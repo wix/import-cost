@@ -1,11 +1,11 @@
-import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT, VUE, SVELTE} from 'import-cost';
-import {ExtensionContext, TextDocument, window, workspace, commands} from 'vscode';
-import {calculated, flushDecorations, clearDecorations} from './decorator';
-import logger from './logger';
+const { window, workspace, commands } = require('vscode');
+const { importCost, cleanup, Lang } = require('import-cost');
+const { calculated, flushDecorations, clearDecorations } = require('./decorator');
+const logger = require('./logger');
 
 let isActive = true;
 
-export function activate(context: ExtensionContext) {
+function activate(context) {
   try {
     logger.init(context);
     logger.log('starting...');
@@ -29,19 +29,19 @@ export function activate(context: ExtensionContext) {
   }
 }
 
-export function deactivate() {
+function deactivate() {
   cleanup();
 }
 
 let emitters = {};
-async function processActiveFile(document: TextDocument) {
+async function processActiveFile(document) {
   if (document && language(document)) {
-    const {fileName} = document;
+    const { fileName } = document;
     if (emitters[fileName]) {
       emitters[fileName].removeAllListeners();
     }
-    const {timeout} = workspace.getConfiguration('importCost');
-    emitters[fileName] = importCost(fileName, document.getText(), language(document), {concurrent: true, maxCallTime: timeout});
+    const { timeout } = workspace.getConfiguration('importCost');
+    emitters[fileName] = importCost(fileName, document.getText(), language(document), { concurrent: true, maxCallTime: timeout });
     emitters[fileName].on('error', e => logger.log(`importCost error: ${e}`));
     emitters[fileName].on('start', packages => flushDecorations(fileName, packages));
     emitters[fileName].on('calculated', packageInfo => calculated(packageInfo));
@@ -49,7 +49,7 @@ async function processActiveFile(document: TextDocument) {
   }
 }
 
-function language({fileName, languageId}) {
+function language({ fileName, languageId }) {
   if (languageId === 'Log') {
     return;
   }
@@ -59,14 +59,19 @@ function language({fileName, languageId}) {
   const vueRegex = new RegExp(configuration.vueExtensions.join('|'));
   const svelteRegex = new RegExp(configuration.svelteExtensions.join('|'));
   if (languageId === 'svelte' || svelteRegex.test(fileName)) {
-    return SVELTE;
+    return Lang.SVELTE;
   } else if (languageId === 'vue' || vueRegex.test(fileName)) {
-    return VUE;
+    return Lang.VUE;
   } else if (languageId === 'typescript' || languageId === 'typescriptreact' || typescriptRegex.test(fileName)) {
-    return TYPESCRIPT;
+    return Lang.TYPESCRIPT;
   } else if (languageId === 'javascript' || languageId === 'javascriptreact' || javascriptRegex.test(fileName)) {
-    return JAVASCRIPT;
+    return Lang.JAVASCRIPT;
   } else {
     return undefined;
   }
 }
+
+module.exports = {
+  activate,
+  deactivate
+};

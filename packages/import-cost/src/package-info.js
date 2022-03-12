@@ -1,12 +1,14 @@
-import fs from 'fs';
-import path from 'path';
-import workerFarm from 'worker-farm';
-import pkgDir from 'pkg-dir';
-import { debouncePromise, DebounceError } from './debouncePromise';
-import { getPackageVersion, parseJson } from './utils';
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const workerFarm = require('worker-farm');
+const pkgDir = require('pkg-dir');
+const { debouncePromise, DebounceError } = require('./debounce-promise.js');
+const { getPackageVersion, parseJson } = require('./utils.js');
+const { calcSize } = require('./webpack.js');
 
 const MAX_WORKER_RETRIES = 3;
-const MAX_CONCURRENT_WORKERS = require('os').cpus().length - 1;
+const MAX_CONCURRENT_WORKERS = os.cpus().length - 1;
 
 const debug = process.env.NODE_ENV === 'test';
 let workers = null;
@@ -18,7 +20,7 @@ function initWorkers(config) {
       maxRetries: MAX_WORKER_RETRIES,
       maxCallTime: config.maxCallTime || Infinity,
     },
-    require.resolve('./webpack'),
+    require.resolve('./webpack.js'),
     ['calcSize'],
   );
 }
@@ -27,12 +29,12 @@ const extensionVersion = parseJson(pkgDir.sync(__dirname)).version;
 let sizeCache = {};
 const versionsCache = {};
 const failedSize = { size: 0, gzip: 0 };
-export const cacheFileName = path.join(
+const cacheFileName = path.join(
   __dirname,
   `ic-cache-${extensionVersion}`,
 );
 
-export async function getSize(pkg, config) {
+async function getSize(pkg, config) {
   readSizeCache();
   try {
     versionsCache[pkg.string] =
@@ -67,17 +69,15 @@ function calcPackageSize(packageInfo, config) {
   return debouncePromise(
     `${packageInfo.fileName}#${packageInfo.line}`,
     (resolve, reject) => {
-      const calcSize = config.concurrent
-        ? workers.calcSize
-        : require('./webpack').calcSize;
-      calcSize(packageInfo, (err, result) =>
+      const fn = config.concurrent ? workers.calcSize : calcSize;
+      fn(packageInfo, (err, result) =>
         err ? reject(err) : resolve(result),
       );
     },
   );
 }
 
-export function clearSizeCache() {
+function clearSizeCache() {
   sizeCache = {};
   if (fs.existsSync(cacheFileName)) {
     fs.unlinkSync(cacheFileName);
@@ -112,9 +112,16 @@ function saveSizeCache() {
   }
 }
 
-export function cleanup() {
+function cleanup() {
   if (workers) {
     workerFarm.end(workers);
     workers = null;
   }
 }
+
+module.exports = {
+  getSize,
+  clearSizeCache,
+  cleanup,
+  cacheFileName
+};
