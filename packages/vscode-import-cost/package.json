@@ -123,14 +123,16 @@
     "test": "node ./test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.65.0",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "16.x",
+    "@types/vscode": "^1.65.0",
+    "@vscode/test-electron": "^2.1.2",
+    "chai": "^4.2.0",
     "glob": "^7.2.0",
     "mocha": "^9.2.2",
-    "chai": "^4.2.0",
-    "@vscode/test-electron": "^2.1.2"
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
   },
   "dependencies": {
     "filesize": "^8.0.7",
