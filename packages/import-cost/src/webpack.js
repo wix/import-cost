@@ -8,7 +8,7 @@ const {
   pkgDir,
 } = require('./utils.js');
 const webpack = require('webpack');
-const MemoryFS = require('memory-fs');
+const { fs } = require('memfs');
 const { gzipSync } = require('zlib');
 
 async function getEntryPoint(packageInfo) {
@@ -94,8 +94,7 @@ async function calcSize(packageInfo, callback) {
   };
 
   const compiler = webpack(webpackConfig);
-  const memoryFileSystem = new MemoryFS();
-  compiler.outputFileSystem = memoryFileSystem;
+  compiler.outputFileSystem = fs;
 
   compiler.inputFileSystem = {
     readlink: (path, options, callback) => {
@@ -138,8 +137,7 @@ async function calcSize(packageInfo, callback) {
         .map(bundle => path.join(process.cwd(), 'dist', bundle.name))
         .map(
           bundleFile =>
-            gzipSync(memoryFileSystem.readFileSync(bundleFile).toString(), {})
-              .length,
+            gzipSync(fs.readFileSync(bundleFile).toString(), {}).length,
         )
         .reduce((sum, gzipSize) => sum + gzipSize, 0);
       callback(null, { size, gzip });
