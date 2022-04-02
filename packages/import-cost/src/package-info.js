@@ -1,42 +1,39 @@
-const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const workerFarm = require('worker-farm');
-const pkgDir = require('pkg-dir');
+const { URI } = require('vscode-uri');
+const fsAdapter = require('native-fs-adapter');
 const { debouncePromise, DebounceError } = require('./debounce-promise.js');
-const { getPackageVersion, parseJson } = require('./utils.js');
+const { getPackageVersion } = require('./utils.js');
+const { version: extensionVersion } = require('../package.json');
 const { calcSize } = require('./webpack.js');
 
-const MAX_WORKER_RETRIES = 3;
-const MAX_CONCURRENT_WORKERS = os.cpus().length - 1;
-
-const debug = process.env.NODE_ENV === 'test';
 let workers = null;
-
 function initWorkers(config) {
+  if (!workerFarm.end) return;
+  const debug = process.env.NODE_ENV === 'test';
   workers = workerFarm(
     {
-      maxConcurrentWorkers: debug ? 1 : MAX_CONCURRENT_WORKERS,
-      maxRetries: MAX_WORKER_RETRIES,
+      maxConcurrentWorkers: debug ? 1 : os.cpus().length - 1,
+      maxRetries: 3,
       maxCallTime: config.maxCallTime || Infinity,
     },
-    require.resolve('./webpack.js'),
+    path.join(__dirname, 'webpack.js'),
     ['calcSize'],
   );
 }
 
-const extensionVersion = parseJson(pkgDir.sync(__dirname)).version;
 let sizeCache = {};
 const versionsCache = {};
 const failedSize = { size: 0, gzip: 0 };
-const cacheFileName = path.join(__dirname, `ic-cache-${extensionVersion}`);
+const cacheFileName = path.join(os.tmpdir(), `ic-cache-${extensionVersion}`);
 
 async function getSize(pkg, config) {
-  readSizeCache();
+  await readSizeCache();
   try {
     versionsCache[pkg.string] =
-      versionsCache[pkg.string] || getPackageVersion(pkg);
-  } catch (e) {
+      versionsCache[pkg.string] || (await getPackageVersion(pkg));
+  } catch {
     return { ...pkg, ...failedSize };
   }
   const key = `${pkg.string}#${versionsCache[pkg.string]}`;
@@ -44,7 +41,7 @@ async function getSize(pkg, config) {
     try {
       sizeCache[key] = sizeCache[key] || calcPackageSize(pkg, config);
       sizeCache[key] = await sizeCache[key];
-      saveSizeCache();
+      await saveSizeCache();
     } catch (e) {
       if (e === DebounceError) {
         delete sizeCache[key];
@@ -66,30 +63,32 @@ function calcPackageSize(packageInfo, config) {
   return debouncePromise(
     `${packageInfo.fileName}#${packageInfo.line}`,
     (resolve, reject) => {
-      const fn = config.concurrent ? workers.calcSize : calcSize;
+      const fn = config.concurrent && workers ? workers.calcSize : calcSize;
       fn(packageInfo, (err, result) => (err ? reject(err) : resolve(result)));
     },
   );
 }
 
-function clearSizeCache() {
+async function clearSizeCache() {
   sizeCache = {};
-  if (fs.existsSync(cacheFileName)) {
-    fs.unlinkSync(cacheFileName);
-  }
-}
-
-function readSizeCache() {
   try {
-    if (Object.keys(sizeCache).length === 0 && fs.existsSync(cacheFileName)) {
-      sizeCache = JSON.parse(fs.readFileSync(cacheFileName, 'utf-8'));
-    }
-  } catch (e) {
+    await fsAdapter.delete(URI.file(cacheFileName));
+  } catch {
     // silent error
   }
 }
 
-function saveSizeCache() {
+async function readSizeCache() {
+  try {
+    if (Object.keys(sizeCache).length === 0) {
+      sizeCache = JSON.parse(await fsAdapter.readFile(URI.file(cacheFileName)));
+    }
+  } catch {
+    // silent error
+  }
+}
+
+async function saveSizeCache() {
   try {
     const keys = Object.keys(sizeCache).filter(key => {
       const size = sizeCache[key] && sizeCache[key].size;
@@ -100,7 +99,10 @@ function saveSizeCache() {
       {},
     );
     if (Object.keys(cache).length > 0) {
-      fs.writeFileSync(cacheFileName, JSON.stringify(cache, null, 2), 'utf-8');
+      await fsAdapter.writeFile(
+        URI.file(cacheFileName),
+        Buffer.from(JSON.stringify(cache, null, 2), 'utf8'),
+      );
     }
   } catch (e) {
     // silent error

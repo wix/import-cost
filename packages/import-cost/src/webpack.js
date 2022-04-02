@@ -1,29 +1,45 @@
+const os = require('os');
+const { URI } = require('vscode-uri');
+const fsAdapter = require('native-fs-adapter');
+const path = require('path');
+const {
+  getPackageJson,
+  getPackageModuleContainer,
+  pkgDir,
+} = require('./utils.js');
 const webpack = require('webpack');
 const MemoryFS = require('memory-fs');
-const pkgDir = require('pkg-dir');
-const tempy = require('tempy');
-const fs = require('fs');
-const path = require('path');
 const { gzipSync } = require('zlib');
-const { getPackageJson, getPackageModuleContainer } = require('./utils.js');
 
-function getEntryPoint(packageInfo) {
-  const tmpFile = tempy.file({ extension: 'js' });
-  fs.writeFileSync(tmpFile, packageInfo.string, 'utf-8');
+async function getEntryPoint(packageInfo) {
+  const tmpFile = path.join(
+    os.tmpdir(),
+    `${Math.random().toString(36).slice(2)}.js`,
+  );
+  await fsAdapter.writeFile(
+    URI.file(tmpFile),
+    Buffer.from(packageInfo.string, 'utf8'),
+  );
   return tmpFile;
 }
 
-function calcSize(packageInfo, callback) {
-  const entryPoint = getEntryPoint(packageInfo);
-  const packageRootDir = pkgDir.sync(path.dirname(packageInfo.fileName));
+async function calcSize(packageInfo, callback) {
+  const packageRootDir = await pkgDir(path.dirname(packageInfo.fileName));
   const modulesDirectory = path.join(packageRootDir, 'node_modules');
-  const peers = getPackageJson(packageInfo).peerDependencies || {};
+  const peers = (await getPackageJson(packageInfo)).peerDependencies || {};
   const defaultExternals = ['react', 'react-dom'];
   const externals = Object.keys(peers)
     .concat(defaultExternals)
     .filter(p => p !== packageInfo.name);
-  const compiler = webpack({
-    entry: entryPoint,
+  const webpackConfig = {
+    entry: await getEntryPoint(packageInfo),
+    // optimization: {
+    //   minimize: false,
+    //   // minimizer: [new TerserPlugin()],
+    // },
+    snapshot: {
+      managedPaths: [],
+    },
     plugins: [
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify('production'),
@@ -34,7 +50,7 @@ function calcSize(packageInfo, callback) {
     resolve: {
       modules: [
         modulesDirectory,
-        getPackageModuleContainer(packageInfo),
+        await getPackageModuleContainer(packageInfo),
         'node_modules',
       ],
       fallback: {
@@ -75,9 +91,40 @@ function calcSize(packageInfo, callback) {
       filename: 'bundle.js',
       libraryTarget: 'commonjs2',
     },
-  });
+  };
+
+  const compiler = webpack(webpackConfig);
   const memoryFileSystem = new MemoryFS();
   compiler.outputFileSystem = memoryFileSystem;
+
+  compiler.inputFileSystem = {
+    readlink: (path, options, callback) => {
+      if (!callback) callback = options;
+      setTimeout(() => callback(new Error('readlink not supported')), 0);
+    },
+    readFile: (path, options, callback) => {
+      if (!callback) callback = options;
+      fsAdapter
+        .readFile(URI.file(path))
+        .then(buffer => callback(null, buffer))
+        .catch(callback);
+    },
+    stat: (path, options, callback) => {
+      if (!callback) callback = options;
+      fsAdapter
+        .stat(URI.file(path))
+        .then(stats =>
+          callback(null, {
+            size: stats.size,
+            ctimeMs: stats.ctime,
+            mtimeMs: stats.mtime,
+            isFile: () => stats.type & 1,
+            isDirectory: () => stats.type & 2,
+          }),
+        )
+        .catch(callback);
+    },
+  };
 
   compiler.run((err, stats) => {
     if (err || stats.toJson().errors.length > 0) {
@@ -91,7 +138,8 @@ function calcSize(packageInfo, callback) {
         .map(bundle => path.join(process.cwd(), 'dist', bundle.name))
         .map(
           bundleFile =>
-            gzipSync(memoryFileSystem.readFileSync(bundleFile), {}).length,
+            gzipSync(memoryFileSystem.readFileSync(bundleFile).toString(), {})
+              .length,
         )
         .reduce((sum, gzipSize) => sum + gzipSize, 0);
       callback(null, { size, gzip });

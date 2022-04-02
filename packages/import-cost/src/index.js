@@ -1,8 +1,7 @@
-const { getSize } = require('./package-info.js');
+const { getSize, cleanup } = require('./package-info.js');
 const { getPackages } = require('./parser.js');
 const { EventEmitter } = require('events');
 const { Lang } = require('./langs.js');
-const { cleanup } = require('./package-info.js');
 
 function importCost(
   fileName,
