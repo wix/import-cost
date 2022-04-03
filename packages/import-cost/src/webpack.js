@@ -33,10 +33,9 @@ async function calcSize(packageInfo, callback) {
     .filter(p => p !== packageInfo.name);
   const webpackConfig = {
     entry: await getEntryPoint(packageInfo),
-    // optimization: {
-    //   minimize: false,
-    //   // minimizer: [new TerserPlugin()],
-    // },
+    optimization: {
+      minimize: !process.browser, //TBD make minimizer work in browser
+    },
     snapshot: {
       managedPaths: [],
     },

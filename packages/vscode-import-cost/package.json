@@ -5,6 +5,8 @@
   "license": "MIT",
   "version": "3.0.0",
   "publisher": "wix",
+  "main": "./src/extension.js",
+  "browser": "./dist/extension.js",
   "engines": {
     "vscode": "^1.64.0"
   },
@@ -26,7 +28,6 @@
     "weight",
     "webpack"
   ],
-  "main": "./src/extension.js",
   "contributes": {
     "configuration": {
       "type": "object",
@@ -129,6 +130,7 @@
     "@types/vscode": "^1.65.0",
     "@vscode/test-electron": "^2.1.2",
     "assert": "^2.0.0",
+    "browser-process-hrtime": "^1.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "chai": "^4.2.0",
