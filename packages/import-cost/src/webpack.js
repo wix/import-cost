@@ -1,4 +1,3 @@
-const os = require('os');
 const { URI } = require('vscode-uri');
 const fsAdapter = require('native-fs-adapter');
 const path = require('path');
@@ -12,14 +11,11 @@ const { fs } = require('memfs');
 const { gzipSync } = require('zlib');
 
 async function getEntryPoint(packageInfo) {
-  const tmpFile = path.join(
-    os.tmpdir(),
-    `${Math.random().toString(36).slice(2)}.js`,
-  );
-  await fsAdapter.writeFile(
-    URI.file(tmpFile),
-    Buffer.from(packageInfo.string, 'utf8'),
-  );
+  const tmpFile = `/tmp/${Math.random().toString(36).slice(2)}.js`;
+  if (!fs.existsSync('/tmp')) {
+    fs.mkdirSync('/tmp');
+  }
+  fs.writeFileSync(tmpFile, Buffer.from(packageInfo.string, 'utf8'));
   return tmpFile;
 }
 
@@ -102,25 +98,33 @@ async function calcSize(packageInfo, callback) {
     },
     readFile: (path, options, callback) => {
       if (!callback) callback = options;
-      fsAdapter
-        .readFile(URI.file(path))
-        .then(buffer => callback(null, buffer))
-        .catch(callback);
+      if (path.startsWith('/tmp/')) {
+        fs.readFile(path, callback);
+      } else {
+        fsAdapter
+          .readFile(URI.file(path))
+          .then(buffer => callback(null, buffer))
+          .catch(callback);
+      }
     },
     stat: (path, options, callback) => {
       if (!callback) callback = options;
-      fsAdapter
-        .stat(URI.file(path))
-        .then(stats =>
-          callback(null, {
-            size: stats.size,
-            ctimeMs: stats.ctime,
-            mtimeMs: stats.mtime,
-            isFile: () => stats.type & 1,
-            isDirectory: () => stats.type & 2,
-          }),
-        )
-        .catch(callback);
+      if (path.startsWith('/tmp/')) {
+        fs.stat(path, callback);
+      } else {
+        fsAdapter
+          .stat(URI.file(path))
+          .then(stats =>
+            callback(null, {
+              size: stats.size,
+              ctimeMs: stats.ctime,
+              mtimeMs: stats.mtime,
+              isFile: () => stats.type & 1,
+              isDirectory: () => stats.type & 2,
+            }),
+          )
+          .catch(callback);
+      }
     },
   };
 
