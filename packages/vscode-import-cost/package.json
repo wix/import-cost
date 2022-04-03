@@ -121,7 +121,8 @@
     ]
   },
   "scripts": {
-    "test": "node ./test/runTest.js"
+    "pretest": "webpack",
+    "test": "node ./test/index.js"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
@@ -129,6 +130,7 @@
     "@types/node": "16.x",
     "@types/vscode": "^1.65.0",
     "@vscode/test-electron": "^2.1.2",
+    "@vscode/test-web": "^0.0.24",
     "assert": "^2.0.0",
     "browser-process-hrtime": "^1.0.0",
     "browserify-zlib": "^0.2.0",

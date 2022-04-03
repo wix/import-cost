@@ -1,40 +1,22 @@
 const { expect } = require('chai');
-const { workspace, extensions } = require('vscode');
+const { workspace, window, extensions, env } = require('vscode');
 
-function whenDone(emitter) {
-  return new Promise((resolve, reject) => {
-    const calculated = [];
+function whenDone(emitter, pkg) {
+  return new Promise(resolve => {
     emitter.onLog(log => {
       if (log.startsWith('Calculated: ')) {
-        calculated.push(JSON.parse(log.replace('Calculated: ', '')));
-        if (calculated[calculated.length - 1].error) reject(log);
-      }
-      if (
-        log.startsWith('Setting decorations:') &&
-        !log.includes('Calculating...')
-      ) {
-        resolve(calculated);
+        const calculated = JSON.parse(log.replace('Calculated: ', ''));
+        if (calculated.name === pkg) resolve(calculated);
       }
     });
   });
 }
 
-async function importCost(fixture, language = 'javascript') {
-  await workspace.openTextDocument({ content: fixture, language });
+async function importCost(content, language = 'javascript') {
+  const doc = await workspace.openTextDocument({ content, language });
+  await window.showTextDocument(doc);
   await extensions.getExtension('wix.vscode-import-cost').activate();
   return extensions.getExtension('wix.vscode-import-cost').exports.logger;
-}
-
-function sizeOf(packages, name) {
-  return packages.filter(x => x.name === name).shift().size;
-}
-
-function gzipOf(packages, name) {
-  return packages.filter(x => x.name === name).shift().gzip;
-}
-
-async function getPackages(fixture) {
-  return whenDone(await importCost(fixture));
 }
 
 async function verify(
@@ -45,16 +27,17 @@ async function verify(
   gzipLowBound = 0.01,
   gzipHighBound = 0.8,
 ) {
-  const packages = await getPackages(fixture);
-  const size = sizeOf(packages, pkg);
+  const { size, gzip } = await whenDone(await importCost(fixture), pkg);
   expect(size).to.be.within(minSize, maxSize);
-  expect(gzipOf(packages, pkg)).to.be.within(
-    size * gzipLowBound,
-    size * gzipHighBound,
-  );
+  expect(gzip).to.be.within(size * gzipLowBound, size * gzipHighBound);
 }
 
 describe('Import Cost VSCode Extension', () => {
   it('Should report module bundle size', () =>
-    verify('const fileSize = require("filesize");\n', 'filesize', 2000, 3000));
+    verify(
+      'const fileSize = require("filesize");\n',
+      'filesize',
+      env.appHost === 'desktop' ? 2000 : 3000,
+      env.appHost === 'desktop' ? 3000 : 4000,
+    ));
 });

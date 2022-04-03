@@ -3,10 +3,13 @@ const path = require('path');
 const config = {
   mode: 'development',
   target: 'webworker',
-  entry: './src/extension.js',
+  entry: {
+    extension: './src/extension.js',
+    tests: './test/runner/browser.js',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'extension.js',
+    filename: '[name].js',
     libraryTarget: 'commonjs2',
     devtoolModuleFilenameTemplate: '../[resource-path]',
   },
