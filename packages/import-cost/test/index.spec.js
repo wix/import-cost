@@ -120,7 +120,7 @@ describe('importCost', () => {
   it('calculates size of legacy import in typescript', () =>
     verify('import-legacy.ts'));
   it('does not calculate size of node import in javascript', () =>
-    verify('import-node.js', 'node-stuff', 0, 0));
+    verify('import-node.js', 'node-stuff'));
   it('calculates size of namespace import in javascript', () =>
     verify('import-namespace.js'));
   // yoshi uses babel 6 which does not support shorthand react fragments <> </>
@@ -257,9 +257,9 @@ describe('importCost', () => {
     expect(await timed(() => verify('import.ts'))).to.be.within(0, 100);
   });
 
-  it('results in 0 if dependency is missing', async () => {
+  it('not added to package list if dependency is missing', async () => {
     const packages = await whenDone(importCost(fixture('failed-missing.js')));
-    expect(sizeOf(packages, 'sinon')).to.equal(0);
+    expect(packages.filter(x => x.name === 'sinon').length).to.equal(0);
   });
   it('results in 0 if bundle fails', async () => {
     const packages = await whenDone(importCost(fixture('failed-bundle.js')));
