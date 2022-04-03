@@ -4,7 +4,6 @@ const workerFarm = require('worker-farm');
 const { URI } = require('vscode-uri');
 const fsAdapter = require('native-fs-adapter');
 const { debouncePromise, DebounceError } = require('./debounce-promise.js');
-const { getPackageVersion } = require('./utils.js');
 const { version: extensionVersion } = require('../package.json');
 const { calcSize } = require('./webpack.js');
 
@@ -24,19 +23,12 @@ function initWorkers(config) {
 }
 
 let sizeCache = {};
-const versionsCache = {};
 const failedSize = { size: 0, gzip: 0 };
 const cacheFileName = path.join(os.tmpdir(), `ic-cache-${extensionVersion}`);
 
 async function getSize(pkg, config) {
+  const key = `${pkg.string}#${pkg.version}`;
   await readSizeCache();
-  try {
-    versionsCache[pkg.string] =
-      versionsCache[pkg.string] || (await getPackageVersion(pkg));
-  } catch {
-    return { ...pkg, ...failedSize };
-  }
-  const key = `${pkg.string}#${versionsCache[pkg.string]}`;
   if (sizeCache[key] === undefined || sizeCache[key] instanceof Promise) {
     try {
       sizeCache[key] = sizeCache[key] || calcPackageSize(pkg, config);

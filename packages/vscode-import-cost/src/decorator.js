@@ -19,12 +19,20 @@ function decorate(fileName, packageInfo) {
 }
 
 function calculated(fileName, packageInfo) {
-  logger.log(
-    `Calculated: ${JSON.stringify({
-      ...packageInfo,
-      ...(packageInfo.error ? { error: true } : {}),
-    })}`,
-  );
+  if (packageInfo.error) {
+    logger.log(
+      `Error Calculated: ${JSON.stringify({ ...packageInfo, error: true })}`,
+    );
+    if (Array.isArray(packageInfo.error)) {
+      packageInfo.error.forEach(err => {
+        logger.log(err?.message || JSON.stringify(err));
+      });
+    } else {
+      logger.log(packageInfo.error.toString());
+    }
+  } else {
+    logger.log(`Calculated: ${JSON.stringify(packageInfo)}`);
+  }
   decorate(fileName, packageInfo);
   flushDecorationsDebounced(fileName);
 }

@@ -29,6 +29,7 @@ async function calcSize(packageInfo, callback) {
     .filter(p => p !== packageInfo.name);
   const webpackConfig = {
     entry: await getEntryPoint(packageInfo),
+    target: 'node',
     optimization: {
       minimize: !process.browser, //TBD make minimizer work in browser
     },
@@ -43,6 +44,7 @@ async function calcSize(packageInfo, callback) {
       new webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }),
     ],
     resolve: {
+      mainFields: ['browser', 'module', 'main'],
       modules: [
         modulesDirectory,
         await getPackageModuleContainer(packageInfo),
@@ -50,14 +52,20 @@ async function calcSize(packageInfo, callback) {
       ],
       fallback: {
         fs: false,
+        tty: false,
         tls: false,
         net: false,
         path: false,
         zlib: false,
         http: false,
+        util: false,
         https: false,
+        assert: false,
         stream: false,
         crypto: false,
+        events: false,
+        readline: false,
+        child_process: false,
       },
     },
     module: {
@@ -129,8 +137,10 @@ async function calcSize(packageInfo, callback) {
   };
 
   compiler.run((err, stats) => {
-    if (err || stats.toJson().errors.length > 0) {
-      callback({ err: err || stats.toJson().errors });
+    if (err) {
+      callback(err);
+    } else if (stats.toJson().errors.length > 0) {
+      callback(stats.toJson().errors);
     } else {
       const bundles = stats
         .toJson()

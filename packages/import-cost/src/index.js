@@ -1,4 +1,5 @@
 const { getSize, cleanup } = require('./package-info.js');
+const { getPackageVersion } = require('./utils.js');
 const { getPackages } = require('./parser.js');
 const { EventEmitter } = require('events');
 const { Lang } = require('./langs.js');
@@ -12,9 +13,13 @@ function importCost(
   const emitter = new EventEmitter();
   setTimeout(async () => {
     try {
-      const imports = getPackages(fileName, text, language).filter(
+      let imports = getPackages(fileName, text, language).filter(
         packageInfo => !packageInfo.name.startsWith('.'),
       );
+      await Promise.allSettled(
+        imports.map(async pkg => (pkg.version = await getPackageVersion(pkg))),
+      );
+      imports = imports.filter(pkg => !!pkg.version);
       emitter.emit('start', imports);
       const promises = imports
         .map(packageInfo => getSize(packageInfo, config))
