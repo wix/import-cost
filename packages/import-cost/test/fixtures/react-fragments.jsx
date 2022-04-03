@@ -1,8 +1,7 @@
-import get from 'lodash/get';
-import React from 'react';
+import * as aaa from 'chai';
 
 export const Comp = () => (
   <>
-    <div>hello</div>
+    <div>{aaa}</div>
   </>
 );

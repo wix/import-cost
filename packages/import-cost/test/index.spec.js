@@ -1,4 +1,3 @@
-/* global wallaby */
 const fs = require('fs');
 const path = require('path');
 const { expect } = require('chai');
@@ -10,12 +9,9 @@ const DEFAULT_CONFIG = {
   concurrent: false,
   maxCallTime: Infinity,
 };
-const workingFolder =
-  typeof wallaby !== 'undefined'
-    ? path.join(wallaby.localProjectDir, 'test')
-    : __dirname;
+
 function fixture(fileName) {
-  return path.join(workingFolder, 'fixtures', fileName);
+  return path.join(__dirname, 'fixtures', fileName);
 }
 
 function whenDone(emitter) {
@@ -39,15 +35,13 @@ function whenDone(emitter) {
 const LANGUAGES = {
   ts: Lang.TYPESCRIPT,
   js: Lang.JAVASCRIPT,
+  jsx: Lang.JAVASCRIPT,
   vue: Lang.VUE,
   svelte: Lang.SVELTE,
 };
 
 function importCost(fileName, language = null, config = DEFAULT_CONFIG) {
-  if (!language) {
-    const extension = fileName.split('.').pop();
-    language = LANGUAGES[extension];
-  }
+  if (!language) language = LANGUAGES[fileName.split('.').pop()];
   return runner(fileName, fs.readFileSync(fileName, 'utf-8'), language, config);
 }
 
@@ -94,203 +88,248 @@ describe('importCost', () => {
     cleanup();
   });
 
-  // it.only('local file', async () => {
-  //   const result = await whenDone(importCost(path.join(workingFolder, 'index.spec.js'), JAVASCRIPT));
-  //   console.log(result[0].error);
-  // });
+  describe('imports', () => {
+    it('calculates size of require in javascript', () => {
+      return verify('require.js');
+    });
+    it('calculates size of require in typescript', () => {
+      return verify('require.ts');
+    });
+    it('calculates size of template require in javascript', () => {
+      return verify('require-template.js');
+    });
+    it('calculates size of template require in typescript', () => {
+      return verify('require-template.ts');
+    });
+    it('calculates size of import in javascript', () => {
+      return verify('import.js');
+    });
+    it('calculates size of import in typescript', () => {
+      return verify('import.ts');
+    });
+    it('calculate size of imports in a file containing typescript features not supported by babel', () => {
+      return verify('typescript-not-supported-features.ts');
+    });
+    it('calculates size of aliased import in javascript', () => {
+      return verify('import-aliased.js');
+    });
+    it('calculates size of aliased import in typescript', () => {
+      return verify('import-aliased.ts');
+    });
+    it('calculates size of import with no semicolon in typescript', () => {
+      return verify('import-no-semicolon.ts');
+    });
+    it('calculates size of legacy import in javascript', () => {
+      return verify('import-legacy.js');
+    });
+    it('calculates size of legacy import in typescript', () => {
+      return verify('import-legacy.ts');
+    });
+    it('calculates size of node import in javascript', () => {
+      return verify('import-node.js', 'node-stuff');
+    });
+    it('calculates size of namespace import in javascript', () => {
+      return verify('import-namespace.js');
+    });
+    it('calculates size of imports in a file with shorthand react fragments', () => {
+      return verify('react-fragments.jsx');
+    });
+    it('calculates size of namespace import in typescript', () => {
+      return verify('import-namespace.ts');
+    });
+    it('calculates size of specifiers import in javascript', () => {
+      return verify('import-specifiers.js');
+    });
+    it('calculates size of specifiers import in typescript', () => {
+      return verify('import-specifiers.ts');
+    });
+    it('calculates size of mixed default+named import in javascript', () => {
+      return verify('import-mixed.js');
+    });
+    it('calculates size of mixed default+named import in typescript', () => {
+      return verify('import-mixed.ts');
+    });
+    it('calculates size of mixed default+global import in javascript', () => {
+      return verify('import-global-mixed.js', 'react');
+    });
+    it('calculates size of mixed default+global import in typescript', () => {
+      return verify('import-global-mixed.ts', 'react');
+    });
+    it('calculates size of cherry pick import in javascript', () => {
+      return verify('import-cherry.js', 'chai/abc');
+    });
+    it('calculates size of cherry pick import in typescript', () => {
+      return verify('import-cherry.ts', 'chai/abc');
+    });
+    it('calculates size of scoped import in javascript', () => {
+      return verify('import-scoped.js', '@angular/core');
+    });
+    it('calculates size of scoped import in typescript', () => {
+      return verify('import-scoped.ts', '@angular/core');
+    });
+    it('calculates size of scoped esm import in javascript', () => {
+      return verify('import-scoped-esm.js', '@angular/core/esm');
+    });
+    it('calculates size of scoped esm import in typescript', () => {
+      return verify('import-scoped-esm.ts', '@angular/core/esm');
+    });
+    it('calculates size of shaken import in javascript', () => {
+      return verify('import-shaken.js', 'react', 200, 300);
+    });
+    it('calculates size of shaken import in typescript', () => {
+      return verify('import-shaken.ts', 'react', 200, 300);
+    });
+    it('calculates size of production env import in javascript', () => {
+      return verify('import-env.js', 'react-dom', 200, 300);
+    });
+    it('calculates size of production env import in typescript', () => {
+      return verify('import-env.ts', 'react-dom', 200, 300);
+    });
+    it('calculates size without externals', () => {
+      return verify('import-externals.js', 'wix-style', 200, 300);
+    });
+    it('calculates size without peerDependencies', () => {
+      return verify('import-peer.js', 'haspeerdeps', 200, 300);
+    });
+    it('supports a monorepo-like structure', () => {
+      return verify('./yarn-workspace/import-nested-project.js', 'chai');
+    });
+    it('supports a monorepo-like structure with scoped module', () => {
+      return verify('./yarn-workspace/import-with-scope.js', '@angular/core');
+    });
+    it('supports a monorepo-like structure with scoped module and file name', () => {
+      return verify(
+        './yarn-workspace/import-with-scope-filename.js',
+        '@angular/core/index.js',
+      );
+    });
+    it('calculates size of a dynamic import in javascript', () => {
+      return verify('dynamic-import.js');
+    });
+    it('calculates size of a dynamic import in typescript', () => {
+      return verify('dynamic-import.ts');
+    });
+    it('calculates size of a vue script', () => {
+      return verify('vue.vue');
+    });
+    it('calculates size of a svelte script', () => {
+      return verify('svelte.svelte');
+    });
+  });
 
-  it('calculates size of require in javascript', () => verify('require.js'));
-  it('calculates size of require in typescript', () => verify('require.ts'));
-  it('calculates size of template require in javascript', () =>
-    verify('require-template.js'));
-  it('calculates size of template require in typescript', () =>
-    verify('require-template.ts'));
-  it('calculates size of import in javascript', () => verify('import.js'));
-  it('calculates size of import in typescript', () => verify('import.ts'));
-  it('calculate size of imports in a file containing typescript features not supported by babel', () =>
-    verify('typescript-not-supported-features.ts'));
-  it('calculates size of aliased import in javascript', () =>
-    verify('import-aliased.js'));
-  it('calculates size of aliased import in typescript', () =>
-    verify('import-aliased.ts'));
-  it('calculates size of import with no semicolon in typescript', () =>
-    verify('import-no-semicolon.ts'));
-  it('calculates size of legacy import in javascript', () =>
-    verify('import-legacy.js'));
-  it('calculates size of legacy import in typescript', () =>
-    verify('import-legacy.ts'));
-  it('does not calculate size of node import in javascript', () =>
-    verify('import-node.js', 'node-stuff'));
-  it('calculates size of namespace import in javascript', () =>
-    verify('import-namespace.js'));
-  // yoshi uses babel 6 which does not support shorthand react fragments <> </>
-  // it('calculates size of imports in a file with shorthand react fragments', () =>
-  //   verify('react-fragments.jsx'));
-  it('calculates size of namespace import in typescript', () =>
-    verify('import-namespace.ts'));
-  it('calculates size of specifiers import in javascript', () =>
-    verify('import-specifiers.js'));
-  it('calculates size of specifiers import in typescript', () =>
-    verify('import-specifiers.ts'));
-  it('calculates size of mixed default+named import in javascript', () =>
-    verify('import-mixed.js'));
-  it('calculates size of mixed default+named import in typescript', () =>
-    verify('import-mixed.ts'));
-  it('calculates size of mixed default+global import in javascript', () =>
-    verify('import-global-mixed.js', 'react'));
-  it('calculates size of mixed default+global import in typescript', () =>
-    verify('import-global-mixed.ts', 'react'));
-  it('calculates size of cherry pick import in javascript', () =>
-    verify('import-cherry.js', 'chai/abc'));
-  it('calculates size of cherry pick import in typescript', () =>
-    verify('import-cherry.ts', 'chai/abc'));
-  it('calculates size of scoped import in javascript', () =>
-    verify('import-scoped.js', '@angular/core'));
-  it('calculates size of scoped import in typescript', () =>
-    verify('import-scoped.ts', '@angular/core'));
-  it('calculates size of scoped esm import in javascript', () =>
-    verify('import-scoped-esm.js', '@angular/core/esm'));
-  it('calculates size of scoped esm import in typescript', () =>
-    verify('import-scoped-esm.ts', '@angular/core/esm'));
-  it('calculates size of shaken import in javascript', () =>
-    verify('import-shaken.js', 'react', 200, 300));
-  it('calculates size of shaken import in typescript', () =>
-    verify('import-shaken.ts', 'react', 200, 300));
-  it('calculates size of production env import in javascript', () =>
-    verify('import-env.js', 'react-dom', 200, 300));
-  it('calculates size of production env import in typescript', () =>
-    verify('import-env.ts', 'react-dom', 200, 300));
-  it('calculates size without externals', () =>
-    verify('import-externals.js', 'wix-style', 200, 300));
-  it('calculates size without peerDependencies', () =>
-    verify('import-peer.js', 'haspeerdeps', 200, 300));
-  it('supports a monorepo-like structure', () =>
-    verify('./yarn-workspace/import-nested-project.js', 'chai'));
-  it('supports a monorepo-like structure with scoped module', () =>
-    verify('./yarn-workspace/import-with-scope.js', '@angular/core'));
-  it('supports a monorepo-like structure with scoped module and file name', () =>
-    verify(
-      './yarn-workspace/import-with-scope-filename.js',
-      '@angular/core/index.js',
-    ));
-  it('calculates size of a dynamic import in javascript', () =>
-    verify('dynamic-import.js'));
-  it('calculates size of a dynamic import in typescript', () =>
-    verify('dynamic-import.ts'));
-  it('calculates size of a vue script', () => verify('vue.vue'));
-  it('calculates size of a svelte script', () => verify('svelte.svelte'));
-
-  it('caches the results import string & version', async () => {
-    expect(await timed(() => verify('import.js'))).to.be.within(100, 1500);
-    expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
-      100,
-      1500,
-    );
-    expect(await timed(() => verify('import.ts'))).to.be.within(0, 100);
-  });
-  it('ignores order of javascript imports for caching purposes', async () => {
-    expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
-      100,
-      1500,
-    );
-    expect(
-      await timed(() => verify('import-specifiers-reversed.js')),
-    ).to.be.within(0, 100);
-    expect(await timed(() => verify('import-mixed.js'))).to.be.within(
-      100,
-      1500,
-    );
-    expect(await timed(() => verify('import-mixed-reversed.js'))).to.be.within(
-      0,
-      120,
-    );
-  });
-  it('ignores order of typescript imports for caching purposes', async () => {
-    expect(await timed(() => verify('import-specifiers.ts'))).to.be.within(
-      100,
-      1500,
-    );
-    expect(
-      await timed(() => verify('import-specifiers-reversed.ts')),
-    ).to.be.within(0, 100);
-    expect(await timed(() => verify('import-mixed.ts'))).to.be.within(
-      100,
-      1500,
-    );
-    expect(await timed(() => verify('import-mixed-reversed.ts'))).to.be.within(
-      0,
-      100,
-    );
-  });
-  it('debounce any consecutive calculations of same import line', () => {
-    const p1 = expect(
-      whenDone(
-        runner(
-          fixture('import.js'),
-          'import "chai";',
-          LANGUAGES.js,
-          DEFAULT_CONFIG,
+  describe('caching', () => {
+    it('caches the results import string & version', async () => {
+      expect(await timed(() => verify('import.js'))).to.be.within(100, 1500);
+      expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
+        100,
+        1500,
+      );
+      expect(await timed(() => verify('import.ts'))).to.be.within(0, 100);
+    });
+    it('ignores order of javascript imports for caching purposes', async () => {
+      expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
+        100,
+        1500,
+      );
+      expect(
+        await timed(() => verify('import-specifiers-reversed.js')),
+      ).to.be.within(0, 100);
+      expect(await timed(() => verify('import-mixed.js'))).to.be.within(
+        100,
+        1500,
+      );
+      expect(
+        await timed(() => verify('import-mixed-reversed.js')),
+      ).to.be.within(0, 120);
+    });
+    it('ignores order of typescript imports for caching purposes', async () => {
+      expect(await timed(() => verify('import-specifiers.ts'))).to.be.within(
+        100,
+        1500,
+      );
+      expect(
+        await timed(() => verify('import-specifiers-reversed.ts')),
+      ).to.be.within(0, 100);
+      expect(await timed(() => verify('import-mixed.ts'))).to.be.within(
+        100,
+        1500,
+      );
+      expect(
+        await timed(() => verify('import-mixed-reversed.ts')),
+      ).to.be.within(0, 100);
+    });
+    it('debounce any consecutive calculations of same import line', () => {
+      const p1 = expect(
+        whenDone(
+          runner(
+            fixture('import.js'),
+            'import "chai";',
+            LANGUAGES.js,
+            DEFAULT_CONFIG,
+          ),
         ),
-      ),
-    ).to.be.rejectedWith(DebounceError);
-    const p2 = expect(
-      whenDone(
-        runner(
-          fixture('import.js'),
-          'import "chai/index";',
-          LANGUAGES.js,
-          DEFAULT_CONFIG,
+      ).to.be.rejectedWith(DebounceError);
+      const p2 = expect(
+        whenDone(
+          runner(
+            fixture('import.js'),
+            'import "chai/index";',
+            LANGUAGES.js,
+            DEFAULT_CONFIG,
+          ),
         ),
-      ),
-    ).to.be.fulfilled;
-    return Promise.all([p1, p2]);
-  });
-  it('caches everything to filesystem', async () => {
-    expect(await timed(() => verify('import.js'))).to.be.within(100, 1500);
-    expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
-      100,
-      1500,
-    );
-    fs.renameSync(cacheFileName, `${cacheFileName}.bak`);
-    clearSizeCache();
-    fs.renameSync(`${cacheFileName}.bak`, cacheFileName);
-    expect(await timed(() => verify('import.ts'))).to.be.within(0, 100);
-  });
-
-  it('not added to package list if dependency is missing', async () => {
-    const packages = await whenDone(importCost(fixture('failed-missing.js')));
-    expect(packages.filter(x => x.name === 'sinon').length).to.equal(0);
-  });
-  it('results in 0 if bundle fails', async () => {
-    const packages = await whenDone(importCost(fixture('failed-bundle.js')));
-    expect(sizeOf(packages, 'jest')).to.equal(0);
+      ).to.be.fulfilled;
+      return Promise.all([p1, p2]);
+    });
+    it('caches everything to filesystem', async () => {
+      expect(await timed(() => verify('import.js'))).to.be.within(100, 1500);
+      expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
+        100,
+        1500,
+      );
+      fs.renameSync(cacheFileName, `${cacheFileName}.bak`);
+      clearSizeCache();
+      fs.renameSync(`${cacheFileName}.bak`, cacheFileName);
+      expect(await timed(() => verify('import.ts'))).to.be.within(0, 100);
+    });
   });
 
-  it('errors on broken javascript', () => {
-    return expect(whenDone(importCost(fixture('incomplete.bad.js')))).to.be
-      .rejected;
-  });
-  it('errors on broken typescript', () => {
-    return expect(whenDone(importCost(fixture('incomplete.bad.ts')))).to.be
-      .rejected;
-  });
-  it('errors on broken vue', () => {
-    return expect(whenDone(importCost(fixture('incomplete.bad.vue')))).to.be
-      .rejected;
-  });
-  it('completes with empty array for unknown file type', async () => {
-    const packages = await whenDone(importCost(fixture('require.js'), 'flow'));
-    expect(packages).to.eql([]);
-  });
-
-  it('should handle timeouts gracefully', async () => {
-    const packages = await whenDone(
-      importCost(fixture('require.js'), LANGUAGES.js, {
-        concurrent: true,
-        maxCallTime: 10,
-      }),
-    );
-    expect(packages[0].size).to.equal(0);
-    expect(packages[0].error.type).to.equal('TimeoutError');
+  describe('error handling', () => {
+    it('not added to package list if dependency is missing', async () => {
+      const packages = await whenDone(importCost(fixture('failed-missing.js')));
+      expect(packages.filter(x => x.name === 'sinon').length).to.equal(0);
+    });
+    it('results in 0 if bundle fails', async () => {
+      const packages = await whenDone(importCost(fixture('failed-bundle.js')));
+      expect(sizeOf(packages, 'jest')).to.equal(0);
+    });
+    it('errors on broken javascript', () => {
+      return expect(whenDone(importCost(fixture('incomplete.bad.js')))).to.be
+        .rejected;
+    });
+    it('errors on broken typescript', () => {
+      return expect(whenDone(importCost(fixture('incomplete.bad.ts')))).to.be
+        .rejected;
+    });
+    it('errors on broken vue', () => {
+      return expect(whenDone(importCost(fixture('incomplete.bad.vue')))).to.be
+        .rejected;
+    });
+    it('completes with empty array for unknown file type', async () => {
+      const packages = await whenDone(
+        importCost(fixture('require.js'), 'flow'),
+      );
+      expect(packages).to.eql([]);
+    });
+    it('should handle timeouts gracefully', async () => {
+      const packages = await whenDone(
+        importCost(fixture('require.js'), LANGUAGES.js, {
+          concurrent: true,
+          maxCallTime: 10,
+        }),
+      );
+      expect(packages[0].size).to.equal(0);
+      expect(packages[0].error.type).to.equal('TimeoutError');
+    });
   });
 });
