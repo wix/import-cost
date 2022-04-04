@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { workspace, window, extensions, env } = require('vscode');
+const { workspace, window, extensions } = require('vscode');
 
 function whenDone(emitter, pkg) {
   return new Promise(resolve => {
@@ -34,10 +34,5 @@ async function verify(
 
 describe('Import Cost VSCode Extension', () => {
   it('Should report module bundle size', () =>
-    verify(
-      'const fileSize = require("filesize");\n',
-      'filesize',
-      env.appHost === 'desktop' ? 2000 : 3000,
-      env.appHost === 'desktop' ? 3000 : 4000,
-    ));
+    verify('const fileSize = require("filesize");\n', 'filesize', 2000, 3000));
 });

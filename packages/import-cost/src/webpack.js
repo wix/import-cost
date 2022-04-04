@@ -30,9 +30,6 @@ async function calcSize(packageInfo, callback) {
   const webpackConfig = {
     entry: await getEntryPoint(packageInfo),
     target: 'node',
-    optimization: {
-      minimize: !process.browser, //TBD make minimizer work in browser
-    },
     snapshot: {
       managedPaths: [],
     },

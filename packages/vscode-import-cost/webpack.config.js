@@ -26,7 +26,10 @@ const config = {
     alias: {
       'native-fs-adapter': require.resolve('./src/fs'),
       'worker-farm': false,
-      'terser-webpack-plugin': false,
+      'jest-worker': false,
+      'uglify-js': false,
+      '@swc/core': false,
+      'esbuild': false,
       'graceful-fs': false,
       'inspector': false,
     },
