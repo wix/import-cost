@@ -229,9 +229,9 @@ describe('importCost', () => {
       await slow('import.js');
       await clearSizeCache();
       await slow('import.js');
-      fs.renameSync(cacheFileName.path, `${cacheFileName.path}.bak`);
+      fs.renameSync(cacheFileName, `${cacheFileName}.bak`);
       await clearSizeCache();
-      fs.renameSync(`${cacheFileName.path}.bak`, cacheFileName.path);
+      fs.renameSync(`${cacheFileName}.bak`, cacheFileName);
       await fast('import.ts');
     });
   });

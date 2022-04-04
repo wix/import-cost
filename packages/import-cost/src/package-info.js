@@ -26,7 +26,7 @@ function initWorkers(config) {
 
 let sizeCache = {};
 const failedSize = { size: 0, gzip: 0 };
-const cacheFileName = URI.file(path.join(os.tmpdir(), `ic-cache-${icVersion}`));
+const cacheFileName = path.join(os.tmpdir(), `ic-cache-${icVersion}`);
 
 async function getSize(pkg, config) {
   const key = `${pkg.string}#${pkg.version}`;
@@ -60,7 +60,7 @@ function calcPackageSize(packageInfo, config) {
 async function clearSizeCache() {
   try {
     sizeCache = {};
-    await fsAdapter.delete(cacheFileName);
+    await fsAdapter.delete(URI.file(cacheFileName));
   } catch {
     // silent error
   }
@@ -69,7 +69,7 @@ async function clearSizeCache() {
 async function readSizeCache() {
   try {
     if (Object.keys(sizeCache).length === 0) {
-      sizeCache = JSON.parse(await fsAdapter.readFile(cacheFileName));
+      sizeCache = JSON.parse(await fsAdapter.readFile(URI.file(cacheFileName)));
     }
   } catch {
     // silent error
@@ -88,7 +88,7 @@ async function saveSizeCache() {
     );
     if (Object.keys(cache).length > 0) {
       await fsAdapter.writeFile(
-        cacheFileName,
+        URI.file(cacheFileName),
         Buffer.from(JSON.stringify(cache, null, 2), 'utf8'),
       );
     }
