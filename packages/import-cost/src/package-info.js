@@ -4,27 +4,29 @@ const workerFarm = require('worker-farm');
 const { URI } = require('vscode-uri');
 const fsAdapter = require('native-fs-adapter');
 const { debouncePromise, DebounceError } = require('./debounce-promise.js');
-const { version: extensionVersion } = require('../package.json');
+const { version: icVersion } = require('../package.json');
 const { calcSize } = require('./webpack.js');
 
 let workers = null;
 function initWorkers(config) {
-  if (!workerFarm.end) return;
-  const debug = process.env.NODE_ENV === 'test';
-  workers = workerFarm(
-    {
-      maxConcurrentWorkers: debug ? 1 : os.cpus().length - 1,
-      maxRetries: 3,
-      maxCallTime: config.maxCallTime || Infinity,
-    },
-    path.join(__dirname, 'webpack.js'),
-    ['calcSize'],
-  );
+  if (!workers) {
+    const debug = process.env.NODE_ENV === 'test';
+    workers = workerFarm(
+      {
+        maxConcurrentWorkers: debug ? 1 : os.cpus().length - 1,
+        maxRetries: 3,
+        maxCallTime: config.maxCallTime || Infinity,
+      },
+      path.join(__dirname, 'webpack.js'),
+      ['calcSize'],
+    );
+  }
+  return workers;
 }
 
 let sizeCache = {};
 const failedSize = { size: 0, gzip: 0 };
-const cacheFileName = path.join(os.tmpdir(), `ic-cache-${extensionVersion}`);
+const cacheFileName = URI.file(path.join(os.tmpdir(), `ic-cache-${icVersion}`));
 
 async function getSize(pkg, config) {
   const key = `${pkg.string}#${pkg.version}`;
@@ -48,23 +50,17 @@ async function getSize(pkg, config) {
 }
 
 function calcPackageSize(packageInfo, config) {
-  if (!workers) {
-    initWorkers(config);
-  }
-
-  return debouncePromise(
-    `${packageInfo.fileName}#${packageInfo.line}`,
-    (resolve, reject) => {
-      const fn = config.concurrent && workers ? workers.calcSize : calcSize;
-      fn(packageInfo, (err, result) => (err ? reject(err) : resolve(result)));
-    },
-  );
+  const key = `${packageInfo.fileName}#${packageInfo.line}`;
+  const fn = config.concurrent ? initWorkers(config).calcSize : calcSize;
+  return debouncePromise(key, (resolve, reject) => {
+    fn(packageInfo, (err, result) => (err ? reject(err) : resolve(result)));
+  });
 }
 
 async function clearSizeCache() {
-  sizeCache = {};
   try {
-    await fsAdapter.delete(URI.file(cacheFileName));
+    sizeCache = {};
+    await fsAdapter.delete(cacheFileName);
   } catch {
     // silent error
   }
@@ -73,7 +69,7 @@ async function clearSizeCache() {
 async function readSizeCache() {
   try {
     if (Object.keys(sizeCache).length === 0) {
-      sizeCache = JSON.parse(await fsAdapter.readFile(URI.file(cacheFileName)));
+      sizeCache = JSON.parse(await fsAdapter.readFile(cacheFileName));
     }
   } catch {
     // silent error
@@ -92,7 +88,7 @@ async function saveSizeCache() {
     );
     if (Object.keys(cache).length > 0) {
       await fsAdapter.writeFile(
-        URI.file(cacheFileName),
+        cacheFileName,
         Buffer.from(JSON.stringify(cache, null, 2), 'utf8'),
       );
     }

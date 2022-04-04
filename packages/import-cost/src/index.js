@@ -10,6 +10,9 @@ function importCost(
   language,
   config = { maxCallTime: Infinity, concurrent: true },
 ) {
+  if (process.browser) {
+    config.concurrent = false; //TBD make concurrency work in browser
+  }
   const emitter = new EventEmitter();
   setTimeout(async () => {
     try {
@@ -21,16 +24,13 @@ function importCost(
       );
       imports = imports.filter(pkg => !!pkg.version);
       emitter.emit('start', imports);
-      const promises = imports
-        .map(packageInfo => getSize(packageInfo, config))
-        .map(promise =>
-          promise.then(packageInfo => {
-            emitter.emit('calculated', packageInfo);
-            return packageInfo;
-          }),
-        );
-      const packages = (await Promise.all(promises)).filter(x => x);
-      emitter.emit('done', packages);
+      const promises = imports.map(packageInfo =>
+        getSize(packageInfo, config).then(packageInfo => {
+          emitter.emit('calculated', packageInfo);
+          return packageInfo;
+        }),
+      );
+      emitter.emit('done', await Promise.all(promises));
     } catch (e) {
       emitter.emit('error', e);
     }

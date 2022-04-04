@@ -5,11 +5,6 @@ const { importCost: runner, cleanup, Lang } = require('../src/index.js');
 const { clearSizeCache, cacheFileName } = require('../src/package-info.js');
 const { DebounceError } = require('../src/debounce-promise.js');
 
-const DEFAULT_CONFIG = {
-  concurrent: false,
-  maxCallTime: Infinity,
-};
-
 function fixture(fileName) {
   return path.join(__dirname, 'fixtures', fileName);
 }
@@ -40,21 +35,11 @@ const LANGUAGES = {
   svelte: Lang.SVELTE,
 };
 
-function importCost(fileName, language = null, config = DEFAULT_CONFIG) {
-  if (!language) language = LANGUAGES[fileName.split('.').pop()];
-  return runner(fileName, fs.readFileSync(fileName, 'utf-8'), language, config);
-}
-
-function sizeOf(packages, name) {
-  return packages.filter(x => x.name === name).shift().size;
-}
-
-function gzipOf(packages, name) {
-  return packages.filter(x => x.name === name).shift().gzip;
-}
-
-function getPackages(fileName) {
-  return whenDone(importCost(fixture(fileName)));
+async function check(fileName, pkg, config = { concurrent: false }) {
+  const language = LANGUAGES[fileName.split('.').pop()];
+  const content = fs.readFileSync(fixture(fileName), 'utf-8');
+  const emitter = runner(fixture(fileName), content, language, config);
+  return (await whenDone(emitter)).find(x => x.name === pkg);
 }
 
 async function verify(
@@ -65,20 +50,15 @@ async function verify(
   gzipLowBound = 0.01,
   gzipHighBound = 0.8,
 ) {
-  const packages = await getPackages(fileName);
-  const size = sizeOf(packages, pkg);
+  const { size, gzip } = await check(fileName, pkg);
   expect(size).to.be.within(minSize, maxSize);
-  expect(gzipOf(packages, pkg)).to.be.within(
-    size * gzipLowBound,
-    size * gzipHighBound,
-  );
+  expect(gzip).to.be.within(size * gzipLowBound, size * gzipHighBound);
 }
 
-async function timed(fn) {
-  const time = process.hrtime();
-  await fn();
-  const diff = process.hrtime(time);
-  return Math.round((diff[0] * 1e9 + diff[1]) / 1e6);
+async function timed(fileName) {
+  const time = process.hrtime.bigint();
+  await verify(fileName);
+  return Math.round(Number(process.hrtime.bigint() - time) / 1e6);
 }
 
 describe('importCost', () => {
@@ -192,14 +172,14 @@ describe('importCost', () => {
       return verify('import-peer.js', 'haspeerdeps', 200, 300);
     });
     it('supports a monorepo-like structure', () => {
-      return verify('./yarn-workspace/import-nested-project.js', 'chai');
+      return verify('yarn-workspace/import-nested-project.js', 'chai');
     });
     it('supports a monorepo-like structure with scoped module', () => {
-      return verify('./yarn-workspace/import-with-scope.js', '@angular/core');
+      return verify('yarn-workspace/import-with-scope.js', '@angular/core');
     });
     it('supports a monorepo-like structure with scoped module and file name', () => {
       return verify(
-        './yarn-workspace/import-with-scope-filename.js',
+        'yarn-workspace/import-with-scope-filename.js',
         '@angular/core/index.js',
       );
     });
@@ -218,118 +198,68 @@ describe('importCost', () => {
   });
 
   describe('caching', () => {
+    const slow = async x => expect(await timed(x)).to.be.within(500, 2500);
+    const fast = async x => expect(await timed(x)).to.be.within(0, 100);
+
     it('caches the results import string & version', async () => {
-      expect(await timed(() => verify('import.js'))).to.be.within(100, 1500);
-      expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
-        100,
-        1500,
-      );
-      expect(await timed(() => verify('import.ts'))).to.be.within(0, 100);
+      await slow('import.js');
+      await slow('import-specifiers.js');
+      await fast('import.js');
     });
     it('ignores order of javascript imports for caching purposes', async () => {
-      expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
-        100,
-        1500,
-      );
-      expect(
-        await timed(() => verify('import-specifiers-reversed.js')),
-      ).to.be.within(0, 100);
-      expect(await timed(() => verify('import-mixed.js'))).to.be.within(
-        100,
-        1500,
-      );
-      expect(
-        await timed(() => verify('import-mixed-reversed.js')),
-      ).to.be.within(0, 120);
+      await slow('import-specifiers.js');
+      await fast('import-specifiers-reversed.js');
+      await slow('import-mixed.js');
+      await fast('import-mixed-reversed.js');
     });
     it('ignores order of typescript imports for caching purposes', async () => {
-      expect(await timed(() => verify('import-specifiers.ts'))).to.be.within(
-        100,
-        1500,
-      );
-      expect(
-        await timed(() => verify('import-specifiers-reversed.ts')),
-      ).to.be.within(0, 100);
-      expect(await timed(() => verify('import-mixed.ts'))).to.be.within(
-        100,
-        1500,
-      );
-      expect(
-        await timed(() => verify('import-mixed-reversed.ts')),
-      ).to.be.within(0, 100);
+      await slow('import-specifiers.ts');
+      await fast('import-specifiers-reversed.ts');
+      await slow('import-mixed.ts');
+      await fast('import-mixed-reversed.ts');
     });
     it('debounce any consecutive calculations of same import line', () => {
-      const p1 = expect(
-        whenDone(
-          runner(
-            fixture('import.js'),
-            'import "chai";',
-            LANGUAGES.js,
-            DEFAULT_CONFIG,
-          ),
-        ),
-      ).to.be.rejectedWith(DebounceError);
-      const p2 = expect(
-        whenDone(
-          runner(
-            fixture('import.js'),
-            'import "chai/index";',
-            LANGUAGES.js,
-            DEFAULT_CONFIG,
-          ),
-        ),
-      ).to.be.fulfilled;
-      return Promise.all([p1, p2]);
+      const line = x => whenDone(runner(fixture('import.js'), x, LANGUAGES.js));
+      return Promise.all([
+        expect(line('import "chai";')).to.be.rejectedWith(DebounceError),
+        expect(line('import "chai/index";')).to.be.fulfilled,
+      ]);
     });
     it('caches everything to filesystem', async () => {
-      expect(await timed(() => verify('import.js'))).to.be.within(100, 1500);
-      expect(await timed(() => verify('import-specifiers.js'))).to.be.within(
-        100,
-        1500,
-      );
-      fs.renameSync(cacheFileName, `${cacheFileName}.bak`);
-      clearSizeCache();
-      fs.renameSync(`${cacheFileName}.bak`, cacheFileName);
-      expect(await timed(() => verify('import.ts'))).to.be.within(0, 100);
+      await slow('import.js');
+      await clearSizeCache();
+      await slow('import.js');
+      fs.renameSync(cacheFileName.path, `${cacheFileName.path}.bak`);
+      await clearSizeCache();
+      fs.renameSync(`${cacheFileName.path}.bak`, cacheFileName.path);
+      await fast('import.ts');
     });
   });
 
   describe('error handling', () => {
     it('not added to package list if dependency is missing', async () => {
-      const packages = await whenDone(importCost(fixture('failed-missing.js')));
-      expect(packages.filter(x => x.name === 'sinon').length).to.equal(0);
+      expect(await check('failed-missing.js', 'sinon')).to.eql(undefined);
     });
     it('results in 0 if bundle fails', async () => {
-      const packages = await whenDone(importCost(fixture('failed-bundle.js')));
-      expect(sizeOf(packages, 'jest')).to.equal(0);
+      expect((await check('failed-bundle.js', 'jest')).size).to.equal(0);
     });
     it('errors on broken javascript', () => {
-      return expect(whenDone(importCost(fixture('incomplete.bad.js')))).to.be
-        .rejected;
+      return expect(check('incomplete.bad.js')).to.be.rejected;
     });
     it('errors on broken typescript', () => {
-      return expect(whenDone(importCost(fixture('incomplete.bad.ts')))).to.be
-        .rejected;
+      return expect(check('incomplete.bad.ts')).to.be.rejected;
     });
     it('errors on broken vue', () => {
-      return expect(whenDone(importCost(fixture('incomplete.bad.vue')))).to.be
-        .rejected;
+      return expect(check('incomplete.bad.vue')).to.be.rejected;
     });
     it('completes with empty array for unknown file type', async () => {
-      const packages = await whenDone(
-        importCost(fixture('require.js'), 'flow'),
-      );
-      expect(packages).to.eql([]);
+      expect(await check('import.flow', 'chai')).to.eql(undefined);
     });
     it('should handle timeouts gracefully', async () => {
-      const packages = await whenDone(
-        importCost(fixture('require.js'), LANGUAGES.js, {
-          concurrent: true,
-          maxCallTime: 10,
-        }),
-      );
-      expect(packages[0].size).to.equal(0);
-      expect(packages[0].error.type).to.equal('TimeoutError');
+      const config = { concurrent: true, maxCallTime: 10 };
+      const pkg = await check('require.js', 'chai', config);
+      expect(pkg.size).to.equal(0);
+      expect(pkg.error.type).to.equal('TimeoutError');
     });
   });
 });
