@@ -8,20 +8,10 @@ const { version: icVersion } = require('../package.json');
 const { calcSize } = require('./webpack.js');
 
 let workers = null;
-function initWorkers(config) {
-  if (!workers) {
-    const debug = process.env.NODE_ENV === 'test';
-    workers = workerFarm(
-      {
-        maxConcurrentWorkers: debug ? 1 : os.cpus().length - 1,
-        maxRetries: 3,
-        maxCallTime: config.maxCallTime || Infinity,
-      },
-      path.join(__dirname, 'webpack.js'),
-      ['calcSize'],
-    );
-  }
-  return workers;
+function initWorkers(maxCallTime = Infinity) {
+  const fileName = path.join(__dirname, 'webpack.js');
+  workers = workers || workerFarm({ maxCallTime }, fileName, ['calcSize']);
+  return workers.calcSize;
 }
 
 let sizeCache = {};
@@ -51,7 +41,7 @@ async function getSize(pkg, config) {
 
 function calcPackageSize(packageInfo, config) {
   const key = `${packageInfo.fileName}#${packageInfo.line}`;
-  const fn = config.concurrent ? initWorkers(config).calcSize : calcSize;
+  const fn = config.concurrent ? initWorkers(config.maxCallTime) : calcSize;
   return debouncePromise(key, (resolve, reject) => {
     fn(packageInfo, (err, result) => (err ? reject(err) : resolve(result)));
   });
