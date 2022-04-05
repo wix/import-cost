@@ -9,6 +9,7 @@ const {
 const webpack = require('webpack');
 const { fs } = require('memfs');
 const { gzipSync } = require('zlib');
+const TimeoutPlugin = require('./timeout-plugin.js');
 
 async function getEntryPoint(packageInfo) {
   const tmpFile = `/tmp/${Math.random().toString(36).slice(2)}.js`;
@@ -19,7 +20,7 @@ async function getEntryPoint(packageInfo) {
   return tmpFile;
 }
 
-async function calcSize(packageInfo, callback) {
+async function calcSize(packageInfo, { maxCallTime }, callback) {
   const packageRootDir = await pkgDir(path.dirname(packageInfo.fileName));
   const modulesDirectory = path.join(packageRootDir, 'node_modules');
   const peers = (await getPackageJson(packageInfo)).peerDependencies || {};
@@ -39,6 +40,7 @@ async function calcSize(packageInfo, callback) {
       }),
       new webpack.optimize.ModuleConcatenationPlugin(),
       new webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }),
+      new TimeoutPlugin(maxCallTime),
     ],
     resolve: {
       mainFields: ['browser', 'module', 'main'],

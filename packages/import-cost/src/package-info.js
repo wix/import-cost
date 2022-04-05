@@ -43,7 +43,7 @@ function calcPackageSize(packageInfo, config) {
   const key = `${packageInfo.fileName}#${packageInfo.line}`;
   const fn = config.concurrent ? initWorkers(config.maxCallTime) : calcSize;
   return debouncePromise(key, (resolve, reject) => {
-    fn(packageInfo, (err, result) => (err ? reject(err) : resolve(result)));
+    fn(packageInfo, config, (e, result) => (e ? reject(e) : resolve(result)));
   });
 }
 
