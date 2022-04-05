@@ -128,7 +128,7 @@
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "16.x",
-    "@types/vscode": "^1.65.0",
+    "@types/vscode": "^1.64.0",
     "@vscode/test-electron": "^2.1.2",
     "@vscode/test-web": "^0.0.24",
     "assert": "^2.0.0",
@@ -144,6 +144,7 @@
     "mocha": "^9.2.2",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "url": "^0.11.0",
@@ -154,8 +155,7 @@
   },
   "dependencies": {
     "filesize": "^8.0.7",
-    "import-cost": "^3.0.0",
-    "process": "^0.11.10"
+    "import-cost": "^3.1.0"
   },
   "icon": "images/import-cost-logo.png",
   "galleryBanner": {
