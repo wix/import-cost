@@ -255,7 +255,7 @@ describe('importCost', () => {
     it('completes with empty array for unknown file type', async () => {
       expect(await check('import.flow', 'chai')).to.eql(undefined);
     });
-    it.only('should handle timeouts gracefully', async () => {
+    it('should handle timeouts gracefully', async () => {
       const pkg = await check('require.js', 'chai', { maxCallTime: 10 });
       expect(pkg.size).to.equal(0);
       expect(pkg.error.type).to.equal('TimeoutError');
