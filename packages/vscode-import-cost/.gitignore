@@ -1,2 +1,4 @@
 .vscode-test*
 dist
+package-lock.json
+*.vsix
