@@ -1,4 +1,6 @@
 const path = require('path');
+const process = require('process');
+const webpack = require('webpack');
 
 const config = {
   mode: 'development',
@@ -7,6 +9,11 @@ const config = {
     extension: './src/extension.js',
     tests: './test/runner/browser.js',
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.CWD': JSON.stringify(path.resolve(process.cwd(), '../../')),
+    }),
+  ],
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',

@@ -51,7 +51,7 @@ async function processActiveFile(document) {
     emitters[fileName]?.removeAllListeners();
 
     const { timeout } = workspace.getConfiguration('importCost');
-    const config = { concurrent: true, maxCallTime: timeout };
+    const config = { concurrent: false, maxCallTime: timeout };
     const text = document.getText();
     const emitter = importCost(fileName, text, language(document), config);
     emitter.on('error', e => logger.log(`importCost error: ${e}`));
