@@ -79,14 +79,7 @@ $ cd packages/vscode-import-cost
 $ npm version patch | minor | major
 $ git commit -a -m "releasing version X.X.X"
 $ git push
-$ git clean -xdf && npm install && vsce publish
-```
-
-See how in the last step we had to clean everything and do a clean `npm install` in the extension folder? This is an important step so that `vsce publish` will bundle everything correctly when publishing the extension. After that's done, you'll need to run following command so that npm will sort everything out again:
-```
-$ cd ../..
-$ git clean -xdf
-$ npm install
+$ vsce publish
 ```
 
 Don't forget to update README.md with details of what is new in the released version...
