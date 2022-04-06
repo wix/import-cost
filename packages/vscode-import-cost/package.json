@@ -3,7 +3,7 @@
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
   "license": "MIT",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "publisher": "wix",
   "main": "./dist/extension.electron.js",
   "browser": "./dist/extension.browser.js",
