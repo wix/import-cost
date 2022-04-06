@@ -5,13 +5,13 @@ const path = require('path');
 async function main() {
   await runElectronTests({
     extensionDevelopmentPath: path.resolve(__dirname, '../'),
-    extensionTestsPath: path.resolve(__dirname, './runner/electron'),
+    extensionTestsPath: path.resolve(__dirname, './runner/electron.js'),
   });
   await runWebTests({
     browserType: 'chromium',
     folderPath: path.resolve(__dirname, '../../../'),
     extensionDevelopmentPath: path.resolve(__dirname, '../'),
-    extensionTestsPath: path.resolve(__dirname, '../dist/tests'),
+    extensionTestsPath: path.resolve(__dirname, '../dist/tests.browser.js'),
   });
   process.exit(0);
 }

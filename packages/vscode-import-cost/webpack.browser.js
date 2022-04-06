@@ -1,7 +1,7 @@
 const path = require('path');
 
 const config = {
-  mode: 'development',
+  mode: 'production',
   target: 'webworker',
   entry: {
     extension: './src/extension.js',
@@ -9,7 +9,7 @@ const config = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
+    filename: '[name].browser.js',
     libraryTarget: 'commonjs2',
     devtoolModuleFilenameTemplate: '../[resource-path]',
   },

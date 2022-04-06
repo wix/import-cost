@@ -5,8 +5,8 @@
   "license": "MIT",
   "version": "3.1.0",
   "publisher": "wix",
-  "main": "./src/extension.js",
-  "browser": "./dist/extension.js",
+  "main": "./dist/extension.electron.js",
+  "browser": "./dist/extension.browser.js",
   "engines": {
     "vscode": "^1.64.0"
   },
@@ -121,7 +121,7 @@
     ]
   },
   "scripts": {
-    "pretest": "webpack",
+    "pretest": "webpack -c ./webpack.browser.js && webpack -c ./webpack.electron.js",
     "test": "node ./test/index.js"
   },
   "devDependencies": {
@@ -151,9 +151,7 @@
     "util": "^0.12.4",
     "vm-browserify": "^1.1.2",
     "webpack": "5.70.0",
-    "webpack-cli": "^4.9.2"
-  },
-  "dependencies": {
+    "webpack-cli": "^4.9.2",
     "filesize": "^8.0.7",
     "import-cost": "^3.1.0"
   },

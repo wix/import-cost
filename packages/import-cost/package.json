@@ -18,6 +18,7 @@
     "chai-as-promised": "^7.1.1",
     "mocha": "^9.2.2",
     "native-fs-adapter": "^1.0.0",
+    "terser-webpack-plugin": "^5.3.1",
     "vscode-uri": "^3.0.3"
   },
   "dependencies": {
@@ -33,7 +34,7 @@
     "pkg-dir": "^5.0.0",
     "tempy": "^1.0.0",
     "url-loader": "^4.1.1",
-    "webpack": "^5.0.0",
+    "webpack": "5.70.0",
     "worker-farm": "^1.4.1"
   }
 }

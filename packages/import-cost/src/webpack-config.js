@@ -6,6 +6,7 @@ const {
   pkgDir,
 } = require('./utils.js');
 const TimeoutPlugin = require('./timeout-plugin.js');
+const TerserPlugin = require('terser-webpack-plugin');
 
 async function webpackConfig(entry, packageInfo, { maxCallTime }) {
   const packageRootDir = await pkgDir(path.dirname(packageInfo.fileName));
@@ -20,6 +21,10 @@ async function webpackConfig(entry, packageInfo, { maxCallTime }) {
     target: 'node',
     snapshot: {
       managedPaths: [],
+    },
+    optimization: {
+      minimize: true,
+      minimizer: [new TerserPlugin({ parallel: false })],
     },
     plugins: [
       new webpack.DefinePlugin({
