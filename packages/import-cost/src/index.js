@@ -14,15 +14,21 @@ function importCost(
     config.concurrent = false; //TBD make concurrency work in browser
   }
   const emitter = new EventEmitter();
+  const log = s => emitter.emit('log', s);
   setTimeout(async () => {
     try {
+      log(`Scanning ${fileName} for packages...`);
       let imports = getPackages(fileName, text, language).filter(
         packageInfo => !packageInfo.name.startsWith('.'),
       );
+      log(`Found ${imports.length} packages`);
       await Promise.allSettled(
         imports.map(async pkg => (pkg.version = await getPackageVersion(pkg))),
       );
-      imports = imports.filter(pkg => !!pkg.version);
+      imports = imports.filter(pkg => {
+        log(`${pkg.version ? 'Found' : 'Skip'}: ${JSON.stringify(pkg)}`);
+        return !!pkg.version;
+      });
       emitter.emit('start', imports);
       const promises = imports.map(packageInfo =>
         getSize(packageInfo, config).then(packageInfo => {

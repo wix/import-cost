@@ -43,7 +43,7 @@ async function getPackageModuleContainer(pkg) {
       await fsAdapter.stat(URI.file(path.resolve(modulesDirectory, pkgName)));
       foundDir = modulesDirectory;
     } catch {
-      currentDir = path.resolve(currentDir, '..');
+      currentDir = path.resolve(projectDir, '..');
     }
   }
   return foundDir;
