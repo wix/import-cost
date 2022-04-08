@@ -1,5 +1,10 @@
 # Changes
 
+## 3.1.0
+- Make the extension work on vscode web
+- Moved to bundling the extension with webpack
+- Moved to handling timeouts in webpack plugin instead of worker farm
+
 ## 2.12.0
 - Add support for dynamic imports
 
