@@ -3,9 +3,7 @@ const fileSize = require('filesize');
 const logger = require('./logger');
 
 const decorations = {};
-const decorationType = window.createTextEditorDecorationType({
-  after: { margin: '0 0 0 1rem' },
-});
+const decorationType = window.createTextEditorDecorationType({});
 
 function setDecorations(fileName, packages) {
   decorations[fileName] = {};
@@ -38,41 +36,66 @@ function calculated(fileName, packageInfo) {
 }
 
 function getDecorationMessage(packageInfo) {
-  if (!packageInfo) {
-    return 'Calculating...';
-  }
-  let decorationMessage;
   const configuration = workspace.getConfiguration('importCost');
+  const text = s => ({
+    after: {
+      contentText: s,
+      margin: `0 0 0 ${configuration.margin}rem`,
+      fontStyle: configuration.fontStyle,
+    },
+  });
+  if (!packageInfo) {
+    return text('Calculating...');
+  }
   const size = fileSize(packageInfo.size, { unix: true });
   const gzip = fileSize(packageInfo.gzip, { unix: true });
-  if (configuration.bundleSizeDecoration === 'both') {
-    decorationMessage = `${size} (gzipped: ${gzip})`;
-  } else if (configuration.bundleSizeDecoration === 'minified') {
-    decorationMessage = size;
+  if (configuration.bundleSizeDecoration === 'minified') {
+    return text(`${size}`);
   } else if (configuration.bundleSizeDecoration === 'gzipped') {
-    decorationMessage = gzip;
+    return text(`${gzip}`);
+  } else {
+    return text(`${size} (gzipped: ${gzip})`);
   }
-  return decorationMessage;
 }
 
 function getDecorationColor(packageInfo) {
   const configuration = workspace.getConfiguration('importCost');
-  const size = packageInfo?.size || 0;
+  const color = (old, dark, light) => ({
+    dark: { after: { color: old || dark } },
+    light: { after: { color: old || light } },
+  });
+  const size =
+    (configuration.bundleSizeColoring === 'minified'
+      ? packageInfo?.size
+      : packageInfo?.gzip) || 0;
   const sizeInKB = size / 1024;
   if (sizeInKB < configuration.smallPackageSize) {
-    return configuration.smallPackageColor;
+    return color(
+      configuration.smallPackageColor,
+      configuration.smallPackageDarkColor,
+      configuration.smallPackageLightColor,
+    );
   } else if (sizeInKB < configuration.mediumPackageSize) {
-    return configuration.mediumPackageColor;
+    return color(
+      configuration.mediumPackageColor,
+      configuration.mediumPackageDarkColor,
+      configuration.mediumPackageLightColor,
+    );
   } else {
-    return configuration.largePackageColor;
+    return color(
+      configuration.largePackageColor,
+      configuration.largePackageDarkColor,
+      configuration.largePackageLightColor,
+    );
   }
 }
 
 function decoration(line, packageInfo) {
-  const text = getDecorationMessage(packageInfo);
-  const color = getDecorationColor(packageInfo);
   return {
-    renderOptions: { after: { contentText: text, color } },
+    renderOptions: {
+      ...getDecorationColor(packageInfo),
+      ...getDecorationMessage(packageInfo),
+    },
     range: new Range(
       new Position(line - 1, 1024),
       new Position(line - 1, 1024),

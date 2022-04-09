@@ -33,6 +33,15 @@
       "type": "object",
       "title": "Import Cost configuration",
       "properties": {
+        "importCost.bundleSizeColoring": {
+          "type": "string",
+          "default": "minified",
+          "enum": [
+            "minified",
+            "gzipped"
+          ],
+          "description": "Which bundle size to use for selecting the color"
+        },
         "importCost.smallPackageSize": {
           "type": "number",
           "default": 50,
@@ -43,20 +52,50 @@
           "default": 100,
           "description": "Upper size limit, in KB, that will count a package as a medium package"
         },
-        "importCost.smallPackageColor": {
+        "importCost.smallPackageDarkColor": {
           "type": "string",
           "default": "#7cc36e",
-          "description": "Decoration color for small packages"
+          "description": "Decoration color for small packages in dark theme"
         },
-        "importCost.mediumPackageColor": {
+        "importCost.mediumPackageDarkColor": {
           "type": "string",
           "default": "#7cc36e",
-          "description": "Decoration color for medium packages"
+          "description": "Decoration color for medium packages in dark theme"
         },
-        "importCost.largePackageColor": {
+        "importCost.largePackageDarkColor": {
           "type": "string",
           "default": "#d44e40",
-          "description": "Decoration color for large packages"
+          "description": "Decoration color for large packages in dark theme"
+        },
+        "importCost.smallPackageLightColor": {
+          "type": "string",
+          "default": "#7cc36e",
+          "description": "Decoration color for small packages in light theme"
+        },
+        "importCost.mediumPackageLightColor": {
+          "type": "string",
+          "default": "#7cc36e",
+          "description": "Decoration color for medium packages in light theme"
+        },
+        "importCost.largePackageLightColor": {
+          "type": "string",
+          "default": "#d44e40",
+          "description": "Decoration color for large packages in light theme"
+        },
+        "importCost.margin": {
+          "type": "number",
+          "default": 1,
+          "description": "Decoration margin from end of line"
+        },
+        "importCost.fontStyle": {
+          "type": "string",
+          "default": "normal",
+          "enum": [
+            "normal",
+            "italic",
+            "oblique"
+          ],
+          "description": "Decoration font style"
         },
         "importCost.typescriptExtensions": {
           "type": "array",
@@ -108,8 +147,8 @@
         },
         "importCost.timeout": {
           "type": "number",
-          "default": 10000,
-          "description": "Size calculation timeout in milliseconds (requires restart)"
+          "default": 20000,
+          "description": "Size calculation timeout in milliseconds"
         }
       }
     },

@@ -22,46 +22,5 @@ Currently supports:
 We detail the why and how in this blog post:
 https://medium.com/@yairhaimo/keep-your-bundle-size-under-control-with-import-cost-vscode-extension-5d476b3c5a76
 
-## Configuration
-The following properties are configurable:
-
-```javascript
-  // Upper size limit, in KB, that will count a package as a small package
-  "importCost.smallPackageSize": 50,
-
-  // Upper size limit, in KB, that will count a package as a medium package
-  "importCost.mediumPackageSize": 100,
-
-  // Decoration color for small packages
-  "importCost.smallPackageColor": "#7cc36e",
-
-  // Decoration color for medium packages
-  "importCost.mediumPackageColor": "#7cc36e",
-
-  // Decoration color for large packages
-  "importCost.largePackageColor": "#d44e40",
-
-  // File extensions to be parsed by the Typescript parser
-  "importCost.typescriptExtensions": [
-    "\\.tsx?$"
-  ],
-
-  // File extensions to be parsed by the Javascript parser
-  "importCost.javascriptExtensions": [
-    "\\.jsx?$"
-  ],
-
-  // Which bundle size to display
-  "importCost.bundleSizeDecoration": "both",
-
-  // Display the 'calculating' decoration
-  "importCost.showCalculatingDecoration": true,
-
-  // Print debug messages in output channel
-  "importCost.debug": false
-```
-Any package size above the mediumPackageSize limit will be considered large.
-
-
 ## Known Issues
 - Importing two libraries with a common dependency will show the size of both libraries isolated from each other, even if the common library needs to be imported only once.
