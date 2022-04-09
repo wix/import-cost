@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const { fs } = require('memfs');
-const { gzipSync, brotliCompressSync: brotliSync } = require('zlib');
+const { gzipSync } = require('zlib');
 const webpackConfig = require('./webpack-config.js');
 const inputFileSystem = require('./input-file-system.js');
 
@@ -38,14 +38,7 @@ async function calcSize(packageInfo, config, callback) {
             gzipSync(fs.readFileSync(bundleFile).toString(), {}).length,
         )
         .reduce((sum, gzipSize) => sum + gzipSize, 0);
-      const brotli = bundles
-        .map(bundle => path.join(process.cwd(), 'dist', bundle.name))
-        .map(
-          bundleFile =>
-            brotliSync(fs.readFileSync(bundleFile).toString(), {}).length,
-        )
-        .reduce((sum, brotliSize) => sum + brotliSize, 0);
-      callback(null, { size, gzip, brotli });
+      callback(null, { size, gzip });
     }
   });
 }

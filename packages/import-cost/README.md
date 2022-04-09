@@ -13,9 +13,9 @@ $ npm install --save import-cost
 ```
 
 ```js
-import {importCost, cleanup, Lang} from 'import-cost';
+import {importCost, cleanup, JAVASCRIPT, TYPESCRIPT} from 'import-cost';
 
-const emitter = importCost(fileName, fileContents, Lang.JAVASCRIPT /* or Lang.TYPESCRIPT */);
+const emitter = importCost(fileName, fileContents, JAVASCRIPT /* or TYPESCRIPT */);
 emitter.on('error', e => /* handle parse error of file, usually just log & ignore */);
 emitter.on('start', packages => /* mark those packages as "calculating..." */);
 emitter.on('calculated', package => /* show size of this single package */);
@@ -33,8 +33,7 @@ Usage as you can see above is pretty straight forward, `importCost()` gets three
 
 1) `fileName` - This is a `string` representing the full path to the file that is being processed. We need full file path since we need to look inside `node_modules` folder of the file in question
 2) `fileContents` - This is a `string` which contains the actual content of the file. We need it because in IDE extension it is usually much faster to get contents from IDE then reading it from filesystem. Also, obviously changes to the file might not have been saved yet, we want to work on the file as the user types to it.
-3) `language` - This effects which AST parser we will use to lookup the imports in the file. As you can see above, you pass either `Lang.JAVASCRIPT`, `Lang.TYPESCRIPT`, `Lang.VUE` or `Lang.SVELTE` to it. Typically IDE can tell you the language of the file, better use the correct API of your IDE then rely on extensions.
-4) `config` (optional) - Object containing the following keys: `maxCallTime` - give up after timeout (in milliseconds) if bundle calculation didn't complete, `concurrent` - boolean representing whether calculation should happen in multiple workers.
+3) `language` - This effects which AST parser we will use to lookup the imports in the file. As you can see above, you pass either `JAVASCRIPT` or `TYPESCRIPT` to it. Typically IDE can tell you the language of the file, better use the correct API of your IDE then rely on extensions.
 
 In response, `importCost()` returns a standard Node `EventEmitter`. You can read about event emitters in [Node docs](https://nodejs.org/api/events.html#events_class_eventemitter), but typically all you need to know is that you can register a callback for various events we emit using `emitter.on(eventName, callback)`. We also recommend you un-register using `emitter.removeAllListeners()` when the file in question changes, this will help you not be confused with any results that are no longer relevant to that file.
 

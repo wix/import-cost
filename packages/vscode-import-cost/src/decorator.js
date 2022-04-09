@@ -49,24 +49,12 @@ function getDecorationMessage(packageInfo) {
   }
   const size = fileSize(packageInfo.size, { unix: true });
   const gzip = fileSize(packageInfo.gzip, { unix: true });
-  const brotli = fileSize(packageInfo.brotli, { unix: true });
   if (configuration.bundleSizeDecoration === 'minified') {
     return text(`${size}`);
-  } else if (
-    configuration.bundleSizeDecoration === 'compressed' ||
-    configuration.bundleSizeDecoration === 'gzipped'
-  ) {
-    if (configuration.compression === 'brotli') {
-      return text(`${brotli}`);
-    } else {
-      return text(`${gzip}`);
-    }
+  } else if (configuration.bundleSizeDecoration === 'gzipped') {
+    return text(`${gzip}`);
   } else {
-    if (configuration.compression === 'brotli') {
-      return text(`${size} (brotli: ${brotli})`);
-    } else {
-      return text(`${size} (gzipped: ${gzip})`);
-    }
+    return text(`${size} (gzipped: ${gzip})`);
   }
 }
 
@@ -79,8 +67,6 @@ function getDecorationColor(packageInfo) {
   const size =
     (configuration.bundleSizeColoring === 'minified'
       ? packageInfo?.size
-      : configuration.compression === 'brotli'
-      ? packageInfo?.brotli
       : packageInfo?.gzip) || 0;
   const sizeInKB = size / 1024;
   if (sizeInKB < configuration.smallPackageSize) {

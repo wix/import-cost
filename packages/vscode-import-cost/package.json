@@ -33,21 +33,12 @@
       "type": "object",
       "title": "Import Cost configuration",
       "properties": {
-        "importCost.compression": {
-          "type": "string",
-          "default": "gzip",
-          "enum": [
-            "gzip",
-            "brotli"
-          ],
-          "description": "Which compression to use"
-        },
         "importCost.bundleSizeColoring": {
           "type": "string",
           "default": "minified",
           "enum": [
             "minified",
-            "compressed"
+            "gzipped"
           ],
           "description": "Which bundle size to use for selecting the color"
         },
@@ -140,7 +131,7 @@
           "enum": [
             "both",
             "minified",
-            "compressed"
+            "gzipped"
           ],
           "description": "Which bundle size to display"
         },
