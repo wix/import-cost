@@ -121,7 +121,7 @@
     ]
   },
   "scripts": {
-    "pretest": "webpack -c ./webpack.browser.js && webpack -c ./webpack.electron.js",
+    "pretest": "webpack -c ./webpack.browser.js && webpack -c ./webpack.electron.js && vsce package -o dist",
     "test": "node ./test/index.js"
   },
   "devDependencies": {
