@@ -9,13 +9,6 @@ const TimeoutPlugin = require('./timeout-plugin.js');
 const TerserPlugin = require('terser-webpack-plugin');
 
 async function webpackConfig(entry, packageInfo, { maxCallTime }) {
-  const packageRootDir = await pkgDir(path.dirname(packageInfo.fileName));
-  const modulesDirectory = path.join(packageRootDir, 'node_modules');
-  const peers = (await getPackageJson(packageInfo)).peerDependencies || {};
-  const defaultExternals = ['react', 'react-dom'];
-  const externals = Object.keys(peers)
-    .concat(defaultExternals)
-    .filter(p => p !== packageInfo.name);
   return {
     entry,
     target: 'node',
@@ -37,27 +30,13 @@ async function webpackConfig(entry, packageInfo, { maxCallTime }) {
     resolve: {
       mainFields: ['browser', 'module', 'main'],
       modules: [
-        modulesDirectory,
+        path.join(
+          await pkgDir(path.dirname(packageInfo.fileName)),
+          'node_modules',
+        ),
         await getPackageModuleContainer(packageInfo),
         'node_modules',
       ],
-      fallback: {
-        fs: false,
-        tty: false,
-        tls: false,
-        net: false,
-        path: false,
-        zlib: false,
-        http: false,
-        util: false,
-        https: false,
-        assert: false,
-        stream: false,
-        crypto: false,
-        events: false,
-        readline: false,
-        child_process: false,
-      },
     },
     module: {
       rules: [
@@ -80,7 +59,11 @@ async function webpackConfig(entry, packageInfo, { maxCallTime }) {
       __dirname: true,
       __filename: true,
     },
-    externals,
+    externals: Object.keys(
+      (await getPackageJson(packageInfo)).peerDependencies || {},
+    )
+      .concat(['react', 'react-dom'])
+      .filter(p => p !== packageInfo.name),
     output: {
       filename: 'bundle.js',
       libraryTarget: 'commonjs2',

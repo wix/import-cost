@@ -64,7 +64,6 @@ async function getPackageJson(pkg) {
 }
 
 module.exports = {
-  parseJson,
   getPackageModuleContainer,
   getPackageVersion,
   getPackageJson,
