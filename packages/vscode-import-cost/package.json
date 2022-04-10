@@ -3,7 +3,7 @@
   "displayName": "Import Cost",
   "description": "Display import/require package size in the editor",
   "license": "MIT",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "publisher": "wix",
   "main": "./dist/extension.electron.js",
   "browser": "./dist/extension.browser.js",
@@ -38,7 +38,7 @@
           "default": "minified",
           "enum": [
             "minified",
-            "gzipped"
+            "compressed"
           ],
           "description": "Which bundle size to use for selecting the color"
         },
@@ -131,7 +131,7 @@
           "enum": [
             "both",
             "minified",
-            "gzipped"
+            "compressed"
           ],
           "description": "Which bundle size to display"
         },

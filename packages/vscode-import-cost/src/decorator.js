@@ -53,6 +53,8 @@ function getDecorationMessage(packageInfo) {
     return text(`${size}`);
   } else if (configuration.bundleSizeDecoration === 'gzipped') {
     return text(`${gzip}`);
+  } else if (configuration.bundleSizeDecoration === 'compressed') {
+    return text(`${gzip}`);
   } else {
     return text(`${size} (gzipped: ${gzip})`);
   }
