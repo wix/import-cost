@@ -161,6 +161,7 @@
   },
   "scripts": {
     "pretest": "webpack -c ./webpack.browser.js && webpack -c ./webpack.electron.js",
+    "build": "npm run pretest && vsce package --no-dependencies",
     "test": "node ./test/index.js"
   },
   "devDependencies": {
