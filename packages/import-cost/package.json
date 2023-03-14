@@ -34,7 +34,7 @@
     "pkg-dir": "^5.0.0",
     "tempy": "^1.0.0",
     "url-loader": "^4.1.1",
-    "webpack": "5.70.0",
+    "webpack": "5.76.0",
     "worker-farm": "^1.4.1"
   }
 }
