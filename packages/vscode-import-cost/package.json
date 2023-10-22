@@ -127,6 +127,20 @@
           ],
           "description": "File extensions to be parsed by the Svelte parser"
         },
+        "importCost.glimmerJSExtensions": {
+          "type": "array",
+          "default": [
+            "\\.gjs$"
+          ],
+          "description": "File extensions to be parsed by the Glimmer-JS parser"
+        },
+        "importCost.glimmerTSExtensions": {
+          "type": "array",
+          "default": [
+            "\\.gts$"
+          ],
+          "description": "File extensions to be parsed by the Glimmer-TS parser"
+        },
         "importCost.bundleSizeDecoration": {
           "type": "string",
           "default": "both",
