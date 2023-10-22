@@ -19,7 +19,9 @@
     "onLanguage:typescript",
     "onLanguage:typescriptreact",
     "onLanguage:vue",
-    "onLanguage:svelte"
+    "onLanguage:svelte",
+    "onLanguage:glimmer-js",
+    "onLanguage:glimmer-ts"
   ],
   "keywords": [
     "import",
