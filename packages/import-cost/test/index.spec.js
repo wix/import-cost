@@ -33,6 +33,8 @@ const LANGUAGES = {
   jsx: Lang.JAVASCRIPT,
   vue: Lang.VUE,
   svelte: Lang.SVELTE,
+  gjs: Lang.GLIMMER_JS,
+  gts: Lang.GLIMMER_TS,
 };
 
 async function check(fileName, pkg, config = { concurrent: false }) {
@@ -194,6 +196,12 @@ describe('importCost', () => {
     });
     it('calculates size of a svelte script', () => {
       return verify('svelte.svelte');
+    });
+    it('calculates size of a glimmer-js script', () => {
+      return verify('glimmer.gjs');
+    });
+    it('calculates size of a glimmer-ts script', () => {
+      return verify('glimmer.gts');
     });
   });
 
