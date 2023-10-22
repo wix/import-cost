@@ -27,7 +27,7 @@ function stripTemplateTag(source) {
   // Replace all template tags within an assignment expression or a return to a no-op
   let sourceStripped = source.replace(
     /(=|return)\s*?<template>(.|\n)*?<\/template>/g,
-    '() => {}',
+    '$1 () => {}',
   );
 
   // Strip all template tags within a class body
