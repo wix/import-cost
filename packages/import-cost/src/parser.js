@@ -23,8 +23,23 @@ function getScriptTagLineNumber(html) {
   return 0;
 }
 
+function stripTemplateTag(source) {
+  // Replace all template tags within an assignment expression or a return to a no-op
+  let sourceStripped = source.replace(
+    /(=|return)\s*?<template>(.|\n)*?<\/template>/g,
+    '$1 () => {}',
+  );
+
+  // Strip all template tags within a class body
+  return sourceStripped.replace(/<template>(.|\n)*?<\/template>/g, '');
+}
+
 function getPackages(fileName, source, language) {
-  if ([Lang.SVELTE, Lang.VUE].some(l => l === language)) {
+  if ([Lang.GLIMMER_JS, Lang.GLIMMER_TS].some(l => l === language)) {
+    const scriptSource = stripTemplateTag(source);
+    const baseLanguage = Lang.GLIMMER_TS ? Lang.TYPESCRIPT : Lang.JAVASCRIPT;
+    return getPackagesFromJS(fileName, scriptSource, baseLanguage);
+  } else if ([Lang.SVELTE, Lang.VUE].some(l => l === language)) {
     const scriptSource = extractScriptFromHtml(source);
     const scriptLine = getScriptTagLineNumber(source);
     return getPackagesFromJS(

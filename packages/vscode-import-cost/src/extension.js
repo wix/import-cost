@@ -76,7 +76,17 @@ function language({ fileName, languageId }) {
   );
   const vueRegex = new RegExp(configuration.vueExtensions.join('|'));
   const svelteRegex = new RegExp(configuration.svelteExtensions.join('|'));
-  if (languageId === 'svelte' || svelteRegex.test(fileName)) {
+  const glimmerJSRegex = new RegExp(
+    configuration.glimmerJSExtensions.join('|'),
+  );
+  const glimmerTSRegex = new RegExp(
+    configuration.glimmerTSExtensions.join('|'),
+  );
+  if (languageId === 'glimmer-js' || glimmerJSRegex.test(fileName)) {
+    return Lang.GLIMMER_JS;
+  } else if (languageId === 'glimmer-ts' || glimmerTSRegex.test(fileName)) {
+    return Lang.GLIMMER_TS;
+  } else if (languageId === 'svelte' || svelteRegex.test(fileName)) {
     return Lang.SVELTE;
   } else if (languageId === 'vue' || vueRegex.test(fileName)) {
     return Lang.VUE;
