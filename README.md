@@ -4,7 +4,7 @@
 This extension will display inline in the editor the size of the imported package.
 The extension utilizes webpack in order to detect the imported size.
 
-![Example Image](https://citw.dev/_next/image?url=%2Fposts%2Fimport-cost%2F1quov3TFpgG2ur7myCLGtsA.gif&w=1080&q=75)
+![Example Image](https://citw.dev/posts/import-cost/1quov3TFpgG2ur7myCLGtsA.gif)
 
 This project includes implementation of:
  * Import Cost [VSCode extension](packages/vscode-import-cost) - install it from [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=wix.vscode-import-cost)
