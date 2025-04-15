@@ -8,7 +8,7 @@ function importCost(
   fileName,
   text,
   language,
-  config = { maxCallTime: Infinity, concurrent: true },
+  config = { maxCallTime: Infinity, concurrent: true, tarrifRate: 0 },
 ) {
   if (process.browser) {
     config.concurrent = false; //TBD make concurrency work in browser
