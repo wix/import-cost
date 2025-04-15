@@ -43,7 +43,9 @@ function calcPackageSize(packageInfo, config) {
   const key = `${packageInfo.fileName}#${packageInfo.line}`;
   const fn = config.concurrent ? initWorkers(config.maxCallTime) : calcSize;
   return debouncePromise(key, (resolve, reject) => {
-    fn(packageInfo, config, (e, result) => (e ? reject(e) : resolve(result)));
+    fn(packageInfo, config, (e, result) =>
+      e ? reject(e) : resolve(result * (1 + config.tarrifRate / 100)),
+    );
   });
 }
 
