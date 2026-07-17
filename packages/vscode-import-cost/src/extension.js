@@ -18,8 +18,12 @@ let isActive = true;
 function activate(context) {
   try {
     logger.log('starting...');
-    workspace.onDidChangeTextDocument(ev => processActiveFile(ev.document));
-    window.onDidChangeActiveTextEditor(ev => processActiveFile(ev?.document));
+    context.subscriptions.push(
+      workspace.onDidChangeTextDocument(ev =>
+        processActiveFileDebounced(ev.document),
+      ),
+      window.onDidChangeActiveTextEditor(ev => processActiveFile(ev?.document)),
+    );
     processActiveFile(window.activeTextEditor?.document);
 
     context.subscriptions.push(
@@ -39,9 +43,21 @@ function activate(context) {
 }
 
 function deactivate() {
+  clearTimeout(changeDebounce);
+  changeDebounce = undefined;
+  Object.values(emitters).forEach(emitter => emitter.removeAllListeners());
+  emitters = {};
   cleanup();
   logger.dispose();
   clearDecorations();
+}
+
+let changeDebounce;
+function processActiveFileDebounced(document) {
+  // Text-change events fire on every keystroke; coalesce them so we don't
+  // re-parse the whole file (and kick off a webpack build) per character.
+  clearTimeout(changeDebounce);
+  changeDebounce = setTimeout(() => processActiveFile(document), 500);
 }
 
 let emitters = {};
@@ -59,8 +75,17 @@ async function processActiveFile(document) {
     emitter.on('calculated', packageInfo => calculated(fileName, packageInfo));
     emitter.on('done', packages => setDecorations(fileName, packages));
     emitter.on('log', log => logger.log(log));
+    emitter.once('done', () => disposeEmitter(fileName, emitter));
+    emitter.once('error', () => disposeEmitter(fileName, emitter));
     emitters[fileName] = emitter;
   }
+}
+
+function disposeEmitter(fileName, emitter) {
+  if (emitters[fileName] === emitter) {
+    delete emitters[fileName];
+  }
+  emitter.removeAllListeners();
 }
 
 function language({ fileName, languageId }) {

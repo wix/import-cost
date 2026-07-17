@@ -139,6 +139,9 @@ function flushDecorations(fileName) {
 }
 
 function clearDecorations() {
+  clearTimeout(decorationsDebounce);
+  decorationsDebounce = undefined;
+  Object.keys(decorations).forEach(fileName => delete decorations[fileName]);
   window.visibleTextEditors.forEach(textEditor => {
     textEditor.setDecorations(decorationType, []);
   });
