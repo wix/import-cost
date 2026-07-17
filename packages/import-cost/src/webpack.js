@@ -15,30 +15,44 @@ async function getEntryPoint(packageInfo) {
 }
 
 async function calcSize(packageInfo, config, callback) {
+  const entryPoint = await getEntryPoint(packageInfo);
   const compiler = webpack(
-    await webpackConfig(await getEntryPoint(packageInfo), packageInfo, config),
+    await webpackConfig(entryPoint, packageInfo, config),
   );
   compiler.outputFileSystem = fs;
   compiler.inputFileSystem = inputFileSystem(fs);
 
   compiler.run((err, stats) => {
-    if (err) {
-      callback(err);
-    } else if (stats.toJson().errors.length > 0) {
-      callback(stats.toJson().errors);
-    } else {
-      const bundles = stats
-        .toJson()
-        .assets.filter(asset => asset.name.includes('bundle.js'));
-      const size = bundles.reduce((sum, pkg) => sum + pkg.size, 0);
-      const gzip = bundles
-        .map(bundle => path.join(process.cwd(), 'dist', bundle.name))
-        .map(
-          bundleFile =>
-            gzipSync(fs.readFileSync(bundleFile).toString(), {}).length,
-        )
-        .reduce((sum, gzipSize) => sum + gzipSize, 0);
-      callback(null, { size, gzip });
+    const releaseFromMemory = () => {
+      try {
+        fs.unlinkSync(entryPoint);
+      } catch {
+        // Ignore if file does not exist
+      }
+      compiler.close(() => {});
+    };
+
+    try {
+      if (err) {
+        callback(err);
+      } else if (stats.toJson().errors.length > 0) {
+        callback(stats.toJson().errors);
+      } else {
+        const bundles = stats
+          .toJson()
+          .assets.filter(asset => asset.name.includes('bundle.js'));
+        const size = bundles.reduce((sum, pkg) => sum + pkg.size, 0);
+        const gzip = bundles
+          .map(bundle => path.join(process.cwd(), 'dist', bundle.name))
+          .map(
+            bundleFile =>
+              gzipSync(fs.readFileSync(bundleFile).toString(), {}).length,
+          )
+          .reduce((sum, gzipSize) => sum + gzipSize, 0);
+        callback(null, { size, gzip });
+      }
+    } finally {
+      releaseFromMemory();
     }
   });
 }

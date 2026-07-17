@@ -12,7 +12,12 @@ function debouncePromise(key, fn, delay = 500) {
       delay,
     );
   });
-  return (promises[key] = promise);
+  promises[key] = promise;
+  return promise.finally(() => {
+    if (promises[key] === promise) {
+      delete promises[key];
+    }
+  });
 }
 
 module.exports = {
